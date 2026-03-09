@@ -296,7 +296,7 @@ window.addEventListener('DOMContentLoaded', async ()=>{
 /* ══ API ══ */
 async function api(method, body){
   const o={redirect:'follow'};
-  if(method==='POST'){ o.method='POST'; o.headers={'Content-Type':'application/json'}; o.body=JSON.stringify(body); }
+  if(method==='POST'){ o.method='POST'; o.headers={'Content-Type':'text/plain;charset=utf-8'}; o.body=JSON.stringify(body); }
   const r=await fetch(APPS_SCRIPT_URL,o);
   return r.json();
 }
