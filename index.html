@@ -95,10 +95,10 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 
 /* ── CARD ── */
 .card{background:var(--white);border-radius:var(--r);box-shadow:var(--sh);margin-bottom:.5rem;border:2px solid transparent;transition:border-color var(--tr)}
-.card.pending{border-color:var(--orange)}.card.saved{border-color:#86efac}
+/* Eliminem la vora taronja per als pendents per netejar la UI */
+.card.saved{border-color:#86efac}
 /* new card */
 .card.cnew{border:2px dashed var(--vb);background:var(--vp)}
-.card.cnew.pending{border-style:solid;border-color:var(--orange)}
 .card.cnew.saved{border-style:solid;border-color:#86efac}
 
 .card-sum{display:flex;align-items:center;gap:.48rem;padding:.45rem .72rem;cursor:pointer;user-select:none;border-bottom:1px solid var(--g100);transition:background var(--tr)}
@@ -120,8 +120,8 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .new-label{display:flex;align-items:center;gap:.38rem;font-size:.74rem;font-weight:800;color:var(--violet);text-transform:uppercase;letter-spacing:.05em;flex:1;overflow:hidden;}
 .new-pill{background:var(--violet);color:#fff;font-size:.61rem;padding:.07rem .38rem;border-radius:99px;font-weight:700;flex-shrink:0;}
 .new-title-text{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--violet);font-weight:700;text-transform:none;}
-.btn-rm{background:transparent;border:none;color:var(--gray-dipta);cursor:pointer;font-size:.92rem;padding:.08rem .18rem;border-radius:4px;transition:color var(--tr);flex-shrink:0;}
-.btn-rm:hover{color:var(--red)}
+.btn-rm{background:transparent;border:1px solid transparent;color:var(--gray-dipta);cursor:pointer;font-size:.75rem;font-weight:600;padding:.2rem .5rem;border-radius:6px;transition:all var(--tr);flex-shrink:0;display:flex;align-items:center;gap:.25rem;}
+.btn-rm:hover{color:var(--red);background:#fee2e2;border-color:#fecaca;}
 
 .acc{border-bottom:1px solid var(--g100)}
 .acc:last-of-type{border-bottom:none}
@@ -257,6 +257,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 
 <script>
 /* ══ CONFIGURACIÓ DE L'API ══ */
+// RECORDATORI: Substitueix aquesta URL per la que has generat fent "Nova implementació" al Google Scripts.
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbynrl8dl98JTPXd0sycbke2s21JtedYTIU90S21uHuWBDwNJHnvbhEIK23MDYQpQlEAEQ/exec"; 
 
 /* ══ STATE ══ */
@@ -414,20 +415,16 @@ function renderCrit(c){
     if(sub.que_diu&&sub.que_diu.trim()){
       const eb=el('button','efqm-btn'); eb.textContent='📖 Què diu el model EFQM?';
       const ep=el('div','efqm-panel'); 
-      // Hem eliminat el replace perquè respecti els salts de línia de l'Excel
-      ep.textContent=sub.que_diu;
+      ep.textContent=sub.que_diu; // Ara respecta exactament l'Excel (i l'ordre)
       eb.onclick=()=>{ ep.classList.toggle('open'); eb.textContent=(ep.classList.contains('open')?'▲ ':'📖 ')+'Què diu el model EFQM?'; };
       tr.appendChild(eb); sticky.appendChild(tr); sticky.appendChild(ep);
     } else { sticky.appendChild(tr); }
     blk.appendChild(sticky);
 
-    // Existing cards
     sub.rows.forEach(row=>{ const card=buildCard(row,c); blk.appendChild(card.el); cards[c].push(card); });
 
-    // Re-attach un-saved newly created cards in this session
     exNew.filter(x=>x.sub===s).forEach(x=>{ blk.appendChild(x.el); cards[c].push(x); });
 
-    // CARREGAR ELS NOUS ENFOCAMENTS DE LA BASE DE DADES
     const strSearch = 'NEW-' + c + '-' + s + '-';
     resp.filter(r => r.email === sess.email && r.id_enfocament && r.id_enfocament.startsWith(strSearch)).forEach(r => {
       if (!exNew.find(x => x.id === r.id_enfocament)) {
@@ -437,7 +434,6 @@ function renderCrit(c){
       }
     });
 
-    // Add new btn
     const ab=el('button','btn-add');
     ab.innerHTML='➕ Proposar un nou enfocament per a <strong style="margin-left:.25rem">'+escH(s)+'</strong>';
     ab.addEventListener('click',()=>insertNew(c,s,sub.titol,blk,ab));
@@ -573,7 +569,8 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
   nl.innerHTML='<span class="new-pill">NOU</span>';
   nl.appendChild(titleSpan);
 
-  const rm=el('button','btn-rm'); rm.title='Eliminar'; rm.textContent='✕';
+  const rm=el('button','btn-rm'); rm.title='Eliminar'; 
+  rm.innerHTML='🗑️ Eliminar'; // <-- ARA ÉS UNA PAPERERA CLARA
   rm.addEventListener('click', async (e)=>{
     e.stopPropagation(); 
     if(!card.classList.contains('saved')){
@@ -581,18 +578,19 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
       updProgress(); updTabPending();
     } else {
       if(confirm('Aquest enfocament ja està desat al sistema. Estàs segur que vols eliminar-lo definitivament?')){
-        const origBtn = rm.textContent;
+        const origBtn = rm.innerHTML;
         rm.textContent = '⏳';
         try {
           const r = await api('POST', { email: sess.email, id_enfocament: tid, esborrar: true });
-          if(!r.success) throw new Error();
+          if(!r.success) throw new Error(r.error || 'Error desconegut del servidor');
+          
           card.remove(); cards[crit]=(cards[crit]||[]).filter(x=>x.id!==tid);
           resp = resp.filter(r => r.id_enfocament !== tid);
           updProgress(); updTabPending();
           toast('Enfocament eliminat correctament.', 'tinfo');
         } catch(err) {
-          rm.textContent = origBtn;
-          toast('Error en eliminar', 'terr');
+          rm.innerHTML = origBtn;
+          toast('Error en eliminar: ' + err.message, 'terr'); // <-- MISSATGE D'ERROR DETALLAT
         }
       }
     }
