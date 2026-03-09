@@ -695,6 +695,11 @@ async function saveExisting(id,btn){
   if(!sess) return;
   const orig=btn.textContent; btn.textContent='Enviant…'; btn.disabled=true;
   const d=cardData(id);
+  
+  // LÓGICA: Se considera "Revisado" si el check está marcado O si hay texto en las propuestas
+  const tieneTexto = (d.sug_desplegament + d.sug_avaluacio + d.sug_evidencies + d.comentari_general).trim() !== '';
+  const isDone = d.validat || tieneTexto;
+
   const payload={
     nom:sess.nom, email:sess.email, area_revisora:sess.area,
     id_enfocament:id, is_new:false,
@@ -707,57 +712,32 @@ async function saveExisting(id,btn){
     comentari_general:d.comentari_general,
     timestamp:new Date().toISOString()
   };
-  await doSave(payload,id,btn,orig,false);
+  await doSave(payload,id,btn,orig,false, isDone);
 }
 
-/* ══ SAVE NEW ══ */
-async function saveNew(tid,btn){
+/* ══ SAVE EXISTING ══ */
+async function saveExisting(id,btn){
   if(!sess) return;
-  const card=document.querySelector('.card[data-id="'+tid+'"]'); if(!card) return;
-  
-  const requiredKeys = ['sug_titol_enfocament', 'sug_enfocament', 'sug_desplegament', 'sug_avaluacio', 'sug_evidencies'];
-  for (let key of requiredKeys) {
-    const ta = card.querySelector(`textarea[data-key="${key}"]`);
-    if (!ta || ta.value.trim() === '') {
-      const labelText = ta.parentElement.querySelector('.nf-lbl').textContent.replace('*','').trim();
-      toast(`El camp "${labelText}" és obligatori.`, 'terr');
-      ta?.focus();
-      return;
-    }
-  }
-
   const orig=btn.textContent; btn.textContent='Enviant…'; btn.disabled=true;
-  const d=cardData(tid);
+  const d=cardData(id);
   
+  // LÓGICA: Se considera "Revisado" si el check está marcado O si hay texto en las propuestas
+  const tieneTexto = (d.sug_desplegament + d.sug_avaluacio + d.sug_evidencies + d.comentari_general).trim() !== '';
+  const isDone = d.validat || tieneTexto;
+
   const payload={
     nom:sess.nom, email:sess.email, area_revisora:sess.area,
-    id_enfocament:tid, is_new:true,
-    validat:true, 
-    sug_titol_enfocament:d.sug_titol_enfocament||'',
-    sug_enfocament:d.sug_enfocament||'',
+    id_enfocament:id, is_new:false,
+    validat:d.validat,
+    sug_titol_enfocament:'',
+    sug_enfocament:'',
     sug_desplegament:d.sug_desplegament||'',
     sug_avaluacio:d.sug_avaluacio||'',
     sug_evidencies:d.sug_evidencies||'',
     comentari_general:d.comentari_general,
-    criteri:card.dataset.crit||'',
-    subcriteri:card.dataset.sub||'',
     timestamp:new Date().toISOString()
   };
-  await doSave(payload,tid,btn,orig,true);
-}
-
-async function doSave(payload,id,btn,orig,isNew){
-  try{
-    if(!APPS_SCRIPT_URL) await wait(500);
-    else{ const r=await api('POST',payload); if(!r.success) throw new Error(r.error||'Error servidor'); }
-    updResp(payload); markSaved(id); 
-    
-    const c=document.querySelector('.card[data-id="'+id+'"]');
-    if(c) c.classList.remove('expanded'); 
-    
-    btn.textContent='Desat ✅'; toast(isNew?'Nova proposta desada! ✨':'Punt desat.','tok');
-  } catch(e){ btn.textContent='Error ❌'; toast('Error: '+e.message,'terr'); }
-  setTimeout(()=>{ btn.textContent=orig; btn.disabled=false; },3000);
+  await doSave(payload,id,btn,orig,false, isDone);
 }
 
 function updResp(p){
