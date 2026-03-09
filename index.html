@@ -381,7 +381,6 @@ function buildTabs(){
 }
 function updTabPending(){
   document.querySelectorAll('.ctab').forEach(t=>{
-    // Marcar la pestanya si hi ha cap targeta "no desada/no validada"
     t.classList.toggle('has-pending',(cards[t.dataset.c]||[]).some(x=>!x.el.classList.contains('saved')));
   });
 }
@@ -415,7 +414,8 @@ function renderCrit(c){
     if(sub.que_diu&&sub.que_diu.trim()){
       const eb=el('button','efqm-btn'); eb.textContent='📖 Què diu el model EFQM?';
       const ep=el('div','efqm-panel'); 
-      ep.textContent=sub.que_diu.replace(/([^\n])\n([^\n])/g, '$1 $2');
+      // Hem eliminat el replace perquè respecti els salts de línia de l'Excel
+      ep.textContent=sub.que_diu;
       eb.onclick=()=>{ ep.classList.toggle('open'); eb.textContent=(ep.classList.contains('open')?'▲ ':'📖 ')+'Què diu el model EFQM?'; };
       tr.appendChild(eb); sticky.appendChild(tr); sticky.appendChild(ep);
     } else { sticky.appendChild(tr); }
@@ -445,7 +445,7 @@ function renderCrit(c){
     area.appendChild(blk);
   });
   updProgress();
-  updTabPending(); // Recalcular punts de pestanyes
+  updTabPending(); 
 }
 
 /* ══ BUILD EXISTING CARD ══ */
@@ -453,7 +453,6 @@ function buildCard(row,crit){
   const id=row.id||'';
   const prev=resp.find(r=>r.email===sess.email&&r.id_enfocament===id);
   const card=document.createElement('div');
-  // Per defecte les que no tenen previ, queden com "no saved" (pendents)
   card.className='card'+(prev?' saved':' pending');
   card.dataset.id=id; card.dataset.isNew='0';
   card.dataset.st=[row.titol_enfocament,row.enfocament,row.desplegament,row.avaluacio,row.evidencies,row.titol_subcriteri].join(' ').toLowerCase();
@@ -516,7 +515,6 @@ function buildCard(row,crit){
 function makeAZ(id,prev,isNew){
   const az=el('div','az');
   
-  // Només creem la checkbox si NO és un enfocament nou
   if(!isNew){
     const cl=el('label','chk-wrap');
     const chk=document.createElement('input'); chk.type='checkbox'; chk.dataset.card=id;
@@ -576,11 +574,27 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
   nl.appendChild(titleSpan);
 
   const rm=el('button','btn-rm'); rm.title='Eliminar'; rm.textContent='✕';
-  rm.addEventListener('click',(e)=>{
+  rm.addEventListener('click', async (e)=>{
     e.stopPropagation(); 
-    if(!card.classList.contains('saved')||confirm('Vols eliminar aquesta proposta de la vista?')){
+    if(!card.classList.contains('saved')){
       card.remove(); cards[crit]=(cards[crit]||[]).filter(x=>x.id!==tid);
       updProgress(); updTabPending();
+    } else {
+      if(confirm('Aquest enfocament ja està desat al sistema. Estàs segur que vols eliminar-lo definitivament?')){
+        const origBtn = rm.textContent;
+        rm.textContent = '⏳';
+        try {
+          const r = await api('POST', { email: sess.email, id_enfocament: tid, esborrar: true });
+          if(!r.success) throw new Error();
+          card.remove(); cards[crit]=(cards[crit]||[]).filter(x=>x.id!==tid);
+          resp = resp.filter(r => r.id_enfocament !== tid);
+          updProgress(); updTabPending();
+          toast('Enfocament eliminat correctament.', 'tinfo');
+        } catch(err) {
+          rm.textContent = origBtn;
+          toast('Error en eliminar', 'terr');
+        }
+      }
     }
   });
   
@@ -592,7 +606,6 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
 
   const body=el('div','card-body new-body');
   
-  // Tots els camps excepte comentari són obligatoris per a "Nou" (req:true)
   const NFIELDS=[
     {key:'sug_titol_enfocament', cls:'nfl-t', color:'var(--violet)', lbl:'Títol de l\'enfocament', ph:'Resum breu del nou enfocament…', cls2:'nta-t', req:true},
     {key:'sug_enfocament',       cls:'nfl-e', color:'var(--navy)',   lbl:'Enfocament',              ph:'Descriu el nou enfocament…',    cls2:'nta-b', req:true},
@@ -657,7 +670,6 @@ function applyF(){
   const kw=$('srch').value.toLowerCase().trim();
   (cards[curC]||[]).forEach(({el:e})=>{
     let show=true;
-    // Ara 'Pendent' vol dir literalment 'No guardat/No validat'
     if(curF==='pending') show = !e.classList.contains('saved');
     else if(curF==='validated') show = e.classList.contains('saved');
     else if(curF==='new') show = e.dataset.isNew==='1';
@@ -705,7 +717,6 @@ async function saveNew(tid,btn){
   if(!sess) return;
   const card=document.querySelector('.card[data-id="'+tid+'"]'); if(!card) return;
   
-  // Validar TOTS els camps obligatoris
   const requiredKeys = ['sug_titol_enfocament', 'sug_enfocament', 'sug_desplegament', 'sug_avaluacio', 'sug_evidencies'];
   for (let key of requiredKeys) {
     const ta = card.querySelector(`textarea[data-key="${key}"]`);
@@ -723,7 +734,7 @@ async function saveNew(tid,btn){
   const payload={
     nom:sess.nom, email:sess.email, area_revisora:sess.area,
     id_enfocament:tid, is_new:true,
-    validat:true, // Un nou enfocament es considera validat per qui el proposa per defecte
+    validat:true, 
     sug_titol_enfocament:d.sug_titol_enfocament||'',
     sug_enfocament:d.sug_enfocament||'',
     sug_desplegament:d.sug_desplegament||'',
@@ -743,7 +754,6 @@ async function doSave(payload,id,btn,orig,isNew){
     else{ const r=await api('POST',payload); if(!r.success) throw new Error(r.error||'Error servidor'); }
     updResp(payload); markSaved(id); 
     
-    // Tancar la Card automàticament en Desar
     const c=document.querySelector('.card[data-id="'+id+'"]');
     if(c) c.classList.remove('expanded'); 
     
