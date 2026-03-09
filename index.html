@@ -7,13 +7,12 @@
 <style>
 /* ══ CONFIGURACIÓ DE COLORS CORPORATIUS La DipTa ══ */
 :root{
-  --navy: #0083A9;       /* Blau corporatiu La DipTa */
-  --navy2: #006b8a;      /* Blau fosc per hovers */
-  --navy-pale: #e6f6fa;  /* Fons suau corporatiu */
-  --gray-dipta: #747678; /* Gris corporatiu */
-  --black-dipta: #000000;/* Negre corporatiu */
+  --navy: #0083A9;       
+  --navy2: #006b8a;      
+  --navy-pale: #e6f6fa;  
+  --gray-dipta: #747678; 
+  --black-dipta: #000000;
   
-  /* Colors de suport */
   --orange: #f97316; --green: #16a34a; --red: #dc2626;
   --violet: #7c3aed; --vp: #f5f3ff; --vb: #c4b5fd;
   --bg: #f0f4f8; --white: #fff;
@@ -54,7 +53,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 /* ══ APP SHELL ══ */
 #s2{display:none;height:100vh;flex-direction:column}
 
-/* Topbar */
 .topbar{flex-shrink:0;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:.52rem 1.2rem;gap:1rem;z-index:300}
 .tb-l{display:flex;align-items:center;gap:.65rem}
 .tb-title{font-size:.87rem;font-weight:700}
@@ -65,7 +63,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .prog-fill{height:100%;background:#34d399;border-radius:99px;transition:width .4s ease}
 .prog-lbl{font-size:.69rem;opacity:.9;white-space:nowrap}
 
-/* Crit tabs */
 .crit-tabs{flex-shrink:0;background:var(--white);border-bottom:1px solid var(--g100);display:flex;overflow-x:auto;scrollbar-width:none;padding:0 1rem}
 .crit-tabs::-webkit-scrollbar{display:none}
 .ctab{padding:.58rem .9rem;font-size:.8rem;font-weight:600;color:var(--gray-dipta);cursor:pointer;border:none;background:transparent;border-bottom:3px solid transparent;white-space:nowrap;transition:all var(--tr);display:flex;align-items:center;gap:.36rem;flex-shrink:0}
@@ -73,10 +70,8 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .tab-dot{width:7px;height:7px;border-radius:50%;background:var(--orange);display:none;flex-shrink:0}
 .ctab.has-pending .tab-dot{display:inline-block}
 
-/* Main */
 .main{flex:1;overflow:hidden;display:flex;flex-direction:column}
 
-/* Toolbar */
 .toolbar{flex-shrink:0;background:var(--g50);border-bottom:1px solid var(--g100);padding:.42rem 1.2rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
 .tog-group{display:flex;border:1.5px solid var(--g100);border-radius:7px;overflow:hidden;background:var(--white)}
 .tog-btn{padding:.3rem .68rem;font-size:.76rem;font-weight:600;border:none;background:transparent;cursor:pointer;color:var(--gray-dipta);transition:all var(--tr)}
@@ -84,16 +79,11 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .sw{flex:1;min-width:130px;position:relative}
 .sw input{padding:.32rem .62rem .32rem 1.82rem;font-size:.79rem;height:29px}
 .s-ico{position:absolute;left:.5rem;top:50%;transform:translateY(-50%);color:var(--g300);font-size:.8rem;pointer-events:none}
-.btn-save-all{background:var(--navy);color:#fff;padding:.32rem .82rem;font-size:.77rem;border-radius:7px;border:none;cursor:pointer;font-weight:600;white-space:nowrap;transition:background var(--tr)}
-.btn-save-all:hover{background:var(--navy2)}.btn-save-all:disabled{opacity:.5;cursor:not-allowed}
 
-/* Scroll */
 .scroll-area{flex:1;overflow-y:auto;padding:.9rem 1.2rem 3rem}
 
-/* ── Subcrit block ── */
 .sb{margin-bottom:1.5rem}
 
-/* Subcrit sticky header */
 .sub-sticky{position:sticky;top:0;z-index:50;background:var(--white);border-radius:8px;box-shadow:var(--sh);margin-bottom:.55rem;overflow:hidden;border:1px solid var(--g100)}
 .sub-title-row{display:flex;align-items:center;gap:.6rem;padding:.5rem .82rem}
 .sub-num{font-size:.68rem;font-weight:700;background:var(--navy);color:#fff;padding:.08rem .42rem;border-radius:5px;flex-shrink:0}
@@ -111,32 +101,28 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .card.cnew.pending{border-style:solid;border-color:var(--orange)}
 .card.cnew.saved{border-style:solid;border-color:#86efac}
 
-/* Card summary row */
 .card-sum{display:flex;align-items:center;gap:.48rem;padding:.45rem .72rem;cursor:pointer;user-select:none;border-bottom:1px solid var(--g100);transition:background var(--tr)}
 .card-sum:hover{background:var(--g50)}
-.cs-id{font-size:.66rem;font-weight:700;color:var(--g300);background:var(--g50);border-radius:4px;padding:.07rem .36rem;flex-shrink:0;white-space:nowrap}
 .cs-title{flex:1;font-size:.82rem;font-weight:600;color:var(--black-dipta);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cs-badge{font-size:.66rem;font-weight:700;padding:.1rem .42rem;border-radius:99px;flex-shrink:0;white-space:nowrap}
 .bp{background:#fff7ed;color:var(--orange);border:1px solid #fed7aa}
 .bs{background:#f0fdf4;color:var(--green);border:1px solid #bbf7d0}
 .bprev{background:#f0fdf4;color:var(--green);border:1px solid #bbf7d0}
-.bnew{background:var(--vp);color:var(--violet);border:1px solid var(--vb)}
 .cs-chev{font-size:.62rem;color:var(--gray-dipta);transition:transform var(--tr);flex-shrink:0}
 .card.expanded .cs-chev{transform:rotate(180deg)}
 
-/* Card body */
 .card-body{display:none}
 .card.expanded .card-body{display:block}
 
-/* New card banner */
+/* Banner nou enfocament dinàmic */
 .new-banner{display:flex;align-items:center;gap:.48rem;padding:.48rem .72rem;background:linear-gradient(135deg,var(--vp),#ede9fe);border-bottom:1px dashed var(--vb);transition:background var(--tr)}
 .new-banner:hover{background:#ede9fe}
-.new-label{display:flex;align-items:center;gap:.38rem;font-size:.74rem;font-weight:800;color:var(--violet);text-transform:uppercase;letter-spacing:.05em}
-.new-pill{background:var(--violet);color:#fff;font-size:.61rem;padding:.07rem .38rem;border-radius:99px;font-weight:700}
-.btn-rm{background:transparent;border:none;color:var(--gray-dipta);cursor:pointer;font-size:.92rem;padding:.08rem .18rem;border-radius:4px;transition:color var(--tr)}
+.new-label{display:flex;align-items:center;gap:.38rem;font-size:.74rem;font-weight:800;color:var(--violet);text-transform:uppercase;letter-spacing:.05em;flex:1;overflow:hidden;}
+.new-pill{background:var(--violet);color:#fff;font-size:.61rem;padding:.07rem .38rem;border-radius:99px;font-weight:700;flex-shrink:0;}
+.new-title-text{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--violet);font-weight:700;text-transform:none;}
+.btn-rm{background:transparent;border:none;color:var(--gray-dipta);cursor:pointer;font-size:.92rem;padding:.08rem .18rem;border-radius:4px;transition:color var(--tr);flex-shrink:0;}
 .btn-rm:hover{color:var(--red)}
 
-/* ── ACCORDIONS ── */
 .acc{border-bottom:1px solid var(--g100)}
 .acc:last-of-type{border-bottom:none}
 .acc-hdr{display:flex;align-items:center;gap:.42rem;padding:.4rem .72rem;cursor:pointer;user-select:none;transition:background var(--tr)}
@@ -151,17 +137,14 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .acc-body{display:none;padding:.42rem .72rem .58rem;border-top:1px solid var(--g100);background:var(--g50)}
 .acc.open .acc-body{display:block}
 
-/* Read-only text */
 .ro{background:var(--white);border-left:3px solid var(--g200);padding:.42rem .58rem;border-radius:0 6px 6px 0;white-space:pre-wrap;font-size:.81rem;color:var(--black-dipta);cursor:not-allowed;line-height:1.55;user-select:none;margin-bottom:.42rem}
 .ro.empty{color:var(--gray-dipta);font-style:italic;font-size:.78rem;border-left-color:var(--g100)}
 .ro-e{border-left-color:var(--navy)}.ro-d{border-left-color:var(--navy2)}.ro-a{border-left-color:#0369a1}.ro-ev{border-left-color:#0f766e}
 
-/* Proposal textarea */
 .prop-lbl{font-size:.69rem;color:var(--orange);font-weight:700;margin-bottom:.2rem;display:block}
 .prop-ta{font-size:.81rem;resize:vertical;min-height:54px;background:#fffbf5;border-color:#fed7aa;border-radius:7px;transition:border-color var(--tr)}
 .prop-ta:focus{border-color:var(--orange);outline:none}
 
-/* New card fields */
 .new-body{padding:.62rem .72rem;background:var(--white)}
 .nf{margin-bottom:.62rem}
 .nf-lbl{font-size:.69rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.22rem;display:flex;align-items:center;gap:.3rem}
@@ -173,7 +156,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .nta.nta-b{min-height:54px}
 .req{color:var(--red);margin-left:.13rem}
 
-/* Context note */
 .ctx{margin:.38rem .72rem;border-radius:7px;overflow:hidden;border:1px solid var(--g100)}
 .ctx-btn{width:100%;text-align:left;background:var(--g50);border:none;padding:.36rem .65rem;font-size:.72rem;font-weight:600;color:var(--gray-dipta);cursor:pointer;display:flex;align-items:center;gap:.28rem;transition:background var(--tr)}
 .ctx-btn:hover{background:var(--g100)}
@@ -183,7 +165,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .ctx-qa{background:#fafeff;color:var(--navy2)}.ctx-prev{color:var(--gray-dipta)}
 .ctx-st{font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;opacity:.8;margin-bottom:.16rem}
 
-/* Action zone */
 .az{display:flex;align-items:flex-start;gap:.58rem;flex-wrap:wrap;padding:.52rem .72rem;background:var(--g50);border-top:1.5px solid var(--g100);border-radius:0 0 calc(var(--r) - 2px) calc(var(--r) - 2px)}
 .card.cnew .az{background:#f3f0ff;border-top-color:var(--vb)}
 .chk-wrap{display:flex;align-items:center;gap:.36rem;cursor:pointer;flex-shrink:0;padding-top:.07rem}
@@ -195,11 +176,9 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .btn-sn{background:var(--violet);color:#fff;padding:.36rem .72rem;font-size:.76rem;flex-shrink:0;align-self:flex-end;border:none;border-radius:8px;cursor:pointer;font-weight:600;transition:background var(--tr)}
 .btn-sn:hover{background:#6d28d9}.btn-sn:disabled{opacity:.5;cursor:not-allowed}
 
-/* Add new btn */
 .btn-add{display:flex;align-items:center;justify-content:center;gap:.38rem;background:transparent;border:1.5px dashed var(--vb);border-radius:8px;padding:.42rem .82rem;font-size:.78rem;font-weight:600;color:var(--violet);cursor:pointer;transition:all var(--tr);margin-top:.32rem;width:100%}
 .btn-add:hover{background:var(--vp);border-color:var(--violet)}
 
-/* Toasts */
 #toasts{position:fixed;bottom:1rem;right:1rem;z-index:9999;display:flex;flex-direction:column;gap:.38rem;max-width:280px}
 .toast{background:var(--black-dipta);color:#fff;padding:.58rem .82rem;border-radius:9px;font-size:.79rem;font-weight:500;animation:fu .2s ease;box-shadow:var(--sh2)}
 .tok{background:#166534}.terr{background:#991b1b}.tinfo{background:var(--navy)}.tvio{background:var(--violet)}
@@ -261,15 +240,14 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
     <div class="toolbar">
       <div class="tog-group">
         <button class="tog-btn active" onclick="setF('all',this)">Tots</button>
-        <button class="tog-btn" onclick="setF('pending',this)">Pendents</button>
-        <button class="tog-btn" onclick="setF('validated',this)">Validats</button>
+        <button class="tog-btn" onclick="setF('pending',this)">Pendents de validar</button>
+        <button class="tog-btn" onclick="setF('validated',this)">Validats i Desats</button>
         <button class="tog-btn" onclick="setF('new',this)">Nous proposats</button>
       </div>
       <div class="sw">
         <span class="s-ico">🔍</span>
         <input type="text" id="srch" placeholder="Cerca…" oninput="applyF()"/>
       </div>
-      <button class="btn-save-all" id="bsa" onclick="saveAll()">💾 Desar canvis pendents</button>
     </div>
     <div class="scroll-area" id="sarea"></div>
   </div>
@@ -403,7 +381,8 @@ function buildTabs(){
 }
 function updTabPending(){
   document.querySelectorAll('.ctab').forEach(t=>{
-    t.classList.toggle('has-pending',(cards[t.dataset.c]||[]).some(x=>x.el.classList.contains('pending')));
+    // Marcar la pestanya si hi ha cap targeta "no desada/no validada"
+    t.classList.toggle('has-pending',(cards[t.dataset.c]||[]).some(x=>!x.el.classList.contains('saved')));
   });
 }
 
@@ -451,7 +430,6 @@ function renderCrit(c){
     // CARREGAR ELS NOUS ENFOCAMENTS DE LA BASE DE DADES
     const strSearch = 'NEW-' + c + '-' + s + '-';
     resp.filter(r => r.email === sess.email && r.id_enfocament && r.id_enfocament.startsWith(strSearch)).forEach(r => {
-      // Evitar duplicats si ja està a exNew
       if (!exNew.find(x => x.id === r.id_enfocament)) {
         const card = buildNewCard(r.id_enfocament, c, s, sub.titol, r);
         blk.appendChild(card.el);
@@ -467,6 +445,7 @@ function renderCrit(c){
     area.appendChild(blk);
   });
   updProgress();
+  updTabPending(); // Recalcular punts de pestanyes
 }
 
 /* ══ BUILD EXISTING CARD ══ */
@@ -474,14 +453,15 @@ function buildCard(row,crit){
   const id=row.id||'';
   const prev=resp.find(r=>r.email===sess.email&&r.id_enfocament===id);
   const card=document.createElement('div');
-  card.className='card'+(prev?' saved':'');
+  // Per defecte les que no tenen previ, queden com "no saved" (pendents)
+  card.className='card'+(prev?' saved':' pending');
   card.dataset.id=id; card.dataset.isNew='0';
   card.dataset.st=[row.titol_enfocament,row.enfocament,row.desplegament,row.avaluacio,row.evidencies,row.titol_subcriteri].join(' ').toLowerCase();
 
   const sum=el('div','card-sum');
   const stxt=el('span','cs-title',row.titol_enfocament||'(sense títol)');
-  const sbadge=el('span','cs-badge '+(prev?'bprev':''));
-  sbadge.textContent=prev?'Ja revisat ✓':''; sbadge.style.display=prev?'':'none';
+  const sbadge=el('span','cs-badge '+(prev?'bs':'bp'));
+  sbadge.textContent=prev?'Ja revisat ✓':'● Pendent';
   const schev=el('span','cs-chev','▼');
   sum.appendChild(stxt); sum.appendChild(sbadge); sum.appendChild(schev);
   sum.addEventListener('click',()=>card.classList.toggle('expanded'));
@@ -535,18 +515,24 @@ function buildCard(row,crit){
 /* ══ ACTION ZONE ══ */
 function makeAZ(id,prev,isNew){
   const az=el('div','az');
-  const cl=el('label','chk-wrap');
-  const chk=document.createElement('input'); chk.type='checkbox'; chk.dataset.card=id;
-  chk.className='chk-v';
-  const chkP=prev&&(prev.validat===true||prev.validat==='TRUE'||prev.validat==='1'||prev.validat===1);
-  chk.checked=chkP; chk.addEventListener('change',()=>markPending(id));
-  const cs=el('span','',isNew?'✅ Confirmo la proposta':'✅ Contingut correcte');
-  cl.appendChild(chk); cl.appendChild(cs); az.appendChild(cl);
+  
+  // Només creem la checkbox si NO és un enfocament nou
+  if(!isNew){
+    const cl=el('label','chk-wrap');
+    const chk=document.createElement('input'); chk.type='checkbox'; chk.dataset.card=id;
+    chk.className='chk-v';
+    const chkP=prev&&(prev.validat===true||prev.validat==='TRUE'||prev.validat==='1'||prev.validat===1);
+    chk.checked=chkP; chk.addEventListener('change',()=>markPending(id));
+    const cs=el('span','','✅ Contingut correcte');
+    cl.appendChild(chk); cl.appendChild(cs); az.appendChild(cl);
+  }
+
   const cw=el('div','cmt-w');
   const cta=document.createElement('textarea'); cta.className='ta-cmt'; cta.dataset.card=id;
   cta.rows=2; cta.placeholder='Comentari (opcional)'; cta.value=prev?.comentari_general||'';
   cta.addEventListener('input',()=>markPending(id));
   cw.appendChild(cta); az.appendChild(cw);
+  
   const sb=document.createElement('button');
   if(isNew){ 
     sb.className='btn-sn btn-sc'; 
@@ -554,7 +540,7 @@ function makeAZ(id,prev,isNew){
     sb.addEventListener('click',()=>saveNew(id,sb)); 
   } else { 
     sb.className='btn btn-primary btn-sc'; 
-    sb.textContent='Desar'; 
+    sb.textContent='Desar targeta'; 
     sb.addEventListener('click',()=>saveExisting(id,sb)); 
   }
   az.appendChild(sb); return az;
@@ -562,12 +548,12 @@ function makeAZ(id,prev,isNew){
 
 /* ══ NEW CARD ══ */
 function insertNew(crit,sub,subTitol,blk,addBtn){
-  // Generem l'ID permanent directament perquè en tornar a entrar sàpiga a quin lloc va
   const tid='NEW-'+crit+'-'+sub+'-'+Date.now();
   const card=buildNewCard(tid,crit,sub,subTitol);
   blk.insertBefore(card.el,addBtn);
   cards[crit]=cards[crit]||[]; cards[crit].push(card);
   updProgress();
+  updTabPending();
   setTimeout(()=>card.el.scrollIntoView({behavior:'smooth',block:'nearest'}),60);
   toast('Nova proposta creada. Omple els camps i desa-la.','tvio');
 }
@@ -579,13 +565,19 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
   card.dataset.st='';
 
   const ban=el('div','new-banner');
-  ban.style.cursor='pointer'; // Fent el banner clicable per obrir/tancar
+  ban.style.cursor='pointer'; 
   ban.addEventListener('click',()=>card.classList.toggle('expanded'));
 
-  const nl=el('div','new-label'); nl.innerHTML='<span class="new-pill">NOU</span>'+escH(sub+(subTitol?' — '+subTitol:''));
+  const initialTitleText = prev ? (prev.sug_titol_enfocament || 'Nou Enfocament') : 'Escriu el títol...';
+  const titleSpan = el('span', 'new-title-text', initialTitleText);
+  
+  const nl=el('div','new-label'); 
+  nl.innerHTML='<span class="new-pill">NOU</span>';
+  nl.appendChild(titleSpan);
+
   const rm=el('button','btn-rm'); rm.title='Eliminar'; rm.textContent='✕';
   rm.addEventListener('click',(e)=>{
-    e.stopPropagation(); // Evitem que és plegui en clicar a Eliminar
+    e.stopPropagation(); 
     if(!card.classList.contains('saved')||confirm('Vols eliminar aquesta proposta de la vista?')){
       card.remove(); cards[crit]=(cards[crit]||[]).filter(x=>x.id!==tid);
       updProgress(); updTabPending();
@@ -598,15 +590,17 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
 
   ban.appendChild(nl); ban.appendChild(chev); ban.appendChild(rm); card.appendChild(ban);
 
-  // ARA UTILITZEM LA CLASSE card-body PERQUÈ ES PLEGHI COM LES ALTRES
   const body=el('div','card-body new-body');
+  
+  // Tots els camps excepte comentari són obligatoris per a "Nou" (req:true)
   const NFIELDS=[
     {key:'sug_titol_enfocament', cls:'nfl-t', color:'var(--violet)', lbl:'Títol de l\'enfocament', ph:'Resum breu del nou enfocament…', cls2:'nta-t', req:true},
-    {key:'sug_enfocament',       cls:'nfl-e', color:'var(--navy)',   lbl:'Enfocament',              ph:'Descriu el nou enfocament…',    cls2:'nta-b', req:false},
-    {key:'sug_desplegament',     cls:'nfl-d', color:'var(--navy2)',  lbl:'Desplegament',            ph:'Com es desplegaria?',           cls2:'nta-b', req:false},
-    {key:'sug_avaluacio',        cls:'nfl-a', color:'#0369a1',       lbl:'Avaluació i Revisió',     ph:'Com s\'avaluaria?',             cls2:'nta-b', req:false},
-    {key:'sug_evidencies',       cls:'nfl-ev',color:'#0f766e',       lbl:'Evidències',              ph:'Quines evidències aportaríeu?', cls2:'nta-b', req:false},
+    {key:'sug_enfocament',       cls:'nfl-e', color:'var(--navy)',   lbl:'Enfocament',              ph:'Descriu el nou enfocament…',    cls2:'nta-b', req:true},
+    {key:'sug_desplegament',     cls:'nfl-d', color:'var(--navy2)',  lbl:'Desplegament',            ph:'Com es desplegaria?',           cls2:'nta-b', req:true},
+    {key:'sug_avaluacio',        cls:'nfl-a', color:'#0369a1',       lbl:'Avaluació i Revisió',     ph:'Com s\'avaluaria?',             cls2:'nta-b', req:true},
+    {key:'sug_evidencies',       cls:'nfl-ev',color:'#0f766e',       lbl:'Evidències',              ph:'Quines evidències aportaríeu?', cls2:'nta-b', req:true},
   ];
+  
   NFIELDS.forEach(f=>{
     const wrap=el('div','nf');
     const lbl=el('div','nf-lbl '+f.cls);
@@ -614,18 +608,19 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
     const ta=document.createElement('textarea'); ta.className='nta '+f.cls2; ta.dataset.key=f.key;
     ta.rows=2; ta.placeholder=f.ph;
     
-    // Si estem carregant un enfocament anterior de la BBDD, posem els textos
     ta.value = prev ? (prev[f.key] || '') : '';
     if(prev) card.dataset.st += ' ' + ta.value.toLowerCase();
 
-    ta.addEventListener('input',()=>{
+    ta.addEventListener('input',(e)=>{
+      if(f.key === 'sug_titol_enfocament') {
+        titleSpan.textContent = e.target.value.trim() || 'Escriu el títol...';
+      }
       markPending(tid);
       card.dataset.st=[...card.querySelectorAll('textarea[data-key]')].map(t=>t.value).join(' ').toLowerCase();
     });
     wrap.appendChild(lbl); wrap.appendChild(ta); body.appendChild(wrap);
   });
   
-  // Afegim l'Action Zone DINS del cos perquè es plegui amb la resta
   body.appendChild(makeAZ(tid,prev,true));
   card.appendChild(body);
   return {el:card, id:tid, isNew:true, sub};
@@ -662,9 +657,11 @@ function applyF(){
   const kw=$('srch').value.toLowerCase().trim();
   (cards[curC]||[]).forEach(({el:e})=>{
     let show=true;
-    if(curF==='pending') show=e.classList.contains('pending');
-    else if(curF==='validated') show=e.classList.contains('saved');
-    else if(curF==='new') show=e.dataset.isNew==='1'; // Afegit filtre "Nous"
+    // Ara 'Pendent' vol dir literalment 'No guardat/No validat'
+    if(curF==='pending') show = !e.classList.contains('saved');
+    else if(curF==='validated') show = e.classList.contains('saved');
+    else if(curF==='new') show = e.dataset.isNew==='1';
+    
     if(show&&kw) show=(e.dataset.st||'').includes(kw);
     e.style.display=show?'':'none';
   });
@@ -707,18 +704,26 @@ async function saveExisting(id,btn){
 async function saveNew(tid,btn){
   if(!sess) return;
   const card=document.querySelector('.card[data-id="'+tid+'"]'); if(!card) return;
-  const titolTa=card.querySelector('textarea[data-key="sug_titol_enfocament"]');
-  if(!titolTa||titolTa.value.trim()===''){
-    toast('El títol de l\'enfocament és obligatori.','terr'); titolTa?.focus(); return;
+  
+  // Validar TOTS els camps obligatoris
+  const requiredKeys = ['sug_titol_enfocament', 'sug_enfocament', 'sug_desplegament', 'sug_avaluacio', 'sug_evidencies'];
+  for (let key of requiredKeys) {
+    const ta = card.querySelector(`textarea[data-key="${key}"]`);
+    if (!ta || ta.value.trim() === '') {
+      const labelText = ta.parentElement.querySelector('.nf-lbl').textContent.replace('*','').trim();
+      toast(`El camp "${labelText}" és obligatori.`, 'terr');
+      ta?.focus();
+      return;
+    }
   }
+
   const orig=btn.textContent; btn.textContent='Enviant…'; btn.disabled=true;
   const d=cardData(tid);
   
-  // Guardem amb el mateix ID permanent que hem generat a l'inici
   const payload={
     nom:sess.nom, email:sess.email, area_revisora:sess.area,
     id_enfocament:tid, is_new:true,
-    validat:d.validat,
+    validat:true, // Un nou enfocament es considera validat per qui el proposa per defecte
     sug_titol_enfocament:d.sug_titol_enfocament||'',
     sug_enfocament:d.sug_enfocament||'',
     sug_desplegament:d.sug_desplegament||'',
@@ -738,9 +743,9 @@ async function doSave(payload,id,btn,orig,isNew){
     else{ const r=await api('POST',payload); if(!r.success) throw new Error(r.error||'Error servidor'); }
     updResp(payload); markSaved(id); 
     
-    // Tancar la Card automàticament en Desar un NOU enfocament!
+    // Tancar la Card automàticament en Desar
     const c=document.querySelector('.card[data-id="'+id+'"]');
-    if(c && isNew) c.classList.remove('expanded'); 
+    if(c) c.classList.remove('expanded'); 
     
     btn.textContent='Desat ✅'; toast(isNew?'Nova proposta desada! ✨':'Punt desat.','tok');
   } catch(e){ btn.textContent='Error ❌'; toast('Error: '+e.message,'terr'); }
@@ -750,22 +755,6 @@ async function doSave(payload,id,btn,orig,isNew){
 function updResp(p){
   const i=resp.findIndex(r=>r.email===p.email&&r.id_enfocament===p.id_enfocament);
   if(i>=0) Object.assign(resp[i],p); else resp.push(p);
-}
-
-/* ══ SAVE ALL ══ */
-async function saveAll(){
-  const pending=[...document.querySelectorAll('.card.pending')];
-  if(!pending.length){ toast('No hi ha canvis pendents.','tinfo'); return; }
-  const btn=$('bsa'); btn.disabled=true;
-  for(let i=0;i<pending.length;i++){
-    btn.textContent='Desant '+(i+1)+' de '+pending.length+'…';
-    const id=pending[i].dataset.id;
-    const cb=pending[i].querySelector('.btn-sc');
-    if(cb){ if(pending[i].dataset.isNew==='1') await saveNew(id,cb); else await saveExisting(id,cb); }
-    await wait(500);
-  }
-  btn.textContent='Tot desat! ✅'; toast(pending.length+' punts desats.','tok');
-  setTimeout(()=>{ btn.textContent='💾 Desar canvis pendents'; btn.disabled=false; },3000);
 }
 
 /* ══ UTILS ══ */
