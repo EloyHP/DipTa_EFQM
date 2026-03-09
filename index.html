@@ -33,7 +33,7 @@ body{font-family:system-ui,-apple-system,'Inter','Segoe UI',sans-serif;backgroun
     background:linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%)}
 .lbox{background:var(--white);border-radius:18px;box-shadow:0 8px 32px rgba(0,0,0,.2);padding:2.5rem;width:100%;max-width:420px}
 .logo{display:flex;align-items:center;gap:.75rem;margin-bottom:2rem}
-.logo img{height: 46px; object-fit: contain;} /* Estil per la imatge del logo */
+.logo img{height: 46px; object-fit: contain;}
 .logo h1{font-size:1.05rem;font-weight:700;color:var(--navy);line-height:1.25}
 .logo p{font-size:.77rem;color:var(--gray-dipta)}
 label{display:block;font-size:.73rem;font-weight:700;color:var(--gray-dipta);margin:.85rem 0 .27rem;text-transform:uppercase;letter-spacing:.05em}
@@ -127,11 +127,10 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 /* Card body */
 .card-body{display:none}
 .card.expanded .card-body{display:block}
-.new-body{display:none}
-.card.expanded .new-body{display:block}
 
 /* New card banner */
-.new-banner{display:flex;align-items:center;justify-content:space-between;padding:.48rem .72rem;background:linear-gradient(135deg,var(--vp),#ede9fe);border-bottom:1px dashed var(--vb)}
+.new-banner{display:flex;align-items:center;gap:.48rem;padding:.48rem .72rem;background:linear-gradient(135deg,var(--vp),#ede9fe);border-bottom:1px dashed var(--vb);transition:background var(--tr)}
+.new-banner:hover{background:#ede9fe}
 .new-label{display:flex;align-items:center;gap:.38rem;font-size:.74rem;font-weight:800;color:var(--violet);text-transform:uppercase;letter-spacing:.05em}
 .new-pill{background:var(--violet);color:#fff;font-size:.61rem;padding:.07rem .38rem;border-radius:99px;font-weight:700}
 .btn-rm{background:transparent;border:none;color:var(--gray-dipta);cursor:pointer;font-size:.92rem;padding:.08rem .18rem;border-radius:4px;transition:color var(--tr)}
@@ -163,7 +162,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .prop-ta:focus{border-color:var(--orange);outline:none}
 
 /* New card fields */
-.new-body{padding:.62rem .72rem}
+.new-body{padding:.62rem .72rem;background:var(--white)}
 .nf{margin-bottom:.62rem}
 .nf-lbl{font-size:.69rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.22rem;display:flex;align-items:center;gap:.3rem}
 .nfl-t{color:var(--violet)}.nfl-e{color:var(--navy)}.nfl-d{color:var(--navy2)}.nfl-a{color:#0369a1}.nfl-ev{color:#0f766e}
@@ -262,9 +261,9 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
     <div class="toolbar">
       <div class="tog-group">
         <button class="tog-btn active" onclick="setF('all',this)">Tots</button>
-        <button class="tog-btn" onclick="setF('pending',this)">No revisats</button>
-        <button class="tog-btn" onclick="setF('validated',this)">Revisats</button>
-        <button class="tog-btn" onclick="setF('nous',this)">✨ Nous</button>
+        <button class="tog-btn" onclick="setF('pending',this)">Pendents</button>
+        <button class="tog-btn" onclick="setF('validated',this)">Validats</button>
+        <button class="tog-btn" onclick="setF('new',this)">Nous proposats</button>
       </div>
       <div class="sw">
         <span class="s-ico">🔍</span>
@@ -300,17 +299,14 @@ window.addEventListener('DOMContentLoaded', async ()=>{
   await loadAreas();
 });
 
-/* ══ API FETCH CORREGIT PER EVITAR CORS ══ */
+/* ══ API FETCH ══ */
 async function api(method, body){
   const o = { redirect: 'follow' };
-  
   if(method === 'POST'){ 
     o.method = 'POST'; 
-    // Forçar text/plain és CLAU perquè Google Apps Script no bloquegi la petició per CORS
     o.headers = { 'Content-Type': 'text/plain;charset=utf-8' }; 
     o.body = JSON.stringify(body); 
   }
-  
   const r = await fetch(APPS_SCRIPT_URL, o);
   return r.json();
 }
@@ -371,52 +367,14 @@ async function loadData(){
     catch(e){ $('sarea').innerHTML='<p style="color:var(--red);padding:2rem">Error: '+e.message+'</p>'; return; }
   }
   
-  // Neteja i ordenació per ID ascendent amagat
   mem.forEach(row => {
     Object.keys(row).forEach(k => { if(typeof row[k] === 'string') row[k] = row[k].trim(); });
   });
   mem.sort((a,b) => (a.id || '').localeCompare(b.id || ''));
   
   buildData(); buildTabs();
-  // Reconstruir els nous enfocaments propis de l'usuari guardats al servidor
-  buildMyNewCards();
   const first=Object.keys(cData).sort()[0];
   if(first) selCrit(first);
-}
-
-/* ══ RECONSTRUIR NOUS ENFOCAMENTS PROPIS ══ */
-function buildMyNewCards(){
-  // Busca a resp[] les entrades is_new=true de l'usuari actual
-  const myNew=resp.filter(r=>r.email===sess.email&&(r.is_new===true||r.is_new==='TRUE'||r.is_new==='1'));
-  myNew.forEach(r=>{
-    const crit=String(r.criteri||'');
-    const sub=String(r.subcriteri||'');
-    if(!crit||!sub) return;
-    // Assegurem que existeix l'estructura cData (per si el criteri no existeix per a l'àrea)
-    if(!cData[crit]) return;
-    const subData=cData[crit].subs[sub];
-    const subTitol=subData?subData.titol:'';
-    const id=r.id_enfocament;
-    // Evitar duplicats
-    if((cards[crit]||[]).find(x=>x.id===id)) return;
-    const card=buildNewCard(id,crit,sub,subTitol);
-    // Omplir els camps amb les dades guardades
-    const fields=['sug_titol_enfocament','sug_enfocament','sug_desplegament','sug_avaluacio','sug_evidencies'];
-    fields.forEach(key=>{
-      const ta=card.el.querySelector('textarea[data-key="'+key+'"]');
-      if(ta&&r[key]) ta.value=r[key];
-    });
-    const cta=card.el.querySelector('.ta-cmt');
-    if(cta&&r.comentari_general) cta.value=r.comentari_general;
-    card.el.dataset.st=fields.map(k=>r[k]||'').join(' ').toLowerCase();
-    // Marcar com a saved (ja estava desat)
-    card.el.classList.remove('pending');
-    card.el.classList.add('saved');
-    card.el.style.borderStyle='solid';
-    const b=card.el.querySelector('.cs-badge');
-    if(b){ b.className='cs-badge bs'; b.textContent='Desat ✅'; b.style.display=''; }
-    cards[crit]=cards[crit]||[]; cards[crit].push(card);
-  });
 }
 
 /* ══ BUILD DATA ══ */
@@ -469,18 +427,15 @@ function renderCrit(c){
     const sub=cData[c].subs[s];
     const blk=el('div','sb'); blk.dataset.s=s;
 
-    // Sticky subcrit header
     const sticky=el('div','sub-sticky');
     const tr=el('div','sub-title-row');
     const num=el('span','sub-num',s);
     const ttl=el('div','sub-title',sub.titol||s);
     tr.appendChild(num); tr.appendChild(ttl);
     
-    // Ajuda del Model (Text netejat)
     if(sub.que_diu&&sub.que_diu.trim()){
       const eb=el('button','efqm-btn'); eb.textContent='📖 Què diu el model EFQM?';
       const ep=el('div','efqm-panel'); 
-      // Neteja salts de línia del PDF
       ep.textContent=sub.que_diu.replace(/([^\n])\n([^\n])/g, '$1 $2');
       eb.onclick=()=>{ ep.classList.toggle('open'); eb.textContent=(ep.classList.contains('open')?'▲ ':'📖 ')+'Què diu el model EFQM?'; };
       tr.appendChild(eb); sticky.appendChild(tr); sticky.appendChild(ep);
@@ -490,8 +445,19 @@ function renderCrit(c){
     // Existing cards
     sub.rows.forEach(row=>{ const card=buildCard(row,c); blk.appendChild(card.el); cards[c].push(card); });
 
-    // Re-attach new cards
+    // Re-attach un-saved newly created cards in this session
     exNew.filter(x=>x.sub===s).forEach(x=>{ blk.appendChild(x.el); cards[c].push(x); });
+
+    // CARREGAR ELS NOUS ENFOCAMENTS DE LA BASE DE DADES
+    const strSearch = 'NEW-' + c + '-' + s + '-';
+    resp.filter(r => r.email === sess.email && r.id_enfocament && r.id_enfocament.startsWith(strSearch)).forEach(r => {
+      // Evitar duplicats si ja està a exNew
+      if (!exNew.find(x => x.id === r.id_enfocament)) {
+        const card = buildNewCard(r.id_enfocament, c, s, sub.titol, r);
+        blk.appendChild(card.el);
+        cards[c].push(card);
+      }
+    });
 
     // Add new btn
     const ab=el('button','btn-add');
@@ -513,9 +479,6 @@ function buildCard(row,crit){
   card.dataset.st=[row.titol_enfocament,row.enfocament,row.desplegament,row.avaluacio,row.evidencies,row.titol_subcriteri].join(' ').toLowerCase();
 
   const sum=el('div','card-sum');
-  // Amaguem el ID tècnic per usabilitat
-  // const sid=el('span','cs-id',id);
-  // sum.appendChild(sid); 
   const stxt=el('span','cs-title',row.titol_enfocament||'(sense títol)');
   const sbadge=el('span','cs-badge '+(prev?'bprev':''));
   sbadge.textContent=prev?'Ja revisat ✓':''; sbadge.style.display=prev?'':'none';
@@ -585,48 +548,58 @@ function makeAZ(id,prev,isNew){
   cta.addEventListener('input',()=>markPending(id));
   cw.appendChild(cta); az.appendChild(cw);
   const sb=document.createElement('button');
-  if(isNew){ sb.className='btn-sn btn-sc'; sb.textContent='Desar proposta'; sb.addEventListener('click',()=>saveNew(id,sb)); }
-  else{ sb.className='btn btn-primary btn-sc'; sb.textContent='Desar'; sb.addEventListener('click',()=>saveExisting(id,sb)); }
+  if(isNew){ 
+    sb.className='btn-sn btn-sc'; 
+    sb.textContent= prev ? 'Actualitzar proposta' : 'Desar proposta'; 
+    sb.addEventListener('click',()=>saveNew(id,sb)); 
+  } else { 
+    sb.className='btn btn-primary btn-sc'; 
+    sb.textContent='Desar'; 
+    sb.addEventListener('click',()=>saveExisting(id,sb)); 
+  }
   az.appendChild(sb); return az;
 }
 
 /* ══ NEW CARD ══ */
 function insertNew(crit,sub,subTitol,blk,addBtn){
-  const tid='NEW-'+Date.now()+'-'+(++nc);
+  // Generem l'ID permanent directament perquè en tornar a entrar sàpiga a quin lloc va
+  const tid='NEW-'+crit+'-'+sub+'-'+Date.now();
   const card=buildNewCard(tid,crit,sub,subTitol);
   blk.insertBefore(card.el,addBtn);
   cards[crit]=cards[crit]||[]; cards[crit].push(card);
   updProgress();
-  card.el.classList.add('expanded');
   setTimeout(()=>card.el.scrollIntoView({behavior:'smooth',block:'nearest'}),60);
   toast('Nova proposta creada. Omple els camps i desa-la.','tvio');
 }
 
-function buildNewCard(tid,crit,sub,subTitol){
+function buildNewCard(tid,crit,sub,subTitol,prev=null){
   const card=document.createElement('div');
-  card.className='card cnew pending';
+  card.className='card cnew ' + (prev ? 'saved' : 'pending expanded');
   card.dataset.id=tid; card.dataset.isNew='1'; card.dataset.crit=crit; card.dataset.sub=sub;
   card.dataset.st='';
 
   const ban=el('div','new-banner');
+  ban.style.cursor='pointer'; // Fent el banner clicable per obrir/tancar
+  ban.addEventListener('click',()=>card.classList.toggle('expanded'));
+
   const nl=el('div','new-label'); nl.innerHTML='<span class="new-pill">NOU</span>'+escH(sub+(subTitol?' — '+subTitol:''));
-  const banR=el('div','',' '); banR.style.cssText='display:flex;align-items:center;gap:.5rem';
-  const chev=el('span','cs-chev','▼'); chev.style.fontSize='.7rem';
   const rm=el('button','btn-rm'); rm.title='Eliminar'; rm.textContent='✕';
   rm.addEventListener('click',(e)=>{
-    e.stopPropagation();
+    e.stopPropagation(); // Evitem que és plegui en clicar a Eliminar
     if(!card.classList.contains('saved')||confirm('Vols eliminar aquesta proposta de la vista?')){
       card.remove(); cards[crit]=(cards[crit]||[]).filter(x=>x.id!==tid);
       updProgress(); updTabPending();
     }
   });
-  banR.appendChild(chev); banR.appendChild(rm);
-  ban.appendChild(nl); ban.appendChild(banR); card.appendChild(ban);
-  // Banner clicable per expandir/plegar
-  ban.style.cursor='pointer';
-  ban.addEventListener('click',()=>{ card.classList.toggle('expanded'); chev.style.transform=card.classList.contains('expanded')?'rotate(180deg)':''; });
+  
+  const chev=el('span','cs-chev','▼');
+  chev.style.marginLeft='auto';
+  chev.style.marginRight='10px';
 
-  const body=el('div','new-body');
+  ban.appendChild(nl); ban.appendChild(chev); ban.appendChild(rm); card.appendChild(ban);
+
+  // ARA UTILITZEM LA CLASSE card-body PERQUÈ ES PLEGHI COM LES ALTRES
+  const body=el('div','card-body new-body');
   const NFIELDS=[
     {key:'sug_titol_enfocament', cls:'nfl-t', color:'var(--violet)', lbl:'Títol de l\'enfocament', ph:'Resum breu del nou enfocament…', cls2:'nta-t', req:true},
     {key:'sug_enfocament',       cls:'nfl-e', color:'var(--navy)',   lbl:'Enfocament',              ph:'Descriu el nou enfocament…',    cls2:'nta-b', req:false},
@@ -640,14 +613,21 @@ function buildNewCard(tid,crit,sub,subTitol){
     lbl.innerHTML='<span class="nf-dot" style="background:'+f.color+'"></span>'+escH(f.lbl)+(f.req?'<span class="req">*</span>':'');
     const ta=document.createElement('textarea'); ta.className='nta '+f.cls2; ta.dataset.key=f.key;
     ta.rows=2; ta.placeholder=f.ph;
+    
+    // Si estem carregant un enfocament anterior de la BBDD, posem els textos
+    ta.value = prev ? (prev[f.key] || '') : '';
+    if(prev) card.dataset.st += ' ' + ta.value.toLowerCase();
+
     ta.addEventListener('input',()=>{
       markPending(tid);
       card.dataset.st=[...card.querySelectorAll('textarea[data-key]')].map(t=>t.value).join(' ').toLowerCase();
     });
     wrap.appendChild(lbl); wrap.appendChild(ta); body.appendChild(wrap);
   });
+  
+  // Afegim l'Action Zone DINS del cos perquè es plegui amb la resta
+  body.appendChild(makeAZ(tid,prev,true));
   card.appendChild(body);
-  card.appendChild(makeAZ(tid,null,true));
   return {el:card, id:tid, isNew:true, sub};
 }
 
@@ -662,8 +642,6 @@ function markPending(id){
 function markSaved(id){
   const c=document.querySelector('.card[data-id="'+id+'"]'); if(!c) return;
   c.classList.remove('pending'); c.classList.add('saved');
-  // Plegar la card al desar
-  c.classList.remove('expanded');
   if(c.classList.contains('cnew')) c.style.borderStyle='solid';
   const b=c.querySelector('.cs-badge');
   if(b){ b.className='cs-badge bs'; b.textContent='Desat ✅'; b.style.display=''; }
@@ -684,9 +662,9 @@ function applyF(){
   const kw=$('srch').value.toLowerCase().trim();
   (cards[curC]||[]).forEach(({el:e})=>{
     let show=true;
-    if(curF==='pending') show=!e.classList.contains('saved')&&!e.classList.contains('cnew');
-    else if(curF==='validated') show=e.classList.contains('saved')&&!e.classList.contains('cnew');
-    else if(curF==='nous') show=e.classList.contains('cnew');
+    if(curF==='pending') show=e.classList.contains('pending');
+    else if(curF==='validated') show=e.classList.contains('saved');
+    else if(curF==='new') show=e.dataset.isNew==='1'; // Afegit filtre "Nous"
     if(show&&kw) show=(e.dataset.st||'').includes(kw);
     e.style.display=show?'':'none';
   });
@@ -733,12 +711,13 @@ async function saveNew(tid,btn){
   if(!titolTa||titolTa.value.trim()===''){
     toast('El títol de l\'enfocament és obligatori.','terr'); titolTa?.focus(); return;
   }
-  const finalId='NEW-'+Date.now();
   const orig=btn.textContent; btn.textContent='Enviant…'; btn.disabled=true;
   const d=cardData(tid);
+  
+  // Guardem amb el mateix ID permanent que hem generat a l'inici
   const payload={
     nom:sess.nom, email:sess.email, area_revisora:sess.area,
-    id_enfocament:finalId, is_new:true,
+    id_enfocament:tid, is_new:true,
     validat:d.validat,
     sug_titol_enfocament:d.sug_titol_enfocament||'',
     sug_enfocament:d.sug_enfocament||'',
@@ -750,18 +729,20 @@ async function saveNew(tid,btn){
     subcriteri:card.dataset.sub||'',
     timestamp:new Date().toISOString()
   };
-  card.dataset.id=finalId;
-  const crit=card.dataset.crit;
-  const entry=(cards[crit]||[]).find(x=>x.id===tid);
-  if(entry) entry.id=finalId;
-  await doSave(payload,finalId,btn,orig,true);
+  await doSave(payload,tid,btn,orig,true);
 }
 
 async function doSave(payload,id,btn,orig,isNew){
   try{
     if(!APPS_SCRIPT_URL) await wait(500);
     else{ const r=await api('POST',payload); if(!r.success) throw new Error(r.error||'Error servidor'); }
-    updResp(payload); markSaved(id); btn.textContent='Desat ✅'; toast(isNew?'Nova proposta desada! ✨':'Punt desat.','tok');
+    updResp(payload); markSaved(id); 
+    
+    // Tancar la Card automàticament en Desar un NOU enfocament!
+    const c=document.querySelector('.card[data-id="'+id+'"]');
+    if(c && isNew) c.classList.remove('expanded'); 
+    
+    btn.textContent='Desat ✅'; toast(isNew?'Nova proposta desada! ✨':'Punt desat.','tok');
   } catch(e){ btn.textContent='Error ❌'; toast('Error: '+e.message,'terr'); }
   setTimeout(()=>{ btn.textContent=orig; btn.disabled=false; },3000);
 }
