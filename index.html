@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Revisió Memòria EFQM</title>
+<style>
+:root{
+  --navy:#1e3a8a;--navy2:#1d4ed8;--navy-pale:#eff6ff;
+  --orange:#f97316;--green:#16a34a;--red:#dc2626;
+  --violet:#7c3aed;--vp:#f5f3ff;--vb:#c4b5fd;
+  --bg:#f0f4f8;--white:#fff;
+  --g50:#f8fafc;--g100:#e2e8f0;--g200:#cbd5e1;
+  --g300:#94a3b8;--g500:#64748b;--g700:#334155;--g900:#0f172a;
+  --sh:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.05);
+  --sh2:0 4px 16px rgba(0,0,0,.1);
+  --r:10px;--tr:.17s ease;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,'Inter','Segoe UI',sans-serif;background:var(--bg);color:var(--g700);font-size:14px;line-height:1.55}
+
+/* ══ LOGIN ══ */
+#s1{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem;
+    background:linear-gradient(135deg,#1e3a8a 0%,#1d4ed8 100%)}
+.lbox{background:var(--white);border-radius:18px;box-shadow:0 8px 32px rgba(0,0,0,.2);padding:2.5rem;width:100%;max-width:420px}
+.logo{display:flex;align-items:center;gap:.75rem;margin-bottom:2rem}
+.logo-ico{width:46px;height:46px;background:var(--navy);border-radius:11px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;flex-shrink:0}
+.logo h1{font-size:1.05rem;font-weight:700;color:var(--navy);line-height:1.25}
+.logo p{font-size:.77rem;color:var(--g500)}
+label{display:block;font-size:.73rem;font-weight:700;color:var(--g500);margin:.85rem 0 .27rem;text-transform:uppercase;letter-spacing:.05em}
+input,select,textarea{width:100%;border:1.5px solid var(--g100);border-radius:8px;padding:.57rem .77rem;font-size:.9rem;font-family:inherit;color:var(--g900);background:var(--white);transition:border-color var(--tr);outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--navy2)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;border:none;border-radius:8px;padding:.6rem 1.1rem;font-size:.84rem;font-weight:600;cursor:pointer;transition:all var(--tr)}
+.btn-primary{background:var(--navy);color:#fff}.btn-primary:hover{background:#1e40af}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed}
+.btn-ghost{background:transparent;border:1.5px solid var(--g100);color:var(--g500)}.btn-ghost:hover{border-color:var(--navy);color:var(--navy)}
+.btn-danger{background:#fee2e2;color:var(--red);border:none}.btn-danger:hover{background:#fecaca}
+.btn-full{width:100%;margin-top:1.2rem}
+.welcome-box{background:var(--navy-pale);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:.9rem;display:flex;justify-content:space-between;align-items:center;gap:.75rem}
+.welcome-box strong{font-size:.9rem;color:var(--navy);display:block}
+.welcome-box small{color:var(--g500);font-size:.76rem}
+.err{color:var(--red);font-size:.76rem;margin-top:.27rem}
+.hidden{display:none!important}
+
+/* ══ APP SHELL ══ */
+#s2{display:none;height:100vh;flex-direction:column}
+
+/* Topbar */
+.topbar{flex-shrink:0;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:.52rem 1.2rem;gap:1rem;z-index:300}
+.tb-l{display:flex;align-items:center;gap:.65rem}
+.tb-ico{font-size:18px;opacity:.8}
+.tb-title{font-size:.87rem;font-weight:700}
+.tb-sub{font-size:.69rem;opacity:.6;margin-top:.05rem}
+.tb-r{display:flex;align-items:center;gap:.65rem}
+.prog-wrap{display:flex;align-items:center;gap:.42rem}
+.prog-track{width:96px;height:5px;background:rgba(255,255,255,.22);border-radius:99px;overflow:hidden}
+.prog-fill{height:100%;background:#34d399;border-radius:99px;transition:width .4s ease}
+.prog-lbl{font-size:.69rem;opacity:.7;white-space:nowrap}
+
+/* Crit tabs */
+.crit-tabs{flex-shrink:0;background:var(--white);border-bottom:1px solid var(--g100);display:flex;overflow-x:auto;scrollbar-width:none;padding:0 1rem}
+.crit-tabs::-webkit-scrollbar{display:none}
+.ctab{padding:.58rem .9rem;font-size:.8rem;font-weight:600;color:var(--g500);cursor:pointer;border:none;background:transparent;border-bottom:3px solid transparent;white-space:nowrap;transition:all var(--tr);display:flex;align-items:center;gap:.36rem;flex-shrink:0}
+.ctab:hover{color:var(--navy)}.ctab.active{color:var(--navy);border-bottom-color:var(--navy)}
+.tab-dot{width:7px;height:7px;border-radius:50%;background:var(--orange);display:none;flex-shrink:0}
+.ctab.has-pending .tab-dot{display:inline-block}
+
+/* Main */
+.main{flex:1;overflow:hidden;display:flex;flex-direction:column}
+
+/* Toolbar */
+.toolbar{flex-shrink:0;background:var(--g50);border-bottom:1px solid var(--g100);padding:.42rem 1.2rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.tog-group{display:flex;border:1.5px solid var(--g100);border-radius:7px;overflow:hidden;background:var(--white)}
+.tog-btn{padding:.3rem .68rem;font-size:.76rem;font-weight:600;border:none;background:transparent;cursor:pointer;color:var(--g500);transition:all var(--tr)}
+.tog-btn.active{background:var(--navy);color:#fff}
+.sw{flex:1;min-width:130px;position:relative}
+.sw input{padding:.32rem .62rem .32rem 1.82rem;font-size:.79rem;height:29px}
+.s-ico{position:absolute;left:.5rem;top:50%;transform:translateY(-50%);color:var(--g300);font-size:.8rem;pointer-events:none}
+.btn-save-all{background:var(--navy);color:#fff;padding:.32rem .82rem;font-size:.77rem;border-radius:7px;border:none;cursor:pointer;font-weight:600;white-space:nowrap;transition:background var(--tr)}
+.btn-save-all:hover{background:#1e40af}.btn-save-all:disabled{opacity:.5;cursor:not-allowed}
+
+/* Scroll */
+.scroll-area{flex:1;overflow-y:auto;padding:.9rem 1.2rem 3rem}
+
+/* ── Subcrit block ── */
+.sb{margin-bottom:1.5rem}
+
+/* Subcrit sticky header */
+.sub-sticky{position:sticky;top:0;z-index:50;background:var(--white);border-radius:8px;box-shadow:var(--sh);margin-bottom:.55rem;overflow:hidden;border:1px solid var(--g100)}
+.sub-title-row{display:flex;align-items:center;gap:.6rem;padding:.5rem .82rem}
+.sub-num{font-size:.68rem;font-weight:700;background:var(--navy);color:#fff;padding:.08rem .42rem;border-radius:5px;flex-shrink:0}
+.sub-title{font-size:.86rem;font-weight:800;color:var(--navy);flex:1}
+.efqm-btn{background:transparent;border:1.5px solid var(--g100);border-radius:6px;padding:.26rem .62rem;cursor:pointer;font-size:.73rem;font-weight:600;color:var(--navy2);transition:background var(--tr);white-space:nowrap;flex-shrink:0}
+.efqm-btn:hover{background:var(--navy-pale)}
+.efqm-panel{display:none;padding:.58rem .82rem .68rem;background:var(--navy-pale);border-top:1px solid #bfdbfe;font-size:.8rem;color:var(--navy2);white-space:pre-wrap;line-height:1.6;border-left:4px solid var(--navy2)}
+.efqm-panel.open{display:block}
+
+/* ── CARD ── */
+.card{background:var(--white);border-radius:var(--r);box-shadow:var(--sh);margin-bottom:.5rem;border:2px solid transparent;transition:border-color var(--tr)}
+.card.pending{border-color:var(--orange)}.card.saved{border-color:#86efac}
+/* new card */
+.card.cnew{border:2px dashed var(--vb);background:var(--vp)}
+.card.cnew.pending{border-style:solid;border-color:var(--orange)}
+.card.cnew.saved{border-style:solid;border-color:#86efac}
+
+/* Card summary row */
+.card-sum{display:flex;align-items:center;gap:.48rem;padding:.45rem .72rem;cursor:pointer;user-select:none;border-bottom:1px solid var(--g100);transition:background var(--tr)}
+.card-sum:hover{background:var(--g50)}
+.cs-id{font-size:.66rem;font-weight:700;color:var(--g300);background:var(--g50);border-radius:4px;padding:.07rem .36rem;flex-shrink:0;white-space:nowrap}
+.cs-title{flex:1;font-size:.82rem;font-weight:600;color:var(--g700);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cs-badge{font-size:.66rem;font-weight:700;padding:.1rem .42rem;border-radius:99px;flex-shrink:0;white-space:nowrap}
+.bp{background:#fff7ed;color:var(--orange);border:1px solid #fed7aa}
+.bs{background:#f0fdf4;color:var(--green);border:1px solid #bbf7d0}
+.bprev{background:#f0fdf4;color:var(--green);border:1px solid #bbf7d0}
+.bnew{background:var(--vp);color:var(--violet);border:1px solid var(--vb)}
+.cs-chev{font-size:.62rem;color:var(--g300);transition:transform var(--tr);flex-shrink:0}
+.card.expanded .cs-chev{transform:rotate(180deg)}
+
+/* Card body */
+.card-body{display:none}
+.card.expanded .card-body{display:block}
+
+/* New card banner */
+.new-banner{display:flex;align-items:center;justify-content:space-between;padding:.48rem .72rem;background:linear-gradient(135deg,var(--vp),#ede9fe);border-bottom:1px dashed var(--vb)}
+.new-label{display:flex;align-items:center;gap:.38rem;font-size:.74rem;font-weight:800;color:var(--violet);text-transform:uppercase;letter-spacing:.05em}
+.new-pill{background:var(--violet);color:#fff;font-size:.61rem;padding:.07rem .38rem;border-radius:99px;font-weight:700}
+.btn-rm{background:transparent;border:none;color:var(--g300);cursor:pointer;font-size:.92rem;padding:.08rem .18rem;border-radius:4px;transition:color var(--tr)}
+.btn-rm:hover{color:var(--red)}
+
+/* ── ACCORDIONS ── */
+.acc{border-bottom:1px solid var(--g100)}
+.acc:last-of-type{border-bottom:none}
+.acc-hdr{display:flex;align-items:center;gap:.42rem;padding:.4rem .72rem;cursor:pointer;user-select:none;transition:background var(--tr)}
+.acc-hdr:hover{background:var(--g50)}
+.acc-arr{font-size:.6rem;color:var(--g300);transition:transform var(--tr);flex-shrink:0;width:10px;text-align:center}
+.acc.open .acc-arr{transform:rotate(180deg)}
+.acc-lbl{font-size:.69rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;flex:1}
+.le{color:#1e3a8a}.ld{color:#1d4ed8}.la{color:#0369a1}.lev{color:#0f766e}
+.acc-dot{width:6px;height:6px;border-radius:50%;background:var(--orange);flex-shrink:0;opacity:0;transition:opacity var(--tr)}
+.acc.has-content .acc-dot{opacity:1}
+.acc.has-content .acc-hdr{background:#fafffd}
+.acc-body{display:none;padding:.42rem .72rem .58rem;border-top:1px solid var(--g100);background:var(--g50)}
+.acc.open .acc-body{display:block}
+
+/* Read-only text */
+.ro{background:var(--white);border-left:3px solid var(--g200);padding:.42rem .58rem;border-radius:0 6px 6px 0;white-space:pre-wrap;font-size:.81rem;color:var(--g700);cursor:not-allowed;line-height:1.55;user-select:none;margin-bottom:.42rem}
+.ro.empty{color:var(--g300);font-style:italic;font-size:.78rem;border-left-color:var(--g100)}
+.ro-e{border-left-color:#1e3a8a}.ro-d{border-left-color:#1d4ed8}.ro-a{border-left-color:#0369a1}.ro-ev{border-left-color:#0f766e}
+
+/* Proposal textarea */
+.prop-lbl{font-size:.69rem;color:var(--orange);font-weight:700;margin-bottom:.2rem;display:block}
+.prop-ta{font-size:.81rem;resize:vertical;min-height:54px;background:#fffbf5;border-color:#fed7aa;border-radius:7px;transition:border-color var(--tr)}
+.prop-ta:focus{border-color:var(--orange);outline:none}
+
+/* New card fields */
+.new-body{padding:.62rem .72rem}
+.nf{margin-bottom:.62rem}
+.nf-lbl{font-size:.69rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.22rem;display:flex;align-items:center;gap:.3rem}
+.nfl-t{color:var(--violet)}.nfl-e{color:#1e3a8a}.nfl-d{color:#1d4ed8}.nfl-a{color:#0369a1}.nfl-ev{color:#0f766e}
+.nf-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.nta{font-size:.81rem;resize:vertical;border-radius:7px;border-color:var(--vb);background:var(--white)}
+.nta:focus{border-color:var(--violet);outline:none}
+.nta.nta-t{min-height:44px;font-weight:600;border-color:var(--violet)}
+.nta.nta-b{min-height:54px}
+.req{color:var(--red);margin-left:.13rem}
+
+/* Context note */
+.ctx{margin:.38rem .72rem;border-radius:7px;overflow:hidden;border:1px solid var(--g100)}
+.ctx-btn{width:100%;text-align:left;background:var(--g50);border:none;padding:.36rem .65rem;font-size:.72rem;font-weight:600;color:var(--g500);cursor:pointer;display:flex;align-items:center;gap:.28rem;transition:background var(--tr)}
+.ctx-btn:hover{background:var(--g100)}
+.ctx-body{display:none}.ctx-body.open{display:block}
+.ctx-sec{padding:.48rem .65rem;font-size:.78rem;white-space:pre-wrap;line-height:1.5}
+.ctx-sec+.ctx-sec{border-top:1px solid var(--g100)}
+.ctx-qa{background:#fafeff;color:var(--navy2)}.ctx-prev{color:var(--g500)}
+.ctx-st{font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;opacity:.6;margin-bottom:.16rem}
+
+/* Action zone */
+.az{display:flex;align-items:flex-start;gap:.58rem;flex-wrap:wrap;padding:.52rem .72rem;background:var(--g50);border-top:1.5px solid var(--g100);border-radius:0 0 calc(var(--r) - 2px) calc(var(--r) - 2px)}
+.card.cnew .az{background:#f3f0ff;border-top-color:var(--vb)}
+.chk-wrap{display:flex;align-items:center;gap:.36rem;cursor:pointer;flex-shrink:0;padding-top:.07rem}
+.chk-wrap input{width:15px;height:15px;accent-color:var(--navy);cursor:pointer}
+.chk-wrap span{font-size:.78rem;font-weight:600;color:var(--g700);white-space:nowrap}
+.cmt-w{flex:1;min-width:150px}
+.cmt-w textarea{font-size:.78rem;resize:vertical;min-height:38px;border-radius:7px}
+.btn-sc{padding:.36rem .72rem;font-size:.76rem;flex-shrink:0;align-self:flex-end}
+.btn-sn{background:var(--violet);color:#fff;padding:.36rem .72rem;font-size:.76rem;flex-shrink:0;align-self:flex-end;border:none;border-radius:8px;cursor:pointer;font-weight:600;transition:background var(--tr)}
+.btn-sn:hover{background:#6d28d9}.btn-sn:disabled{opacity:.5;cursor:not-allowed}
+
+/* Add new btn */
+.btn-add{display:flex;align-items:center;justify-content:center;gap:.38rem;background:transparent;border:1.5px dashed var(--vb);border-radius:8px;padding:.42rem .82rem;font-size:.78rem;font-weight:600;color:var(--violet);cursor:pointer;transition:all var(--tr);margin-top:.32rem;width:100%}
+.btn-add:hover{background:var(--vp);border-color:var(--violet)}
+
+/* Toasts */
+#toasts{position:fixed;bottom:1rem;right:1rem;z-index:9999;display:flex;flex-direction:column;gap:.38rem;max-width:280px}
+.toast{background:var(--g900);color:#fff;padding:.58rem .82rem;border-radius:9px;font-size:.79rem;font-weight:500;animation:fu .2s ease;box-shadow:var(--sh2)}
+.tok{background:#166534}.terr{background:#991b1b}.tinfo{background:var(--navy)}.tvio{background:var(--violet)}
+@keyframes fu{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+@media(max-width:600px){
+  .topbar{flex-wrap:wrap}.prog-wrap{display:none}
+  .az{flex-direction:column}
+  .ctab{font-size:.74rem;padding:.52rem .68rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ SCREEN 1 ══ -->
+<div id="s1">
+  <div class="lbox">
+    <div class="logo">
+      <div class="logo-ico">◈</div>
+      <div><h1>Revisió Memòria EFQM</h1><p>Criteris Agents · Lògica REDER</p></div>
+    </div>
+    <div id="wblock" class="hidden">
+      <div class="welcome-box">
+        <div><strong id="wname"></strong><small id="wsub"></small></div>
+        <button class="btn btn-ghost" style="font-size:.72rem;padding:.28rem .62rem" onclick="clearSess()">No soc jo</button>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="goS2()">Continuar →</button>
+    </div>
+    <div id="lform">
+      <label for="fn">El teu nom</label>
+      <input id="fn" type="text" placeholder="Nom i cognoms" autocomplete="name"/>
+      <label for="fe">Email</label>
+      <input id="fe" type="email" placeholder="nom@organitzacio.cat" autocomplete="email"/>
+      <label for="fa">La teva àrea</label>
+      <select id="fa"><option value="">— Carregant àrees… —</option></select>
+      <div id="ferr" class="err hidden"></div>
+      <button class="btn btn-primary btn-full" onclick="doLogin()">Accedir</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCREEN 2 ══ -->
+<div id="s2">
+  <div class="topbar">
+    <div class="tb-l">
+      <span class="tb-ico">◈</span>
+      <div><div class="tb-title">Revisió Memòria EFQM</div><div class="tb-sub" id="tb-user"></div></div>
+    </div>
+    <div class="tb-r">
+      <div class="prog-wrap">
+        <div class="prog-track"><div class="prog-fill" id="pfill" style="width:0%"></div></div>
+        <span class="prog-lbl" id="plbl">0 / 0</span>
+      </div>
+      <button class="btn btn-danger" style="font-size:.72rem;padding:.3rem .62rem" onclick="doLogout()">Tancar sessió</button>
+    </div>
+  </div>
+
+  <div class="crit-tabs" id="ctabs"></div>
+
+  <div class="main">
+    <div class="toolbar">
+      <div class="tog-group">
+        <button class="tog-btn active" onclick="setF('all',this)">Tots</button>
+        <button class="tog-btn" onclick="setF('pending',this)">Pendents</button>
+        <button class="tog-btn" onclick="setF('validated',this)">Validats</button>
+      </div>
+      <div class="sw">
+        <span class="s-ico">🔍</span>
+        <input type="text" id="srch" placeholder="Cerca…" oninput="applyF()"/>
+      </div>
+      <button class="btn-save-all" id="bsa" onclick="saveAll()">💾 Desar canvis pendents</button>
+    </div>
+    <div class="scroll-area" id="sarea"></div>
+  </div>
+</div>
+
+<div id="toasts"></div>
+
+<script>
+/* ══ CONFIG ══ */
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxZm83OoRldwnwB44pz0CjXK-lAxClIE6WfiYBtvIOXLav0B4IQ2zGOGQj3clvrOcW_QQ/exec"; // URL del Web App publicat
+
+/* ══ STATE ══ */
+let mem=[], resp=[], sess=null;
+// cData[criteri] = { titol, subs:{ s:{ titol, que_diu, rows:[] } } }
+let cData={}, curC=null, curF='all';
+// cards[criteri] = [{el, id, isNew, sub}]
+let cards={}, nc=0;
+
+/* ══ INIT ══ */
+window.addEventListener('DOMContentLoaded', async ()=>{
+  const st=localStorage.getItem('efqm_v4');
+  if(st){
+    sess=JSON.parse(st);
+    document.getElementById('wname').textContent='Benvinguda/t de nou, '+sess.nom;
+    document.getElementById('wsub').textContent=sess.email+' · '+sess.area;
+    document.getElementById('wblock').classList.remove('hidden');
+    document.getElementById('lform').classList.add('hidden');
+  }
+  await loadAreas();
+});
+
+/* ══ API ══ */
+async function api(method, body){
+  const o={redirect:'follow'};
+  if(method==='POST'){ o.method='POST'; o.headers={'Content-Type':'application/json'}; o.body=JSON.stringify(body); }
+  const r=await fetch(APPS_SCRIPT_URL,o);
+  return r.json();
+}
+
+async function loadAreas(){
+  if(!APPS_SCRIPT_URL){ setAreas(['Direcció','Operacions','Qualitat','RRHH','Tecnologia']); return; }
+  try{
+    const d=await api('GET');
+    mem=d.memoria||[]; resp=d.respostes||[];
+    const s=new Set();
+    mem.forEach(r=>(r.area||'').split(',').forEach(a=>{ const t=a.trim(); if(t) s.add(t); }));
+    setAreas([...s].sort());
+  } catch{ setAreas([]); }
+}
+
+function setAreas(a){
+  const sel=document.getElementById('fa');
+  sel.innerHTML='<option value="">— Selecciona la teva àrea —</option>';
+  a.forEach(v=>{ const o=document.createElement('option'); o.value=v; o.textContent=v; sel.appendChild(o); });
+}
+
+/* ══ LOGIN / LOGOUT ══ */
+function doLogin(){
+  const nom=$('fn').value.trim(), email=$('fe').value.trim(), area=$('fa').value;
+  const err=$('ferr');
+  if(!nom){ showErr(err,'El nom és obligatori.'); return; }
+  if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ showErr(err,'Email invàlid.'); return; }
+  if(!area){ showErr(err,'Selecciona la teva àrea.'); return; }
+  err.classList.add('hidden');
+  sess={nom,email,area};
+  localStorage.setItem('efqm_v4',JSON.stringify(sess));
+  goS2();
+}
+function clearSess(){
+  localStorage.removeItem('efqm_v4'); sess=null;
+  $('wblock').classList.add('hidden');
+  $('lform').classList.remove('hidden');
+}
+function doLogout(){
+  if(document.querySelectorAll('.card.pending').length>0 &&
+     !confirm('Tens canvis pendents. Si tanques la sessió es perdran. Continuar?')) return;
+  clearSess();
+  $('s2').style.display='none'; $('s1').style.display='flex';
+}
+
+/* ══ SCREEN 2 ══ */
+async function goS2(){
+  $('s1').style.display='none'; $('s2').style.display='flex';
+  $('tb-user').textContent=sess.nom+' · '+sess.area;
+  await loadData();
+}
+
+async function loadData(){
+  $('sarea').innerHTML='<p style="color:var(--g300);padding:2rem;text-align:center">Carregant dades…</p>';
+  if(!APPS_SCRIPT_URL){ mem=demo(); resp=[]; }
+  else{
+    try{ const d=await api('GET'); mem=d.memoria||[]; resp=d.respostes||[]; }
+    catch(e){ $('sarea').innerHTML='<p style="color:var(--red);padding:2rem">Error: '+e.message+'</p>'; return; }
+  }
+  buildData(); buildTabs();
+  const first=Object.keys(cData).sort()[0];
+  if(first) selCrit(first);
+}
+
+/* ══ BUILD DATA ══ */
+function buildData(){
+  cData={}; cards={};
+  mem.forEach(row=>{
+    const areas=(row.area||'').split(',').map(a=>a.trim());
+    if(!areas.includes(sess.area)) return;
+    const c=String(row.criteri||''), s=String(row.subcriteri||'');
+    if(!cData[c]) cData[c]={titol:row.titol_criteri||'',subs:{}};
+    if(!cData[c].titol&&row.titol_criteri) cData[c].titol=row.titol_criteri;
+    if(!cData[c].subs[s]) cData[c].subs[s]={titol:row.titol_subcriteri||'',que_diu:row.que_diu_el_model||'',rows:[]};
+    if(!cData[c].subs[s].que_diu&&row.que_diu_el_model) cData[c].subs[s].que_diu=row.que_diu_el_model;
+    cData[c].subs[s].rows.push(row);
+  });
+}
+
+/* ══ TABS ══ */
+function buildTabs(){
+  const nav=$('ctabs'); nav.innerHTML='';
+  Object.keys(cData).sort().forEach(c=>{
+    const b=document.createElement('button'); b.className='ctab'; b.dataset.c=c;
+    b.innerHTML=escH(c+(cData[c].titol?' — '+cData[c].titol:''))+' <span class="tab-dot"></span>';
+    b.onclick=()=>selCrit(c); nav.appendChild(b);
+  });
+}
+function updTabPending(){
+  document.querySelectorAll('.ctab').forEach(t=>{
+    t.classList.toggle('has-pending',(cards[t.dataset.c]||[]).some(x=>x.el.classList.contains('pending')));
+  });
+}
+
+/* ══ SELECT CRITERION ══ */
+function selCrit(c){
+  curC=c;
+  document.querySelectorAll('.ctab').forEach(t=>t.classList.toggle('active',t.dataset.c===c));
+  $('srch').value=''; curF='all';
+  document.querySelectorAll('.tog-btn').forEach((b,i)=>b.classList.toggle('active',i===0));
+  renderCrit(c);
+}
+
+/* ══ RENDER ══ */
+function renderCrit(c){
+  const area=$('sarea'); area.innerHTML='';
+  if(!cData[c]) return;
+  const exNew=(cards[c]||[]).filter(x=>x.isNew);
+  cards[c]=[];
+
+  Object.keys(cData[c].subs).sort().forEach(s=>{
+    const sub=cData[c].subs[s];
+    const blk=el('div','sb'); blk.dataset.s=s;
+
+    // Sticky subcrit header
+    const sticky=el('div','sub-sticky');
+    const tr=el('div','sub-title-row');
+    const num=el('span','sub-num',s);
+    const ttl=el('div','sub-title',sub.titol||s);
+    tr.appendChild(num); tr.appendChild(ttl);
+    if(sub.que_diu&&sub.que_diu.trim()){
+      const eb=el('button','efqm-btn'); eb.textContent='📖 Què diu el model EFQM?';
+      const ep=el('div','efqm-panel'); ep.textContent=sub.que_diu;
+      eb.onclick=()=>{ ep.classList.toggle('open'); eb.textContent=(ep.classList.contains('open')?'▲ ':'📖 ')+'Què diu el model EFQM?'; };
+      tr.appendChild(eb); sticky.appendChild(tr); sticky.appendChild(ep);
+    } else { sticky.appendChild(tr); }
+    blk.appendChild(sticky);
+
+    // Existing cards
+    sub.rows.forEach(row=>{ const card=buildCard(row,c); blk.appendChild(card.el); cards[c].push(card); });
+
+    // Re-attach new cards
+    exNew.filter(x=>x.sub===s).forEach(x=>{ blk.appendChild(x.el); cards[c].push(x); });
+
+    // Add new btn
+    const ab=el('button','btn-add');
+    ab.innerHTML='➕ Proposar un nou enfocament per a <strong style="margin-left:.25rem">'+escH(s)+'</strong>';
+    ab.addEventListener('click',()=>insertNew(c,s,sub.titol,blk,ab));
+    blk.appendChild(ab);
+    area.appendChild(blk);
+  });
+  updProgress();
+}
+
+/* ══ BUILD EXISTING CARD ══ */
+function buildCard(row,crit){
+  const id=row.id||'';
+  const prev=resp.find(r=>r.email===sess.email&&r.id_enfocament===id);
+  const card=document.createElement('div');
+  card.className='card'+(prev?' saved':'');
+  card.dataset.id=id; card.dataset.isNew='0';
+  // searchable text
+  card.dataset.st=[row.titol_enfocament,row.enfocament,row.desplegament,row.avaluacio,row.evidencies,row.titol_subcriteri].join(' ').toLowerCase();
+
+  // Summary row — uses titol_enfocament
+  const sum=el('div','card-sum');
+  const sid=el('span','cs-id',id);
+  const stxt=el('span','cs-title',row.titol_enfocament||'(sense títol)');
+  const sbadge=el('span','cs-badge '+(prev?'bprev':''));
+  sbadge.textContent=prev?'Ja revisat ✓':''; sbadge.style.display=prev?'':'none';
+  const schev=el('span','cs-chev','▼');
+  sum.appendChild(sid); sum.appendChild(stxt); sum.appendChild(sbadge); sum.appendChild(schev);
+  sum.addEventListener('click',()=>card.classList.toggle('expanded'));
+  card.appendChild(sum);
+
+  // Card body
+  const body=el('div','card-body');
+
+  // 4 REDER accordions
+  // fields: key, label, cls, roCls, srcField, taKey, taVal
+  const BLOCKS=[
+    {lbl:'Enfocament',         acls:'le', roCls:'ro-e', text:row.enfocament,   taKey:null},
+    {lbl:'Desplegament',       acls:'ld', roCls:'ro-d', text:row.desplegament, taKey:'sug_desplegament',  taVal:prev?.sug_desplegament},
+    {lbl:'Avaluació i Revisió',acls:'la', roCls:'ro-a', text:row.avaluacio,    taKey:'sug_avaluacio',     taVal:prev?.sug_avaluacio},
+    {lbl:'Evidències',         acls:'lev',roCls:'ro-ev',text:row.evidencies,   taKey:'sug_evidencies',    taVal:prev?.sug_evidencies},
+  ];
+  BLOCKS.forEach(b=>{
+    const acc=el('div','acc');
+    if(b.taKey&&(b.taVal||'').trim()) acc.classList.add('has-content');
+    const hdr=el('div','acc-hdr');
+    hdr.innerHTML='<span class="acc-arr">▼</span><span class="acc-lbl '+b.acls+'">'+escH(b.lbl)+'</span><span class="acc-dot"></span>';
+    hdr.addEventListener('click',()=>acc.classList.toggle('open'));
+    const abody=el('div','acc-body');
+    const ro=document.createElement('div');
+    ro.className=(b.text&&b.text.trim()?'ro '+b.roCls:'ro empty');
+    if(b.text&&b.text.trim()) ro.textContent=b.text;
+    else ro.textContent='— Sense contingut —';
+    abody.appendChild(ro);
+    if(b.taKey){
+      const pl=el('span','prop-lbl','Proposta de millora');
+      const ta=document.createElement('textarea'); ta.className='prop-ta'; ta.dataset.key=b.taKey;
+      ta.rows=2; ta.placeholder='Escriu aquí la teva proposta…'; ta.value=b.taVal||'';
+      ta.addEventListener('input',()=>{ markPending(id); acc.classList.toggle('has-content',ta.value.trim()!==''); });
+      abody.appendChild(pl); abody.appendChild(ta);
+    }
+    acc.appendChild(hdr); acc.appendChild(abody); body.appendChild(acc);
+  });
+
+  // Context note
+  if(row.preg_avaluadors||row.informe_ant){
+    const note=el('div','ctx');
+    const cb=el('button','ctx-btn'); cb.innerHTML='💡 Context d\'ajuda';
+    const cbody=el('div','ctx-body');
+    if(row.preg_avaluadors){ const sec=el('div','ctx-sec ctx-qa'); sec.innerHTML='<div class="ctx-st">Preguntes dels avaluadors</div>'+escH(row.preg_avaluadors); cbody.appendChild(sec); }
+    if(row.informe_ant){ const sec=el('div','ctx-sec ctx-prev'); sec.innerHTML='<div class="ctx-st">Informe anterior</div>'+escH(row.informe_ant); cbody.appendChild(sec); }
+    cb.onclick=()=>{ cbody.classList.toggle('open'); cb.innerHTML=(cbody.classList.contains('open')?'▼':'💡')+' Context d\'ajuda'; };
+    note.appendChild(cb); note.appendChild(cbody); body.appendChild(note);
+  }
+
+  body.appendChild(makeAZ(id,prev,false));
+  card.appendChild(body);
+  return {el:card, id, isNew:false};
+}
+
+/* ══ ACTION ZONE ══ */
+function makeAZ(id,prev,isNew){
+  const az=el('div','az');
+  const cl=el('label','chk-wrap');
+  const chk=document.createElement('input'); chk.type='checkbox'; chk.dataset.card=id;
+  chk.className='chk-v';
+  const chkP=prev&&(prev.validat===true||prev.validat==='TRUE'||prev.validat==='1');
+  chk.checked=chkP; chk.addEventListener('change',()=>markPending(id));
+  const cs=el('span','',isNew?'✅ Confirmo la proposta':'✅ Contingut correcte');
+  cl.appendChild(chk); cl.appendChild(cs); az.appendChild(cl);
+  const cw=el('div','cmt-w');
+  const cta=document.createElement('textarea'); cta.className='ta-cmt'; cta.dataset.card=id;
+  cta.rows=2; cta.placeholder='Comentari (opcional)'; cta.value=prev?.comentari_general||'';
+  cta.addEventListener('input',()=>markPending(id));
+  cw.appendChild(cta); az.appendChild(cw);
+  const sb=document.createElement('button');
+  if(isNew){ sb.className='btn-sn btn-sc'; sb.textContent='Desar proposta'; sb.addEventListener('click',()=>saveNew(id,sb)); }
+  else{ sb.className='btn btn-primary btn-sc'; sb.textContent='Desar'; sb.addEventListener('click',()=>saveExisting(id,sb)); }
+  az.appendChild(sb); return az;
+}
+
+/* ══ NEW CARD ══ */
+function insertNew(crit,sub,subTitol,blk,addBtn){
+  const tid='NEW-'+Date.now()+'-'+(++nc);
+  const card=buildNewCard(tid,crit,sub,subTitol);
+  blk.insertBefore(card.el,addBtn);
+  cards[crit]=cards[crit]||[]; cards[crit].push(card);
+  updProgress();
+  setTimeout(()=>card.el.scrollIntoView({behavior:'smooth',block:'nearest'}),60);
+  toast('Nova proposta creada. Omple els camps i desa-la.','tvio');
+}
+
+function buildNewCard(tid,crit,sub,subTitol){
+  const card=document.createElement('div');
+  card.className='card cnew pending';
+  card.dataset.id=tid; card.dataset.isNew='1'; card.dataset.crit=crit; card.dataset.sub=sub;
+  card.dataset.st='';
+
+  // Banner
+  const ban=el('div','new-banner');
+  const nl=el('div','new-label'); nl.innerHTML='<span class="new-pill">NOU</span>'+escH(sub+(subTitol?' — '+subTitol:''));
+  const rm=el('button','btn-rm'); rm.title='Eliminar'; rm.textContent='✕';
+  rm.addEventListener('click',()=>{
+    if(!card.classList.contains('saved')||confirm('Vols eliminar aquesta proposta de la vista?')){
+      card.remove(); cards[crit]=(cards[crit]||[]).filter(x=>x.id!==tid);
+      updProgress(); updTabPending();
+    }
+  });
+  ban.appendChild(nl); ban.appendChild(rm); card.appendChild(ban);
+
+  // Fields: titol -> sug_titol_enfocament, enfocament -> sug_enfocament, resta REDER
+  const body=el('div','new-body');
+  const NFIELDS=[
+    {key:'sug_titol_enfocament', cls:'nfl-t', color:'var(--violet)', lbl:'Títol de l\'enfocament', ph:'Resum breu del nou enfocament…', cls2:'nta-t', req:true},
+    {key:'sug_enfocament',       cls:'nfl-e', color:'#1e3a8a',       lbl:'Enfocament',              ph:'Descriu el nou enfocament…',    cls2:'nta-b', req:false},
+    {key:'sug_desplegament',     cls:'nfl-d', color:'#1d4ed8',       lbl:'Desplegament',            ph:'Com es desplegaria?',           cls2:'nta-b', req:false},
+    {key:'sug_avaluacio',        cls:'nfl-a', color:'#0369a1',       lbl:'Avaluació i Revisió',     ph:'Com s\'avaluaria?',             cls2:'nta-b', req:false},
+    {key:'sug_evidencies',       cls:'nfl-ev',color:'#0f766e',       lbl:'Evidències',              ph:'Quines evidències aportaríeu?', cls2:'nta-b', req:false},
+  ];
+  NFIELDS.forEach(f=>{
+    const wrap=el('div','nf');
+    const lbl=el('div','nf-lbl '+f.cls);
+    lbl.innerHTML='<span class="nf-dot" style="background:'+f.color+'"></span>'+escH(f.lbl)+(f.req?'<span class="req">*</span>':'');
+    const ta=document.createElement('textarea'); ta.className='nta '+f.cls2; ta.dataset.key=f.key;
+    ta.rows=2; ta.placeholder=f.ph;
+    ta.addEventListener('input',()=>{
+      markPending(tid);
+      card.dataset.st=[...card.querySelectorAll('textarea[data-key]')].map(t=>t.value).join(' ').toLowerCase();
+    });
+    wrap.appendChild(lbl); wrap.appendChild(ta); body.appendChild(wrap);
+  });
+  card.appendChild(body);
+  card.appendChild(makeAZ(tid,null,true));
+  return {el:card, id:tid, isNew:true, sub};
+}
+
+/* ══ CARD STATE ══ */
+function markPending(id){
+  const c=document.querySelector('.card[data-id="'+id+'"]'); if(!c) return;
+  c.classList.remove('saved'); c.classList.add('pending');
+  const b=c.querySelector('.cs-badge');
+  if(b){ b.className='cs-badge bp'; b.textContent='● Pendent'; b.style.display=''; }
+  updTabPending();
+}
+function markSaved(id){
+  const c=document.querySelector('.card[data-id="'+id+'"]'); if(!c) return;
+  c.classList.remove('pending'); c.classList.add('saved');
+  if(c.classList.contains('cnew')) c.style.borderStyle='solid';
+  const b=c.querySelector('.cs-badge');
+  if(b){ b.className='cs-badge bs'; b.textContent='Desat ✅'; b.style.display=''; }
+  updProgress(); updTabPending();
+}
+
+/* ══ PROGRESS ══ */
+function updProgress(){
+  let tot=0,sav=0;
+  Object.values(cards).forEach(arr=>{ tot+=arr.length; arr.forEach(({el:e})=>{ if(e.classList.contains('saved')) sav++; }); });
+  const pct=tot?Math.round(sav/tot*100):0;
+  $('pfill').style.width=pct+'%'; $('plbl').textContent=sav+' / '+tot;
+}
+
+/* ══ FILTERS ══ */
+function setF(f,btn){ curF=f; document.querySelectorAll('.tog-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); applyF(); }
+function applyF(){
+  const kw=$('srch').value.toLowerCase().trim();
+  (cards[curC]||[]).forEach(({el:e})=>{
+    let show=true;
+    if(curF==='pending') show=e.classList.contains('pending');
+    else if(curF==='validated') show=e.classList.contains('saved');
+    if(show&&kw) show=(e.dataset.st||'').includes(kw);
+    e.style.display=show?'':'none';
+  });
+  document.querySelectorAll('.sb').forEach(b=>{
+    b.style.display=[...b.querySelectorAll('.card')].some(c=>c.style.display!=='none')?'':'none';
+  });
+}
+
+/* ══ COLLECT CARD DATA ══ */
+function cardData(id){
+  const c=document.querySelector('.card[data-id="'+id+'"]'); if(!c) return {};
+  const d={};
+  c.querySelectorAll('textarea[data-key]').forEach(ta=>{ d[ta.dataset.key]=ta.value; });
+  d.validat=c.querySelector('.chk-v')?.checked||false;
+  d.comentari_general=c.querySelector('.ta-cmt')?.value||'';
+  return d;
+}
+
+/* ══ SAVE EXISTING ══ */
+async function saveExisting(id,btn){
+  if(!sess) return;
+  const orig=btn.textContent; btn.textContent='Enviant…'; btn.disabled=true;
+  const d=cardData(id);
+  const payload={
+    nom:sess.nom, email:sess.email, area_revisora:sess.area,
+    id_enfocament:id, is_new:false,
+    validat:d.validat,
+    sug_titol_enfocament:'',
+    sug_enfocament:'',
+    sug_desplegament:d.sug_desplegament||'',
+    sug_avaluacio:d.sug_avaluacio||'',
+    sug_evidencies:d.sug_evidencies||'',
+    comentari_general:d.comentari_general,
+    timestamp:new Date().toISOString()
+  };
+  await doSave(payload,id,btn,orig,false);
+}
+
+/* ══ SAVE NEW ══ */
+async function saveNew(tid,btn){
+  if(!sess) return;
+  const card=document.querySelector('.card[data-id="'+tid+'"]'); if(!card) return;
+  const titolTa=card.querySelector('textarea[data-key="sug_titol_enfocament"]');
+  if(!titolTa||titolTa.value.trim()===''){
+    toast('El títol de l\'enfocament és obligatori.','terr'); titolTa?.focus(); return;
+  }
+  const finalId='NEW-'+Date.now();
+  const orig=btn.textContent; btn.textContent='Enviant…'; btn.disabled=true;
+  const d=cardData(tid);
+  const payload={
+    nom:sess.nom, email:sess.email, area_revisora:sess.area,
+    id_enfocament:finalId, is_new:true,
+    validat:d.validat,
+    sug_titol_enfocament:d.sug_titol_enfocament||'',
+    sug_enfocament:d.sug_enfocament||'',
+    sug_desplegament:d.sug_desplegament||'',
+    sug_avaluacio:d.sug_avaluacio||'',
+    sug_evidencies:d.sug_evidencies||'',
+    comentari_general:d.comentari_general,
+    criteri:card.dataset.crit||'',
+    subcriteri:card.dataset.sub||'',
+    timestamp:new Date().toISOString()
+  };
+  // update card id before save
+  card.dataset.id=finalId;
+  const crit=card.dataset.crit;
+  const entry=(cards[crit]||[]).find(x=>x.id===tid);
+  if(entry) entry.id=finalId;
+  await doSave(payload,finalId,btn,orig,true);
+}
+
+async function doSave(payload,id,btn,orig,isNew){
+  try{
+    if(!APPS_SCRIPT_URL) await wait(500);
+    else{ const r=await api('POST',payload); if(!r.success) throw new Error(r.error||'Error servidor'); }
+    updResp(payload); markSaved(id); btn.textContent='Desat ✅'; toast(isNew?'Nova proposta desada! ✨':'Punt desat.','tok');
+  } catch(e){ btn.textContent='Error ❌'; toast('Error: '+e.message,'terr'); }
+  setTimeout(()=>{ btn.textContent=orig; btn.disabled=false; },3000);
+}
+
+function updResp(p){
+  const i=resp.findIndex(r=>r.email===p.email&&r.id_enfocament===p.id_enfocament);
+  if(i>=0) Object.assign(resp[i],p); else resp.push(p);
+}
+
+/* ══ SAVE ALL ══ */
+async function saveAll(){
+  const pending=[...document.querySelectorAll('.card.pending')];
+  if(!pending.length){ toast('No hi ha canvis pendents.','tinfo'); return; }
+  const btn=$('bsa'); btn.disabled=true;
+  for(let i=0;i<pending.length;i++){
+    btn.textContent='Desant '+(i+1)+' de '+pending.length+'…';
+    const id=pending[i].dataset.id;
+    const cb=pending[i].querySelector('.btn-sc');
+    if(cb){ if(pending[i].dataset.isNew==='1') await saveNew(id,cb); else await saveExisting(id,cb); }
+    await wait(500);
+  }
+  btn.textContent='Tot desat! ✅'; toast(pending.length+' punts desats.','tok');
+  setTimeout(()=>{ btn.textContent='💾 Desar canvis pendents'; btn.disabled=false; },3000);
+}
+
+/* ══ UTILS ══ */
+const $=id=>document.getElementById(id);
+const el=(tag,cls,txt)=>{ const e=document.createElement(tag); if(cls) e.className=cls; if(txt!==undefined) e.textContent=txt; return e; };
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const escH=t=>(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function toast(msg,cls){ const c=$('toasts'); const t=el('div','toast '+(cls||'')); t.textContent=msg; c.appendChild(t); setTimeout(()=>t.remove(),3400); }
+function showErr(e,m){ e.textContent=m; e.classList.remove('hidden'); }
+
+/* ══ DEMO DATA ══ */
+function demo(){
+  return [
+    {id:'EFQ-001',criteri:'1',titol_criteri:'Lideratge',subcriteri:'1a',titol_subcriteri:'Propòsit, visió i estratègia',
+     que_diu_el_model:'Les organitzacions excel·lents defineixen el seu propòsit per explicar per quina raó existeixen, més enllà del benefici econòmic.\n\nEl model espera que els líders defineixin i promoguin activament el propòsit i actuïn com a referents de la cultura organitzativa.',
+     area:'Qualitat, RRHH, Direcció',
+     titol_enfocament:'Definició i comunicació del propòsit corporatiu',
+     enfocament:'L\'organització ha definit un propòsit clar i una visió inspiradora que guia totes les decisions estratègiques. El propòsit s\'alinea amb els valors corporatius i es comunica regularment a tots els nivells.',
+     desplegament:'El propòsit es desplega mitjançant plans anuals i revisions trimestrals.\nEs fan reunions mensuals per reforçar la visió.',
+     avaluacio:'Es revisa anualment a través d\'enquestes de clima i reunions de direcció.',
+     evidencies:'Pla estratègic 2023-2026\nInforme de valors corporatius\nActes de reunions de direcció',
+     preg_avaluadors:'Com s\'assegura que el propòsit és conegut per tots?\nQuins mecanismes hi ha per actualitzar la visió?',
+     informe_ant:'En l\'avaluació anterior es va destacar la necessitat de millorar la comunicació als nivells operatius.'},
+    {id:'EFQ-002',criteri:'1',titol_criteri:'Lideratge',subcriteri:'1a',titol_subcriteri:'Propòsit, visió i estratègia',
+     que_diu_el_model:'',area:'Qualitat, Operacions',
+     titol_enfocament:'Integració dels valors en els processos de persones',
+     enfocament:'Els valors organitzacionals estan documentats i integrats en els processos de selecció i avaluació del rendiment.',
+     desplegament:'',avaluacio:'',evidencies:'Política de valors corporatius',
+     preg_avaluadors:'Com es mesura l\'adhesió als valors?',informe_ant:''},
+    {id:'EFQ-003',criteri:'1',titol_criteri:'Lideratge',subcriteri:'1b',titol_subcriteri:'Cultura organitzacional i lideratge',
+     que_diu_el_model:'El model EFQM espera que els líders demostrin amb el seu comportament personal els valors i l\'ètica de l\'organització, creant una cultura d\'excel·lència.',
+     area:'Direcció, RRHH',
+     titol_enfocament:'Programa de desenvolupament de lideratge',
+     enfocament:'El lideratge promou activament una cultura d\'excel·lència i millora contínua a tots els nivells de l\'organització.',
+     desplegament:'Programa de lideratge amb 45 participants i pla de mentoria.',
+     avaluacio:'Enquesta 360° als responsables. Resultats: 78% de valoració positiva.',
+     evidencies:'Resultats enquesta 360°\nRegistre d\'assistència programa lideratge',
+     preg_avaluadors:'Com s\'identifiquen els líders emergents?',
+     informe_ant:'Cal millorar la coherència entre el discurs i la pràctica directiva.'},
+    {id:'EFQ-004',criteri:'2',titol_criteri:'Estratègia',subcriteri:'2a',titol_subcriteri:'Estratègia i planificació',
+     que_diu_el_model:'L\'estratègia es desenvolupa basant-se en la comprensió de les necessitats dels grups d\'interès, el rendiment de l\'organització i les tendències externes.\n\nHa de traduir-se en polítiques, plans i objectius concrets.',
+     area:'Direcció, Qualitat',
+     titol_enfocament:'Elaboració i desplegament del Pla Estratègic via BSC',
+     enfocament:'L\'estratègia es desenvolupa tenint en compte les necessitats dels grups d\'interès i l\'entorn competitiu del sector.',
+     desplegament:'Pla estratègic 2023-2026 aprovat per Consell d\'Administració.\nDesplegament via BSC amb 4 perspectives.',
+     avaluacio:'Revisió semestral del quadre de comandament integral.',
+     evidencies:'Pla Estratègic 2023-2026\nActa aprovació Consell\nQuadre de Comandament Integral',
+     preg_avaluadors:'Com s\'incorporen els canvis de l\'entorn a l\'estratègia?',
+     informe_ant:'El procés d\'elaboració de l\'estratègia ha madurat significativament.'},
+    {id:'EFQ-005',criteri:'3',titol_criteri:'Persones',subcriteri:'3a',titol_subcriteri:'Gestió del talent',
+     que_diu_el_model:'Les organitzacions excel·lents valoren les seves persones, promouen la igualtat i l\'equitat i desenvolupen les competències necessàries per assolir els objectius.',
+     area:'RRHH, Qualitat, Direcció',
+     titol_enfocament:'Pla de formació i retenció del talent',
+     enfocament:'L\'organització atrau, desenvolupa i reté el talent necessari per assolir els seus objectius estratègics i crear valor sostenible.',
+     desplegament:'Pla de formació anual amb 40h per persona. Programa de mentoria intern.',
+     avaluacio:'Taxa de rotació 8,2%. Satisfacció laboral 7,4/10.',
+     evidencies:'Pla de Formació 2024\nResultats enquesta clima laboral\nDades RRHH rotació',
+     preg_avaluadors:'Com es garanteix l\'equitat en les oportunitats de desenvolupament?',
+     informe_ant:'Cal millorar la identificació de necessitats formatives futures.'}
+  ];
+}
+</script>
+</body>
+</html>
