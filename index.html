@@ -95,7 +95,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 
 /* ── CARD ── */
 .card{background:var(--white);border-radius:var(--r);box-shadow:var(--sh);margin-bottom:.5rem;border:2px solid transparent;transition:border-color var(--tr)}
-/* Eliminem la vora taronja per als pendents per netejar la UI */
 .card.saved{border-color:#86efac}
 /* new card */
 .card.cnew{border:2px dashed var(--vb);background:var(--vp)}
@@ -114,7 +113,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .card-body{display:none}
 .card.expanded .card-body{display:block}
 
-/* Banner nou enfocament dinàmic */
 .new-banner{display:flex;align-items:center;gap:.48rem;padding:.48rem .72rem;background:linear-gradient(135deg,var(--vp),#ede9fe);border-bottom:1px dashed var(--vb);transition:background var(--tr)}
 .new-banner:hover{background:#ede9fe}
 .new-label{display:flex;align-items:center;gap:.38rem;font-size:.74rem;font-weight:800;color:var(--violet);text-transform:uppercase;letter-spacing:.05em;flex:1;overflow:hidden;}
@@ -257,7 +255,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 
 <script>
 /* ══ CONFIGURACIÓ DE L'API ══ */
-// RECORDATORI: Substitueix aquesta URL per la que has generat fent "Nova implementació" al Google Scripts.
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbynrl8dl98JTPXd0sycbke2s21JtedYTIU90S21uHuWBDwNJHnvbhEIK23MDYQpQlEAEQ/exec"; 
 
 /* ══ STATE ══ */
@@ -415,7 +412,7 @@ function renderCrit(c){
     if(sub.que_diu&&sub.que_diu.trim()){
       const eb=el('button','efqm-btn'); eb.textContent='📖 Què diu el model EFQM?';
       const ep=el('div','efqm-panel'); 
-      ep.textContent=sub.que_diu; // Ara respecta exactament l'Excel (i l'ordre)
+      ep.textContent=sub.que_diu; 
       eb.onclick=()=>{ ep.classList.toggle('open'); eb.textContent=(ep.classList.contains('open')?'▲ ':'📖 ')+'Què diu el model EFQM?'; };
       tr.appendChild(eb); sticky.appendChild(tr); sticky.appendChild(ep);
     } else { sticky.appendChild(tr); }
@@ -570,7 +567,7 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
   nl.appendChild(titleSpan);
 
   const rm=el('button','btn-rm'); rm.title='Eliminar'; 
-  rm.innerHTML='🗑️ Eliminar'; // <-- ARA ÉS UNA PAPERERA CLARA
+  rm.innerHTML='🗑️ Eliminar'; 
   rm.addEventListener('click', async (e)=>{
     e.stopPropagation(); 
     if(!card.classList.contains('saved')){
@@ -590,7 +587,7 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
           toast('Enfocament eliminat correctament.', 'tinfo');
         } catch(err) {
           rm.innerHTML = origBtn;
-          toast('Error en eliminar: ' + err.message, 'terr'); // <-- MISSATGE D'ERROR DETALLAT
+          toast('Error en eliminar: ' + err.message, 'terr'); 
         }
       }
     }
@@ -715,29 +712,63 @@ async function saveExisting(id,btn){
   await doSave(payload,id,btn,orig,false, isDone);
 }
 
-/* ══ SAVE EXISTING ══ */
-async function saveExisting(id,btn){
+/* ══ SAVE NEW ══ */
+async function saveNew(tid,btn){
   if(!sess) return;
-  const orig=btn.textContent; btn.textContent='Enviant…'; btn.disabled=true;
-  const d=cardData(id);
+  const card=document.querySelector('.card[data-id="'+tid+'"]'); if(!card) return;
   
-  // LÓGICA: Se considera "Revisado" si el check está marcado O si hay texto en las propuestas
-  const tieneTexto = (d.sug_desplegament + d.sug_avaluacio + d.sug_evidencies + d.comentari_general).trim() !== '';
-  const isDone = d.validat || tieneTexto;
+  const requiredKeys = ['sug_titol_enfocament', 'sug_enfocament', 'sug_desplegament', 'sug_avaluacio', 'sug_evidencies'];
+  for (let key of requiredKeys) {
+    const ta = card.querySelector(`textarea[data-key="${key}"]`);
+    if (!ta || ta.value.trim() === '') {
+      const labelText = ta.parentElement.querySelector('.nf-lbl').textContent.replace('*','').trim();
+      toast(`El camp "${labelText}" és obligatori.`, 'terr');
+      ta?.focus();
+      return;
+    }
+  }
 
+  const orig=btn.textContent; btn.textContent='Enviant…'; btn.disabled=true;
+  const d=cardData(tid);
+  
   const payload={
     nom:sess.nom, email:sess.email, area_revisora:sess.area,
-    id_enfocament:id, is_new:false,
-    validat:d.validat,
-    sug_titol_enfocament:'',
-    sug_enfocament:'',
+    id_enfocament:tid, is_new:true,
+    validat:true, 
+    sug_titol_enfocament:d.sug_titol_enfocament||'',
+    sug_enfocament:d.sug_enfocament||'',
     sug_desplegament:d.sug_desplegament||'',
     sug_avaluacio:d.sug_avaluacio||'',
     sug_evidencies:d.sug_evidencies||'',
     comentari_general:d.comentari_general,
+    criteri:card.dataset.crit||'',
+    subcriteri:card.dataset.sub||'',
     timestamp:new Date().toISOString()
   };
-  await doSave(payload,id,btn,orig,false, isDone);
+  await doSave(payload,tid,btn,orig,true, true);
+}
+
+async function doSave(payload,id,btn,orig,isNew, isDone){
+  try{
+    if(!APPS_SCRIPT_URL) await wait(500);
+    else{ const r=await api('POST',payload); if(!r.success) throw new Error(r.error||'Error servidor'); }
+    updResp(payload); 
+    
+    if(isDone) {
+        markSaved(id); 
+        btn.textContent='Revisat ✅'; 
+        toast(isNew?'Nova proposta desada! ✨':'Punt revisat.','tok');
+    } else {
+        markPending(id);
+        btn.textContent='Desat (Pendent)'; 
+        toast('Punt desmarcat. Torna a estar pendent.','tinfo');
+    }
+    
+    const c=document.querySelector('.card[data-id="'+id+'"]');
+    if(c && isNew && isDone) c.classList.remove('expanded'); 
+    
+  } catch(e){ btn.textContent='Error ❌'; toast('Error: '+e.message,'terr'); }
+  setTimeout(()=>{ btn.textContent=orig; btn.disabled=false; },3000);
 }
 
 function updResp(p){
