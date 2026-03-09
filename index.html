@@ -260,14 +260,14 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
     <div class="toolbar">
       <div class="tog-group">
         <button class="tog-btn active" onclick="setF('all',this)">Tots</button>
-        <button class="tog-btn" onclick="setF('pending',this)">Pendents</button>
-        <button class="tog-btn" onclick="setF('validated',this)">Validats</button>
+        <button class="tog-btn" onclick="setF('pending',this)">No revisats</button>
+        <button class="tog-btn" onclick="setF('validated',this)">Revisats</button>
       </div>
       <div class="sw">
         <span class="s-ico">🔍</span>
         <input type="text" id="srch" placeholder="Cerca…" oninput="applyF()"/>
       </div>
-      <button class="btn-save-all" id="bsa" onclick="saveAll()">💾 Desar canvis pendents</button>
+
     </div>
     <div class="scroll-area" id="sarea"></div>
   </div>
@@ -532,13 +532,15 @@ function buildCard(row,crit){
 /* ══ ACTION ZONE ══ */
 function makeAZ(id,prev,isNew){
   const az=el('div','az');
-  const cl=el('label','chk-wrap');
-  const chk=document.createElement('input'); chk.type='checkbox'; chk.dataset.card=id;
-  chk.className='chk-v';
-  const chkP=prev&&(prev.validat===true||prev.validat==='TRUE'||prev.validat==='1'||prev.validat===1);
-  chk.checked=chkP; chk.addEventListener('change',()=>markPending(id));
-  const cs=el('span','',isNew?'✅ Confirmo la proposta':'✅ Contingut correcte');
-  cl.appendChild(chk); cl.appendChild(cs); az.appendChild(cl);
+  if(!isNew){
+    const cl=el('label','chk-wrap');
+    const chk=document.createElement('input'); chk.type='checkbox'; chk.dataset.card=id;
+    chk.className='chk-v';
+    const chkP=prev&&(prev.validat===true||prev.validat==='TRUE'||prev.validat==='1'||prev.validat===1);
+    chk.checked=chkP; chk.addEventListener('change',()=>markPending(id));
+    const cs=el('span','','✅ Contingut correcte');
+    cl.appendChild(chk); cl.appendChild(cs); az.appendChild(cl);
+  }
   const cw=el('div','cmt-w');
   const cta=document.createElement('textarea'); cta.className='ta-cmt'; cta.dataset.card=id;
   cta.rows=2; cta.placeholder='Comentari (opcional)'; cta.value=prev?.comentari_general||'';
@@ -634,7 +636,7 @@ function applyF(){
   const kw=$('srch').value.toLowerCase().trim();
   (cards[curC]||[]).forEach(({el:e})=>{
     let show=true;
-    if(curF==='pending') show=e.classList.contains('pending');
+    if(curF==='pending') show=!e.classList.contains('saved');
     else if(curF==='validated') show=e.classList.contains('saved');
     if(show&&kw) show=(e.dataset.st||'').includes(kw);
     e.style.display=show?'':'none';
@@ -678,29 +680,42 @@ async function saveExisting(id,btn){
 async function saveNew(tid,btn){
   if(!sess) return;
   const card=document.querySelector('.card[data-id="'+tid+'"]'); if(!card) return;
-  const titolTa=card.querySelector('textarea[data-key="sug_titol_enfocament"]');
-  if(!titolTa||titolTa.value.trim()===''){
-    toast('El títol de l\'enfocament és obligatori.','terr'); titolTa?.focus(); return;
+  
+  // Validació de tots els camps obligatoris
+  const required=[
+    {key:'sug_titol_enfocament', lbl:"Títol de l'enfocament"},
+    {key:'sug_enfocament',       lbl:'Enfocament'},
+    {key:'sug_desplegament',     lbl:'Desplegament'},
+    {key:'sug_avaluacio',        lbl:'Avaluació i Revisió'},
+    {key:'sug_evidencies',       lbl:'Evidències'},
+  ];
+  for(const f of required){
+    const ta=card.querySelector('textarea[data-key="'+f.key+'"]');
+    if(!ta||ta.value.trim()===''){
+      toast('El camp "'+f.lbl+'" és obligatori.','terr'); ta?.focus(); return;
+    }
   }
-  const finalId='NEW-'+Date.now();
+  
+  const crit=card.dataset.crit||'';
+  const sub=card.dataset.sub||'';
+  const finalId='NOU-'+crit+'-'+sub+'-'+Date.now();
   const orig=btn.textContent; btn.textContent='Enviant…'; btn.disabled=true;
   const d=cardData(tid);
   const payload={
     nom:sess.nom, email:sess.email, area_revisora:sess.area,
     id_enfocament:finalId, is_new:true,
-    validat:d.validat,
+    validat:false,
     sug_titol_enfocament:d.sug_titol_enfocament||'',
     sug_enfocament:d.sug_enfocament||'',
     sug_desplegament:d.sug_desplegament||'',
     sug_avaluacio:d.sug_avaluacio||'',
     sug_evidencies:d.sug_evidencies||'',
-    comentari_general:d.comentari_general,
-    criteri:card.dataset.crit||'',
-    subcriteri:card.dataset.sub||'',
+    comentari_general:d.comentari_general||'',
+    criteri:crit,
+    subcriteri:sub,
     timestamp:new Date().toISOString()
   };
   card.dataset.id=finalId;
-  const crit=card.dataset.crit;
   const entry=(cards[crit]||[]).find(x=>x.id===tid);
   if(entry) entry.id=finalId;
   await doSave(payload,finalId,btn,orig,true);
@@ -720,21 +735,6 @@ function updResp(p){
   if(i>=0) Object.assign(resp[i],p); else resp.push(p);
 }
 
-/* ══ SAVE ALL ══ */
-async function saveAll(){
-  const pending=[...document.querySelectorAll('.card.pending')];
-  if(!pending.length){ toast('No hi ha canvis pendents.','tinfo'); return; }
-  const btn=$('bsa'); btn.disabled=true;
-  for(let i=0;i<pending.length;i++){
-    btn.textContent='Desant '+(i+1)+' de '+pending.length+'…';
-    const id=pending[i].dataset.id;
-    const cb=pending[i].querySelector('.btn-sc');
-    if(cb){ if(pending[i].dataset.isNew==='1') await saveNew(id,cb); else await saveExisting(id,cb); }
-    await wait(500);
-  }
-  btn.textContent='Tot desat! ✅'; toast(pending.length+' punts desats.','tok');
-  setTimeout(()=>{ btn.textContent='💾 Desar canvis pendents'; btn.disabled=false; },3000);
-}
 
 /* ══ UTILS ══ */
 const $=id=>document.getElementById(id);
