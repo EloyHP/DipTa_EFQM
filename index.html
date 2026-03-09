@@ -456,7 +456,7 @@ function buildCard(row,crit){
   const sum=el('div','card-sum');
   const stxt=el('span','cs-title',row.titol_enfocament||'(sense títol)');
   const sbadge=el('span','cs-badge '+(prev?'bs':'bp'));
-  sbadge.textContent=prev?'Ja revisat ✓':'● Pendent';
+  sbadge.textContent=prev?'Revisat ✅':'● Pendent';
   const schev=el('span','cs-chev','▼');
   sum.appendChild(stxt); sum.appendChild(sbadge); sum.appendChild(schev);
   sum.addEventListener('click',()=>card.classList.toggle('expanded'));
@@ -650,7 +650,7 @@ function markSaved(id){
   c.classList.remove('pending'); c.classList.add('saved');
   if(c.classList.contains('cnew')) c.style.borderStyle='solid';
   const b=c.querySelector('.cs-badge');
-  if(b){ b.className='cs-badge bs'; b.textContent='Desat ✅'; b.style.display=''; }
+  if(b){ b.className='cs-badge bs'; b.textContent='Revisat ✅'; b.style.display=''; }
   updProgress(); updTabPending();
 }
 
