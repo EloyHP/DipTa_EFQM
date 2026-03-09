@@ -93,6 +93,12 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .efqm-panel{display:none;padding:.58rem .82rem .68rem;background:var(--navy-pale);border-top:1px solid #bfdbfe;font-size:.8rem;color:var(--navy2);white-space:pre-wrap;line-height:1.6;border-left:4px solid var(--navy)}
 .efqm-panel.open{display:block}
 
+/* Nou estil pel botó de preguntes avaluadors */
+.eval-btn { color: var(--orange); border-color: #fed7aa; }
+.eval-btn:hover { background: #fff7ed; }
+.eval-panel { display:none; padding:.58rem .82rem .68rem; background:#fff7ed; border-top:1px solid #fed7aa; font-size:.8rem; color:#9a3412; white-space:pre-wrap; line-height:1.6; border-left:4px solid var(--orange); }
+.eval-panel.open { display:block; }
+
 /* ── CARD ── */
 .card{background:var(--white);border-radius:var(--r);box-shadow:var(--sh);margin-bottom:.5rem;border:2px solid transparent;transition:border-color var(--tr)}
 .card.saved{border-color:#86efac}
@@ -362,8 +368,12 @@ function buildData(){
     const c=String(row.criteri||''), s=String(row.subcriteri||'');
     if(!cData[c]) cData[c]={titol:row.titol_criteri||'',subs:{}};
     if(!cData[c].titol&&row.titol_criteri) cData[c].titol=row.titol_criteri;
-    if(!cData[c].subs[s]) cData[c].subs[s]={titol:row.titol_subcriteri||'',que_diu:row.que_diu_el_model||'',rows:[]};
+    
+    // Hem afegit 'preg_avaluadors' al diccionari de dades de subcriteri
+    if(!cData[c].subs[s]) cData[c].subs[s]={titol:row.titol_subcriteri||'',que_diu:row.que_diu_el_model||'',preg_avaluadors:row.preg_avaluadors||'',rows:[]};
     if(!cData[c].subs[s].que_diu&&row.que_diu_el_model) cData[c].subs[s].que_diu=row.que_diu_el_model;
+    if(!cData[c].subs[s].preg_avaluadors&&row.preg_avaluadors) cData[c].subs[s].preg_avaluadors=row.preg_avaluadors;
+    
     cData[c].subs[s].rows.push(row);
   });
 }
@@ -409,13 +419,35 @@ function renderCrit(c){
     const ttl=el('div','sub-title',sub.titol||s);
     tr.appendChild(num); tr.appendChild(ttl);
     
+    // Contenidor per alinia els botons de consulta d'ajuda
+    const actions = el('div');
+    actions.style.display = 'flex';
+    actions.style.gap = '.5rem';
+    actions.style.flexShrink = '0';
+    actions.style.flexWrap = 'wrap';
+    
+    let ep = null, evp = null;
+
     if(sub.que_diu&&sub.que_diu.trim()){
-      const eb=el('button','efqm-btn'); eb.textContent='📖 Què diu el model EFQM?';
-      const ep=el('div','efqm-panel'); 
+      const eb=el('button','efqm-btn'); eb.textContent='📖 Què diu el model?';
+      ep=el('div','efqm-panel'); 
       ep.textContent=sub.que_diu; 
-      eb.onclick=()=>{ ep.classList.toggle('open'); eb.textContent=(ep.classList.contains('open')?'▲ ':'📖 ')+'Què diu el model EFQM?'; };
-      tr.appendChild(eb); sticky.appendChild(tr); sticky.appendChild(ep);
-    } else { sticky.appendChild(tr); }
+      eb.onclick=()=>{ ep.classList.toggle('open'); eb.textContent=(ep.classList.contains('open')?'▲ ':'📖 ')+'Què diu el model?'; };
+      actions.appendChild(eb);
+    }
+    
+    if(sub.preg_avaluadors&&sub.preg_avaluadors.trim()){
+      const evb=el('button','efqm-btn eval-btn'); evb.textContent='❓ Preguntes avaluadors';
+      evp=el('div','eval-panel'); 
+      evp.textContent=sub.preg_avaluadors; 
+      evb.onclick=()=>{ evp.classList.toggle('open'); evb.textContent=(evp.classList.contains('open')?'▲ ':'❓ ')+'Preguntes avaluadors'; };
+      actions.appendChild(evb);
+    }
+
+    if(actions.childNodes.length > 0) tr.appendChild(actions);
+    sticky.appendChild(tr);
+    if(ep) sticky.appendChild(ep);
+    if(evp) sticky.appendChild(evp);
     blk.appendChild(sticky);
 
     sub.rows.forEach(row=>{ const card=buildCard(row,c); blk.appendChild(card.el); cards[c].push(card); });
@@ -489,13 +521,13 @@ function buildCard(row,crit){
     acc.appendChild(hdr); acc.appendChild(abody); body.appendChild(acc);
   });
 
-  if(row.preg_avaluadors||row.informe_ant){
+  // Ara només mostrem informe_ant, perquè preg_avaluadors ha pujat de nivell
+  if(row.informe_ant && row.informe_ant.trim() !== ''){
     const note=el('div','ctx');
-    const cb=el('button','ctx-btn'); cb.innerHTML='💡 Context d\'ajuda';
+    const cb=el('button','ctx-btn'); cb.innerHTML='💡 Informe anterior';
     const cbody=el('div','ctx-body');
-    if(row.preg_avaluadors){ const sec=el('div','ctx-sec ctx-qa'); sec.innerHTML='<div class="ctx-st">Preguntes dels avaluadors</div>'+escH(row.preg_avaluadors); cbody.appendChild(sec); }
-    if(row.informe_ant){ const sec=el('div','ctx-sec ctx-prev'); sec.innerHTML='<div class="ctx-st">Informe anterior</div>'+escH(row.informe_ant); cbody.appendChild(sec); }
-    cb.onclick=()=>{ cbody.classList.toggle('open'); cb.innerHTML=(cbody.classList.contains('open')?'▼':'💡')+' Context d\'ajuda'; };
+    const sec=el('div','ctx-sec ctx-prev'); sec.textContent=row.informe_ant; cbody.appendChild(sec);
+    cb.onclick=()=>{ cbody.classList.toggle('open'); cb.innerHTML=(cbody.classList.contains('open')?'▼':'💡')+' Informe anterior'; };
     note.appendChild(cb); note.appendChild(cbody); body.appendChild(note);
   }
 
@@ -513,14 +545,12 @@ function makeAZ(id,prev,isNew){
     const chk=document.createElement('input'); chk.type='checkbox'; chk.dataset.card=id;
     chk.className='chk-v';
     
-    // Aquí verifiquem si estava prèviament validat
     const isChecked = prev&&(prev.validat===true||prev.validat==='TRUE'||prev.validat==='1'||prev.validat===1);
     chk.checked = isChecked;
     
-    // Si ja estava validat, BLOCQUEM EL CHECKBOX perquè quedi en gris
     if(isChecked) {
         chk.disabled = true;
-        cl.style.opacity = '0.6'; // Efecte visual de bloquejat
+        cl.style.opacity = '0.6'; 
         cl.style.cursor = 'not-allowed';
     } else {
         chk.addEventListener('change',()=>markPending(id));
@@ -705,6 +735,9 @@ async function saveExisting(id,btn){
   const orig=btn.textContent; btn.textContent='Enviant…'; btn.disabled=true;
   const d=cardData(id);
   
+  const tieneTexto = (d.sug_desplegament + d.sug_avaluacio + d.sug_evidencies + d.comentari_general).trim() !== '';
+  const isDone = d.validat || tieneTexto;
+
   const payload={
     nom:sess.nom, email:sess.email, area_revisora:sess.area,
     id_enfocament:id, is_new:false,
@@ -717,7 +750,7 @@ async function saveExisting(id,btn){
     comentari_general:d.comentari_general,
     timestamp:new Date().toISOString()
   };
-  await doSave(payload,id,btn,orig,false);
+  await doSave(payload,id,btn,orig,false, isDone);
 }
 
 /* ══ SAVE NEW ══ */
@@ -753,21 +786,29 @@ async function saveNew(tid,btn){
     subcriteri:card.dataset.sub||'',
     timestamp:new Date().toISOString()
   };
-  await doSave(payload,tid,btn,orig,true);
+  await doSave(payload,tid,btn,orig,true, true);
 }
 
-async function doSave(payload,id,btn,orig,isNew){
+async function doSave(payload,id,btn,orig,isNew, isDone){
   try{
     if(!APPS_SCRIPT_URL) await wait(500);
     else{ const r=await api('POST',payload); if(!r.success) throw new Error(r.error||'Error servidor'); }
-    updResp(payload); markSaved(id); 
+    updResp(payload); 
     
-    // Aplicar el bloqueig immediatament a la targeta quan es desa l'aprovació
+    if(isDone) {
+        markSaved(id); 
+        btn.textContent='Revisat ✅'; 
+        toast(isNew?'Nova proposta desada! ✨':'Punt revisat i desat.','tok');
+    } else {
+        markPending(id);
+        btn.textContent='Desat (Pendent)'; 
+        toast('S\'han desat els canvis. Encara pendent.','tinfo');
+    }
+    
     const c=document.querySelector('.card[data-id="'+id+'"]');
     if(c){
-        if(isNew) c.classList.remove('expanded'); 
+        if(isNew && isDone) c.classList.remove('expanded'); 
         
-        // Bloqueja el check si està marcat
         const chk = c.querySelector('.chk-v');
         if(chk && chk.checked){
             chk.disabled = true;
@@ -776,7 +817,6 @@ async function doSave(payload,id,btn,orig,isNew){
         }
     }
     
-    btn.textContent='Desat ✅'; toast(isNew?'Nova proposta desada! ✨':'Punt revisat i desat.','tok');
   } catch(e){ btn.textContent='Error ❌'; toast('Error: '+e.message,'terr'); }
   setTimeout(()=>{ btn.textContent=orig; btn.disabled=false; },3000);
 }
