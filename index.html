@@ -512,8 +512,20 @@ function makeAZ(id,prev,isNew){
     const cl=el('label','chk-wrap');
     const chk=document.createElement('input'); chk.type='checkbox'; chk.dataset.card=id;
     chk.className='chk-v';
-    const chkP=prev&&(prev.validat===true||prev.validat==='TRUE'||prev.validat==='1'||prev.validat===1);
-    chk.checked=chkP; chk.addEventListener('change',()=>markPending(id));
+    
+    // Aquí verifiquem si estava prèviament validat
+    const isChecked = prev&&(prev.validat===true||prev.validat==='TRUE'||prev.validat==='1'||prev.validat===1);
+    chk.checked = isChecked;
+    
+    // Si ja estava validat, BLOCQUEM EL CHECKBOX perquè quedi en gris
+    if(isChecked) {
+        chk.disabled = true;
+        cl.style.opacity = '0.6'; // Efecte visual de bloquejat
+        cl.style.cursor = 'not-allowed';
+    } else {
+        chk.addEventListener('change',()=>markPending(id));
+    }
+    
     const cs=el('span','','✅ Contingut correcte');
     cl.appendChild(chk); cl.appendChild(cs); az.appendChild(cl);
   }
@@ -693,10 +705,6 @@ async function saveExisting(id,btn){
   const orig=btn.textContent; btn.textContent='Enviant…'; btn.disabled=true;
   const d=cardData(id);
   
-  // LÓGICA: Se considera "Revisado" si el check está marcado O si hay texto en las propuestas
-  const tieneTexto = (d.sug_desplegament + d.sug_avaluacio + d.sug_evidencies + d.comentari_general).trim() !== '';
-  const isDone = d.validat || tieneTexto;
-
   const payload={
     nom:sess.nom, email:sess.email, area_revisora:sess.area,
     id_enfocament:id, is_new:false,
@@ -709,7 +717,7 @@ async function saveExisting(id,btn){
     comentari_general:d.comentari_general,
     timestamp:new Date().toISOString()
   };
-  await doSave(payload,id,btn,orig,false, isDone);
+  await doSave(payload,id,btn,orig,false);
 }
 
 /* ══ SAVE NEW ══ */
@@ -745,28 +753,30 @@ async function saveNew(tid,btn){
     subcriteri:card.dataset.sub||'',
     timestamp:new Date().toISOString()
   };
-  await doSave(payload,tid,btn,orig,true, true);
+  await doSave(payload,tid,btn,orig,true);
 }
 
-async function doSave(payload,id,btn,orig,isNew, isDone){
+async function doSave(payload,id,btn,orig,isNew){
   try{
     if(!APPS_SCRIPT_URL) await wait(500);
     else{ const r=await api('POST',payload); if(!r.success) throw new Error(r.error||'Error servidor'); }
-    updResp(payload); 
+    updResp(payload); markSaved(id); 
     
-    if(isDone) {
-        markSaved(id); 
-        btn.textContent='Revisat ✅'; 
-        toast(isNew?'Nova proposta desada! ✨':'Punt revisat.','tok');
-    } else {
-        markPending(id);
-        btn.textContent='Desat (Pendent)'; 
-        toast('Punt desmarcat. Torna a estar pendent.','tinfo');
+    // Aplicar el bloqueig immediatament a la targeta quan es desa l'aprovació
+    const c=document.querySelector('.card[data-id="'+id+'"]');
+    if(c){
+        if(isNew) c.classList.remove('expanded'); 
+        
+        // Bloqueja el check si està marcat
+        const chk = c.querySelector('.chk-v');
+        if(chk && chk.checked){
+            chk.disabled = true;
+            chk.parentElement.style.opacity = '0.6';
+            chk.parentElement.style.cursor = 'not-allowed';
+        }
     }
     
-    const c=document.querySelector('.card[data-id="'+id+'"]');
-    if(c && isNew && isDone) c.classList.remove('expanded'); 
-    
+    btn.textContent='Desat ✅'; toast(isNew?'Nova proposta desada! ✨':'Punt revisat i desat.','tok');
   } catch(e){ btn.textContent='Error ❌'; toast('Error: '+e.message,'terr'); }
   setTimeout(()=>{ btn.textContent=orig; btn.disabled=false; },3000);
 }
