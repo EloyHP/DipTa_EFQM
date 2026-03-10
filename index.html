@@ -298,8 +298,7 @@ async function loadBackendData(){
     resp=d.respostes||[];
     usuaris=d.usuaris||[]; 
     
-    // NOU BLINDATGE ANTI-ERRORS: Convertim totes les cel·les a text pur
-    // Això evita el penjament (Processant dades...) si el full té algun número (ex: anys, codis)
+    // BLINDATGE TOTAL: Ens assegurem que qualsevol element de la taula sigui un Text (String)
     const sanitize = arr => arr.forEach(r => Object.keys(r).forEach(k => r[k] = r[k] != null ? String(r[k]).trim() : ''));
     sanitize(mem); 
     sanitize(resp); 
@@ -325,7 +324,7 @@ function doLogin(){
     return;
   }
 
-  const user = usuaris.find(u => (u.email_autoritzat || '').toLowerCase() === email);
+  const user = usuaris.find(u => String(u.email_autoritzat || '').toLowerCase() === email);
   
   if(!user){
     showErr(err, 'Accés denegat. Aquest correu no està a la llista d\'usuaris autoritzats.');
@@ -364,22 +363,30 @@ async function goS2(){
 }
 
 async function loadData(){
-  $('sarea').innerHTML='<p style="color:var(--g300);padding:2rem;text-align:center">Processant dades…</p>';
-  
-  if(mem.length === 0 && APPS_SCRIPT_URL) await loadBackendData();
-  
-  mem.sort((a,b) => (a.id || '').localeCompare(b.id || ''));
-  
-  buildData(); buildTabs();
-  const first=Object.keys(cData).sort()[0];
-  if(first) selCrit(first);
+  try {
+    $('sarea').innerHTML='<p style="color:var(--g300);padding:2rem;text-align:center">Processant dades…</p>';
+    
+    if(mem.length === 0 && APPS_SCRIPT_URL) await loadBackendData();
+    
+    // Evitem crash ordenant IDs si falta algun valor (convertim a string per seguretat)
+    mem.sort((a,b) => String(a.id || '').localeCompare(String(b.id || '')));
+    
+    buildData(); 
+    buildTabs();
+    const first=Object.keys(cData).sort()[0];
+    if(first) selCrit(first);
+
+  } catch(err) {
+    // Si hi ha qualsevol error amagat a l'Excel, ho mostrarem aquí en lloc de quedar-se penjat
+    $('sarea').innerHTML='<p style="color:var(--red);padding:2rem;text-align:center"><strong>❌ Error crític al processar les dades de l\'Excel:</strong><br>' + err.message + '</p>';
+  }
 }
 
 /* ══ BUILD DATA ══ */
 function buildData(){
   cData={}; cards={};
   
-  const areaUsuari = (sess.area || '').toLowerCase();
+  const areaUsuari = String(sess.area || '').toLowerCase();
   const esGlobal = areaUsuari.includes('global') || areaUsuari.includes('totes');
   const llistaAreasUsuari = areaUsuari.split(',').map(a => a.trim());
 
@@ -387,12 +394,12 @@ function buildData(){
     // Línia de seguretat extra per evitar que una fila buida faci crash
     if(!row.criteri || !row.subcriteri) return; 
 
-    const llistaAreasFila = (row.area||'').toLowerCase().split(',').map(a=>a.trim());
+    const llistaAreasFila = String(row.area||'').toLowerCase().split(',').map(a=>a.trim());
     const teAcces = esGlobal || llistaAreasUsuari.some(areaUs => llistaAreasFila.includes(areaUs));
     
     if(!teAcces) return;
 
-    const c=row.criteri, s=row.subcriteri;
+    const c=String(row.criteri), s=String(row.subcriteri);
     if(!cData[c]) cData[c]={titol:row.titol_criteri||'',subs:{}};
     if(!cData[c].titol&&row.titol_criteri) cData[c].titol=row.titol_criteri;
     
@@ -480,7 +487,8 @@ function renderCrit(c){
     exNew.filter(x=>x.sub===s).forEach(x=>{ blk.appendChild(x.el); cards[c].push(x); });
 
     const strSearch = 'NEW-' + c + '-' + s + '-';
-    resp.filter(r => r.email === sess.email && r.id_enfocament && r.id_enfocament.startsWith(strSearch)).forEach(r => {
+    // Protegim el startsWith posant String() abans per si algun id antic és només numèric
+    resp.filter(r => r.email === sess.email && r.id_enfocament && String(r.id_enfocament).startsWith(strSearch)).forEach(r => {
       if (!exNew.find(x => x.id === r.id_enfocament)) {
         const card = buildNewCard(r.id_enfocament, c, s, sub.titol, r);
         blk.appendChild(card.el);
