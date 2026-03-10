@@ -744,7 +744,7 @@ function renderAdminDashboard(){
     const millores = resp.filter(r => !String(r.id_enfocament).startsWith('NEW-') && 
         (r.sug_desplegament || r.sug_avaluacio || r.sug_evidencies || r.sug_titol_enfocament || r.sug_enfocament || r.comentari_general));
     
-    const pendentsAdmin = novesPropostes.filter(r => !r.estat_admin || r.estat_admin === '');
+    const pendentsAdmin = novesPropostes.filter(r => !r.estat_admin || r.estat_admin === '' || r.estat_admin === 'Pendent');
 
     const grid = el('div', 'kpi-grid');
     grid.innerHTML = `
@@ -756,7 +756,17 @@ function renderAdminDashboard(){
 
     const actionRow = el('div'); actionRow.style.marginBottom = '2rem';
     const btnPdf = el('button', 'btn btn-primary', '📄 Generar Informe Final (Impressió/PDF)');
-    btnPdf.onclick = () => generatePDF();
+    
+    // Alerta intel·ligent abans de fer l'informe
+    btnPdf.onclick = () => {
+        if(pendentsAdmin.length > 0) {
+            if(!confirm(`⚠️ ATENCIÓ:\n\nHi ha ${pendentsAdmin.length} enfocaments nous pendents de validar que NO sortiran a l'informe.\n\nVols generar l'informe de totes maneres?`)) {
+                return;
+            }
+        }
+        generatePDF();
+    };
+    
     actionRow.appendChild(btnPdf); area.appendChild(actionRow);
 
     const sec1 = el('div', 'admin-section');
@@ -789,7 +799,7 @@ function renderAdminDashboard(){
     const sec2 = el('div', 'admin-section');
     sec2.innerHTML = `<div class="admin-title">✍️ Millores en Enfocaments Existents</div>`;
     const t2 = document.createElement('table'); t2.className = 'admin-table';
-    t2.innerHTML = `<thead><tr><th>Ref. ID</th><th>Usuari / Àrea</th><th>Què s'ha tocat?</th></tr></thead><tbody></tbody>`;
+    t2.innerHTML = `<thead><tr><th>Enfocament Original</th><th>Usuari / Àrea</th><th>Què s'ha tocat?</th></tr></thead><tbody></tbody>`;
     const tb2 = t2.querySelector('tbody');
 
     if(millores.length === 0) tb2.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--g300)">No hi ha millores registrades.</td></tr>';
@@ -802,8 +812,15 @@ function renderAdminDashboard(){
         if(r.sug_evidencies) tocat.push('Evidències');
         if(r.comentari_general) tocat.push('Comentari');
         
+        // Cercar el títol original per mostrar-lo en gran
+        const orig = mem.find(m => String(m.id) === String(r.id_enfocament));
+        const titolOriginal = orig ? orig.titol_enfocament : 'Enfocament existent';
+        
         tr.innerHTML = `
-            <td><span style="font-family:monospace; background:var(--g50); padding:2px 4px; border-radius:4px">${r.id_enfocament}</span></td>
+            <td>
+              <div style="font-size:.85rem; font-weight:700; color:var(--navy); margin-bottom:.3rem;">${escH(titolOriginal)}</div>
+              <span style="font-family:monospace; font-size:.7rem; background:var(--g100); padding:2px 4px; border-radius:4px; color:var(--g700);">${r.id_enfocament}</span>
+            </td>
             <td>${escH(r.nom_visible)} <small style="color:var(--g300)">(${escH(r.area_revisora)})</small></td>
             <td style="color:var(--navy)">${tocat.join(', ')}</td>
         `;
