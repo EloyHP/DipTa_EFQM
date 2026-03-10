@@ -47,7 +47,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .welcome-box{background:var(--navy-pale);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:.9rem;display:flex;justify-content:space-between;align-items:center;gap:.75rem}
 .welcome-box strong{font-size:.9rem;color:var(--navy);display:block}
 .welcome-box small{color:var(--gray-dipta);font-size:.76rem}
-.err{color:var(--red);font-size:.76rem;margin-top:.27rem}
+.err{color:var(--red);font-size:.76rem;margin-top:.27rem;text-align:center;font-weight:600}
 .hidden{display:none!important}
 
 /* ══ APP SHELL ══ */
@@ -93,7 +93,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .efqm-panel{display:none;padding:.58rem .82rem .68rem;background:var(--navy-pale);border-top:1px solid #bfdbfe;font-size:.8rem;color:var(--navy2);white-space:pre-wrap;line-height:1.6;border-left:4px solid var(--navy)}
 .efqm-panel.open{display:block}
 
-/* Nou estil pel botó de preguntes avaluadors */
 .eval-btn { color: var(--orange); border-color: #fed7aa; }
 .eval-btn:hover { background: #fff7ed; }
 .eval-panel { display:none; padding:.58rem .82rem .68rem; background:#fff7ed; border-top:1px solid #fed7aa; font-size:.8rem; color:#9a3412; white-space:pre-wrap; line-height:1.6; border-left:4px solid var(--orange); }
@@ -102,7 +101,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 /* ── CARD ── */
 .card{background:var(--white);border-radius:var(--r);box-shadow:var(--sh);margin-bottom:.5rem;border:2px solid transparent;transition:border-color var(--tr)}
 .card.saved{border-color:#86efac}
-/* new card */
 .card.cnew{border:2px dashed var(--vb);background:var(--vp)}
 .card.cnew.saved{border-style:solid;border-color:#86efac}
 
@@ -211,14 +209,10 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
       <button class="btn btn-primary btn-full" onclick="goS2()">Continuar →</button>
     </div>
     <div id="lform">
-      <label for="fn">El teu nom</label>
-      <input id="fn" type="text" placeholder="Nom i cognoms" autocomplete="name"/>
-      <label for="fe">Email</label>
-      <input id="fe" type="email" placeholder="nom@organitzacio.cat" autocomplete="email"/>
-      <label for="fa">La teva àrea</label>
-      <select id="fa"><option value="">— Carregant àrees… —</option></select>
+      <label for="fe">Correu corporatiu</label>
+      <input id="fe" type="email" placeholder="usuari@dipta.cat" autocomplete="email" onkeypress="if(event.key==='Enter') doLogin()"/>
       <div id="ferr" class="err hidden"></div>
-      <button class="btn btn-primary btn-full" onclick="doLogin()">Accedir</button>
+      <button id="btn-login" class="btn btn-primary btn-full" onclick="doLogin()">Accedir a la revisió</button>
     </div>
   </div>
 </div>
@@ -264,7 +258,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbynrl8dl98JTPXd0sycbke2s21JtedYTIU90S21uHuWBDwNJHnvbhEIK23MDYQpQlEAEQ/exec"; 
 
 /* ══ STATE ══ */
-let mem=[], resp=[], sess=null;
+let mem=[], resp=[], usuaris=[], sess=null;
 let cData={}, curC=null, curF='all';
 let cards={}, nc=0;
 
@@ -278,7 +272,8 @@ window.addEventListener('DOMContentLoaded', async ()=>{
     document.getElementById('wblock').classList.remove('hidden');
     document.getElementById('lform').classList.add('hidden');
   }
-  await loadAreas();
+  // Carreguem tot en obrir la pàgina perquè el login sigui instantani
+  await loadBackendData();
 });
 
 /* ══ API FETCH ══ */
@@ -293,40 +288,63 @@ async function api(method, body){
   return r.json();
 }
 
-async function loadAreas(){
-  if(!APPS_SCRIPT_URL){ setAreas(['Direcció','Operacions','Qualitat','RRHH','Tecnologia']); return; }
+async function loadBackendData(){
+  if(!APPS_SCRIPT_URL) return;
   try{
+    const btn = document.getElementById('btn-login');
+    if(btn) { btn.textContent = 'Carregant base de dades...'; btn.disabled = true; }
+    
     const d=await api('GET');
-    mem=d.memoria||[]; resp=d.respostes||[];
-    const s=new Set();
-    mem.forEach(r=>(r.area||'').split(',').forEach(a=>{ const t=a.trim(); if(t) s.add(t); }));
-    setAreas([...s].sort());
-  } catch{ setAreas([]); }
+    mem=d.memoria||[]; 
+    resp=d.respostes||[];
+    usuaris=d.usuaris||[]; // Nova llista d'usuaris
+    
+    if(btn) { btn.textContent = 'Accedir a la revisió'; btn.disabled = false; }
+  } catch(e){ 
+    showErr(document.getElementById('ferr'), 'Error connectant amb el servidor. Recarrega la pàgina.');
+  }
 }
 
-function setAreas(a){
-  const sel=document.getElementById('fa');
-  sel.innerHTML='<option value="">— Selecciona la teva àrea —</option>';
-  a.forEach(v=>{ const o=document.createElement('option'); o.value=v; o.textContent=v; sel.appendChild(o); });
-}
-
-/* ══ LOGIN / LOGOUT ══ */
+/* ══ LOGIN (SISTEMA NOU AMB CORREU) ══ */
 function doLogin(){
-  const nom=$('fn').value.trim(), email=$('fe').value.trim(), area=$('fa').value;
-  const err=$('ferr');
-  if(!nom){ showErr(err,'El nom és obligatori.'); return; }
-  if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ showErr(err,'Email invàlid.'); return; }
-  if(!area){ showErr(err,'Selecciona la teva àrea.'); return; }
+  const email = $('fe').value.trim().toLowerCase();
+  const err = $('ferr');
+  
+  if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ 
+    showErr(err,'Introdueix un correu electrònic vàlid.'); 
+    return; 
+  }
+  if(usuaris.length === 0){
+    showErr(err,'Encara s\'està carregant la base de dades, espera un segon...'); 
+    return;
+  }
+
+  // Comprovar si l'usuari existeix a la pestanya 'usuaris'
+  const user = usuaris.find(u => (u.email_autoritzat || '').trim().toLowerCase() === email);
+  
+  if(!user){
+    showErr(err, 'Accés denegat. Aquest correu no està a la llista d\'usuaris autoritzats.');
+    return;
+  }
+
+  // Si existeix, guardem la seva sessió automàticament
   err.classList.add('hidden');
-  sess={nom,email,area};
+  sess={
+    nom: user.nom_usuari || 'Usuari',
+    email: email,
+    area: user.area_assignada || ''
+  };
   localStorage.setItem('efqm_v4',JSON.stringify(sess));
   goS2();
 }
+
 function clearSess(){
   localStorage.removeItem('efqm_v4'); sess=null;
   $('wblock').classList.add('hidden');
   $('lform').classList.remove('hidden');
+  $('fe').value = '';
 }
+
 function doLogout(){
   if(document.querySelectorAll('.card.pending').length>0 &&
      !confirm('Tens canvis pendents. Si tanques la sessió es perdran. Continuar?')) return;
@@ -342,12 +360,10 @@ async function goS2(){
 }
 
 async function loadData(){
-  $('sarea').innerHTML='<p style="color:var(--g300);padding:2rem;text-align:center">Carregant dades…</p>';
-  if(!APPS_SCRIPT_URL){ mem=demo(); resp=[]; }
-  else{
-    try{ const d=await api('GET'); mem=d.memoria||[]; resp=d.respostes||[]; }
-    catch(e){ $('sarea').innerHTML='<p style="color:var(--red);padding:2rem">Error: '+e.message+'</p>'; return; }
-  }
+  $('sarea').innerHTML='<p style="color:var(--g300);padding:2rem;text-align:center">Processant dades…</p>';
+  
+  // Si per algun motiu memòria està buida, la tornem a carregar
+  if(mem.length === 0 && APPS_SCRIPT_URL) await loadBackendData();
   
   mem.forEach(row => {
     Object.keys(row).forEach(k => { if(typeof row[k] === 'string') row[k] = row[k].trim(); });
@@ -359,17 +375,27 @@ async function loadData(){
   if(first) selCrit(first);
 }
 
-/* ══ BUILD DATA ══ */
+/* ══ BUILD DATA (AMB VISIÓ FUSIONADA MULTI-ÀREA) ══ */
 function buildData(){
   cData={}; cards={};
+  
+  // Lògica per a usuaris amb múltiples àrees o accés Global
+  const areaUsuari = (sess.area || '').toLowerCase();
+  const esGlobal = areaUsuari.includes('global') || areaUsuari.includes('totes');
+  const llistaAreasUsuari = areaUsuari.split(',').map(a => a.trim());
+
   mem.forEach(row=>{
-    const areas=(row.area||'').split(',').map(a=>a.trim());
-    if(!areas.includes(sess.area)) return;
+    const llistaAreasFila = (row.area||'').toLowerCase().split(',').map(a=>a.trim());
+    
+    // Si l'usuari és global, o si alguna de les seves àrees coincideix amb les de la fila
+    const teAcces = esGlobal || llistaAreasUsuari.some(areaUs => llistaAreasFila.includes(areaUs));
+    
+    if(!teAcces) return;
+
     const c=String(row.criteri||''), s=String(row.subcriteri||'');
     if(!cData[c]) cData[c]={titol:row.titol_criteri||'',subs:{}};
     if(!cData[c].titol&&row.titol_criteri) cData[c].titol=row.titol_criteri;
     
-    // Hem afegit 'preg_avaluadors' al diccionari de dades de subcriteri
     if(!cData[c].subs[s]) cData[c].subs[s]={titol:row.titol_subcriteri||'',que_diu:row.que_diu_el_model||'',preg_avaluadors:row.preg_avaluadors||'',rows:[]};
     if(!cData[c].subs[s].que_diu&&row.que_diu_el_model) cData[c].subs[s].que_diu=row.que_diu_el_model;
     if(!cData[c].subs[s].preg_avaluadors&&row.preg_avaluadors) cData[c].subs[s].preg_avaluadors=row.preg_avaluadors;
@@ -419,7 +445,6 @@ function renderCrit(c){
     const ttl=el('div','sub-title',sub.titol||s);
     tr.appendChild(num); tr.appendChild(ttl);
     
-    // Contenidor per alinia els botons de consulta d'ajuda
     const actions = el('div');
     actions.style.display = 'flex';
     actions.style.gap = '.5rem';
@@ -521,7 +546,6 @@ function buildCard(row,crit){
     acc.appendChild(hdr); acc.appendChild(abody); body.appendChild(acc);
   });
 
-  // Ara només mostrem informe_ant, perquè preg_avaluadors ha pujat de nivell
   if(row.informe_ant && row.informe_ant.trim() !== ''){
     const note=el('div','ctx');
     const cb=el('button','ctx-btn'); cb.innerHTML='💡 Informe anterior';
