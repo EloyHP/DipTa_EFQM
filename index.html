@@ -244,17 +244,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
   .p-new { border: 2px dashed var(--violet); background: #faf5ff; }
   .p-new-badge { display: inline-block; background: var(--violet); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; margin-bottom: 10px; }
 }
-
-#toasts{position:fixed;bottom:1rem;right:1rem;z-index:9999;display:flex;flex-direction:column;gap:.38rem;max-width:280px}
-.toast{background:var(--black-dipta);color:#fff;padding:.58rem .82rem;border-radius:9px;font-size:.79rem;font-weight:500;animation:fu .2s ease;box-shadow:var(--sh2)}
-.tok{background:#166534}.terr{background:#991b1b}.tinfo{background:var(--navy)}.tvio{background:var(--violet)}
-@keyframes fu{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
-
-@media(max-width:600px){
-  .topbar{flex-wrap:wrap}.prog-wrap{display:none}
-  .az{flex-direction:column}
-  .ctab{font-size:.74rem;padding:.52rem .68rem}
-}
 </style>
 </head>
 <body>
@@ -302,8 +291,8 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
     <div class="toolbar" id="main-toolbar">
       <div class="tog-group">
         <button class="tog-btn active" onclick="setF('all',this)">Tots</button>
-        <button class="tog-btn" onclick="setF('pending',this)">Pendents de validar</button>
-        <button class="tog-btn" onclick="setF('validated',this)">Validats i Desats</button>
+        <button class="tog-btn" onclick="setF('pending',this)">Pendents</button>
+        <button class="tog-btn" onclick="setF('validated',this)">Revisats</button>
         <button class="tog-btn" onclick="setF('new',this)">Nous proposats</button>
       </div>
       <div class="sw">
@@ -313,7 +302,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
     </div>
     
     <div class="scroll-area" id="sarea"></div>
-    
     <div class="scroll-area hidden" id="admin-view" style="background: var(--bg);"></div>
   </div>
 </div>
@@ -337,7 +325,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 </div>
 
 <div id="print-area"></div>
-
 <div id="toasts"></div>
 
 <script>
@@ -589,14 +576,17 @@ function buildCard(row,crit){
   const isAdminRejected = prev && prev.estat_admin === 'Descartat';
   const isAdminApproved = prev && prev.estat_admin === 'Aprovat';
   
-  card.className='card'+(prev?' saved':' pending');
+  // Només es marca com a "saved" (Verd/Revisat) si s'ha marcat explícitament el checkbox validat=true
+  const isChecked = prev&&(prev.validat===true||prev.validat==='TRUE'||prev.validat==='1'||prev.validat===1||prev.validat==='true');
+  
+  card.className='card'+(isChecked?' saved':' pending');
   card.dataset.id=id; card.dataset.isNew='0';
   card.dataset.st=[row.titol_enfocament,row.enfocament,row.desplegament,row.avaluacio,row.evidencies,row.titol_subcriteri].join(' ').toLowerCase();
 
   const sum=el('div','card-sum');
   sum.appendChild(el('span','cs-title',row.titol_enfocament||'(sense títol)'));
   
-  let bcls = prev ? 'bs' : 'bp'; let btxt = prev ? 'Revisat ✅' : '● Pendent';
+  let bcls = isChecked ? 'bs' : 'bp'; let btxt = isChecked ? 'Revisat ✅' : '● Pendent';
   if(isAdminRejected) { bcls = 'bdismiss'; btxt = '❌ Descartat'; }
   const sbadge = el('span','cs-badge '+bcls, btxt);
   sum.appendChild(sbadge); sum.appendChild(el('span','cs-chev','▼'));
@@ -654,14 +644,14 @@ function makeAZ(id,prev,isNew){
     chk.checked = isChecked;
     if(isChecked) { chk.disabled = true; cl.style.opacity = '0.6'; cl.style.cursor = 'not-allowed'; } 
     else { chk.addEventListener('change',()=>markPending(id)); }
-    cl.appendChild(chk); cl.appendChild(el('span','','✅ Contingut correcte')); az.appendChild(cl);
+    cl.appendChild(chk); cl.appendChild(el('span','','✅ Revisió finalitzada')); az.appendChild(cl);
   }
   const cw=el('div','cmt-w');
   const cta=document.createElement('textarea'); cta.className='ta-cmt'; cta.dataset.card=id; cta.rows=2; cta.placeholder='Comentari (opcional)'; cta.value=prev?.comentari_general||'';
   cta.addEventListener('input',()=>markPending(id)); cw.appendChild(cta); az.appendChild(cw);
   const sb=document.createElement('button');
   if(isNew){ sb.className='btn-sn btn-sc'; sb.textContent= prev ? 'Actualitzar proposta' : 'Desar proposta'; sb.addEventListener('click',()=>saveNew(id,sb)); } 
-  else { sb.className='btn btn-primary btn-sc'; sb.textContent='Desar targeta'; sb.addEventListener('click',()=>saveExisting(id,sb)); }
+  else { sb.className='btn btn-primary btn-sc'; sb.textContent='Desar'; sb.addEventListener('click',()=>saveExisting(id,sb)); }
   az.appendChild(sb); return az;
 }
 
@@ -974,8 +964,10 @@ function cardData(id){
 
 async function saveExisting(id,btn){
   if(!sess) return; const orig=btn.textContent; btn.textContent='Enviant…'; btn.disabled=true; const d=cardData(id);
-  const tieneTexto = (d.sug_desplegament + d.sug_avaluacio + d.sug_evidencies + d.comentari_general).trim() !== '';
-  const isDone = d.validat || tieneTexto;
+  
+  // NOMÉS ES CONSIDERA DONE SI EL CHECK ESTÀ MARCAT explícitament (Permet desar esborranys)
+  const isDone = d.validat; 
+  
   const payload={ nom:sess.nom, email:sess.email, area_revisora:sess.area, id_enfocament:id, is_new:false, validat:d.validat, sug_titol_enfocament:'', sug_enfocament:'', sug_desplegament:d.sug_desplegament||'', sug_avaluacio:d.sug_avaluacio||'', sug_evidencies:d.sug_evidencies||'', comentari_general:d.comentari_general, timestamp:new Date().toISOString() };
   await doSave(payload,id,btn,orig,false, isDone);
 }
@@ -996,8 +988,8 @@ async function doSave(payload,id,btn,orig,isNew, isDone){
   try{
     if(!APPS_SCRIPT_URL) await wait(500); else{ const r=await api('POST',payload); if(!r.success) throw new Error(r.error||'Error servidor'); }
     updResp(payload); 
-    if(isDone) { markSaved(id); btn.textContent='Revisat ✅'; toast(isNew?'Nova proposta desada! ✨':'Punt revisat i desat.','tok'); } 
-    else { markPending(id); btn.textContent='Desat (Pendent)'; toast('S\'han desat els canvis. Encara pendent.','tinfo'); }
+    if(isDone) { markSaved(id); btn.textContent='Revisat ✅'; toast(isNew?'Nova proposta desada! ✨':'Revisió finalitzada i desada.','tok'); } 
+    else { markPending(id); btn.textContent='Desat (Esborrany)'; toast('Esborrany desat. Encara pendent de finalitzar.','tinfo'); }
     const c=document.querySelector('.card[data-id="'+id+'"]');
     if(c){ if(isNew && isDone) c.classList.remove('expanded'); const chk = c.querySelector('.chk-v'); if(chk && chk.checked){ chk.disabled = true; chk.parentElement.style.opacity = '0.6'; chk.parentElement.style.cursor = 'not-allowed'; } }
   } catch(e){ btn.textContent='Error ❌'; toast('Error: '+e.message,'terr'); }
