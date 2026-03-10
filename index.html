@@ -106,8 +106,14 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 /* ── CARD ── */
 .card{background:var(--white);border-radius:var(--r);box-shadow:var(--sh);margin-bottom:.5rem;border:2px solid transparent;transition:border-color var(--tr)}
 .card.saved{border-color:#86efac}
+
+/* new card normal i descartada */
 .card.cnew{border:2px dashed var(--vb);background:var(--vp)}
 .card.cnew.saved{border-style:solid;border-color:#86efac}
+.card.cnew.rejected { border-style: solid !important; border-color: var(--red) !important; background: #fff5f5 !important; }
+.card.cnew.rejected .new-banner { background: #fee2e2 !important; border-bottom: 1px solid #fca5a5 !important; }
+.card.cnew.rejected .new-label { color: var(--red) !important; }
+.card.cnew.rejected .new-title-text { color: var(--red) !important; }
 
 .card-sum{display:flex;align-items:center;gap:.48rem;padding:.45rem .72rem;cursor:pointer;user-select:none;border-bottom:1px solid var(--g100);transition:background var(--tr)}
 .card-sum:hover{background:var(--g50)}
@@ -116,7 +122,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .bp{background:#fff7ed;color:var(--orange);border:1px solid #fed7aa}
 .bs{background:#f0fdf4;color:var(--green);border:1px solid #bbf7d0}
 .bdismiss{background:#fef2f2;color:var(--red);border:1px solid #fecaca}
-.bprev{background:#f0fdf4;color:var(--green);border:1px solid #bbf7d0}
+
 .cs-chev{font-size:.62rem;color:var(--gray-dipta);transition:transform var(--tr);flex-shrink:0}
 .card.expanded .cs-chev{transform:rotate(180deg)}
 
@@ -131,7 +137,9 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .new-banner:hover{background:#ede9fe}
 .new-label{display:flex;align-items:center;gap:.38rem;font-size:.74rem;font-weight:800;color:var(--violet);text-transform:uppercase;letter-spacing:.05em;flex:1;overflow:hidden;}
 .new-pill{background:var(--violet);color:#fff;font-size:.61rem;padding:.07rem .38rem;border-radius:99px;font-weight:700;flex-shrink:0;}
+.new-pill.rejected-pill { background: var(--red) !important; }
 .new-title-text{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--violet);font-weight:700;text-transform:none;}
+
 .btn-rm{background:transparent;border:1px solid transparent;color:var(--gray-dipta);cursor:pointer;font-size:.75rem;font-weight:600;padding:.2rem .5rem;border-radius:6px;transition:all var(--tr);flex-shrink:0;display:flex;align-items:center;gap:.25rem;}
 .btn-rm:hover{color:var(--red);background:#fee2e2;border-color:#fecaca;}
 
@@ -154,7 +162,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .ro-e{border-left-color:var(--navy)}.ro-d{border-left-color:var(--navy2)}.ro-a{border-left-color:#0369a1}.ro-ev{border-left-color:#0f766e}
 
 .prop-lbl{font-size:.69rem;color:var(--orange);font-weight:700;margin-bottom:.2rem;display:block}
-.prop-ta{font-size:.81rem;resize:vertical;min-height:54px;background:#fffbf5;border-color:#fed7aa;border-radius:7px;transition:border-color var(--tr)}
+.prop-ta{font-size:.81rem;resize:vertical;min-height:54px;background:#fffbf5;border-color:#fed7aa;border-radius:7px;transition:all var(--tr)}
 .prop-ta:focus{border-color:var(--orange);outline:none}
 
 .new-body{padding:.62rem .72rem;background:var(--white)}
@@ -162,7 +170,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .nf-lbl{font-size:.69rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.22rem;display:flex;align-items:center;gap:.3rem}
 .nfl-t{color:var(--violet)}.nfl-e{color:var(--navy)}.nfl-d{color:var(--navy2)}.nfl-a{color:#0369a1}.nfl-ev{color:#0f766e}
 .nf-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-.nta{font-size:.81rem;resize:vertical;border-radius:7px;border-color:var(--vb);background:var(--white)}
+.nta{font-size:.81rem;resize:vertical;border-radius:7px;border-color:var(--vb);background:var(--white); transition: all var(--tr);}
 .nta:focus{border-color:var(--violet);outline:none}
 .nta.nta-t{min-height:44px;font-weight:600;border-color:var(--violet)}
 .nta.nta-b{min-height:54px}
@@ -244,6 +252,17 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
   .p-new { border: 2px dashed var(--violet); background: #faf5ff; }
   .p-new-badge { display: inline-block; background: var(--violet); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; margin-bottom: 10px; }
 }
+
+#toasts{position:fixed;bottom:1rem;right:1rem;z-index:9999;display:flex;flex-direction:column;gap:.38rem;max-width:280px}
+.toast{background:var(--black-dipta);color:#fff;padding:.58rem .82rem;border-radius:9px;font-size:.79rem;font-weight:500;animation:fu .2s ease;box-shadow:var(--sh2)}
+.tok{background:#166534}.terr{background:#991b1b}.tinfo{background:var(--navy)}.tvio{background:var(--violet)}
+@keyframes fu{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+@media(max-width:600px){
+  .topbar{flex-wrap:wrap}.prog-wrap{display:none}
+  .az{flex-direction:column}
+  .ctab{font-size:.74rem;padding:.52rem .68rem}
+}
 </style>
 </head>
 <body>
@@ -302,6 +321,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
     </div>
     
     <div class="scroll-area" id="sarea"></div>
+    
     <div class="scroll-area hidden" id="admin-view" style="background: var(--bg);"></div>
   </div>
 </div>
@@ -325,6 +345,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 </div>
 
 <div id="print-area"></div>
+
 <div id="toasts"></div>
 
 <script>
@@ -575,8 +596,6 @@ function buildCard(row,crit){
   
   const isAdminRejected = prev && prev.estat_admin === 'Descartat';
   const isAdminApproved = prev && prev.estat_admin === 'Aprovat';
-  
-  // Només es marca com a "saved" (Verd/Revisat) si s'ha marcat explícitament el checkbox validat=true
   const isChecked = prev&&(prev.validat===true||prev.validat==='TRUE'||prev.validat==='1'||prev.validat===1||prev.validat==='true');
   
   card.className='card'+(isChecked?' saved':' pending');
@@ -596,7 +615,7 @@ function buildCard(row,crit){
   const body=el('div','card-body');
   
   if(isAdminRejected) {
-      const alert = el('div','admin-alert'); alert.innerHTML = '<strong>❌ Descartat per Direcció:</strong><br>' + escH(prev.comentari_admin || 'Sense comentaris');
+      const alert = el('div','admin-alert'); alert.innerHTML = '<strong>❌ Descartat per Estratègia Corporativa:</strong><br>' + escH(prev.comentari_admin || 'Sense comentaris');
       body.appendChild(alert);
   } else if(isAdminApproved) {
       const alert = el('div','admin-alert-ok','✅ Aprovat per Direcció'); body.appendChild(alert);
@@ -668,11 +687,16 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
   const isAdminRejected = prev && prev.estat_admin === 'Descartat';
   const isAdminApproved = prev && prev.estat_admin === 'Aprovat';
 
-  card.className='card cnew ' + (prev ? 'saved' : 'pending expanded');
+  card.className='card cnew ' + (prev ? 'saved' : 'pending expanded') + (isAdminRejected ? ' rejected' : '');
   card.dataset.id=tid; card.dataset.isNew='1'; card.dataset.crit=crit; card.dataset.sub=sub; card.dataset.st='';
 
   const ban=el('div','new-banner'); ban.style.cursor='pointer'; ban.addEventListener('click',()=>card.classList.toggle('expanded'));
-  const nl=el('div','new-label'); nl.innerHTML='<span class="new-pill">NOU</span>';
+  
+  const nl=el('div','new-label'); 
+  const pillClass = isAdminRejected ? 'new-pill rejected-pill' : 'new-pill';
+  const pillText = isAdminRejected ? 'DESCARTAT' : 'NOU';
+  nl.innerHTML=`<span class="${pillClass}">${pillText}</span>`;
+  
   const titleSpan = el('span', 'new-title-text', prev ? (prev.sug_titol_enfocament || 'Nou Enfocament') : 'Escriu el títol...');
   nl.appendChild(titleSpan);
 
@@ -698,7 +722,7 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
   const body=el('div','card-body new-body');
   
   if(isAdminRejected) {
-      body.appendChild(el('div','admin-alert')).innerHTML = '<strong>❌ Descartat per Direcció:</strong><br>' + escH(prev.comentari_admin || '');
+      body.appendChild(el('div','admin-alert')).innerHTML = '<strong>❌ Descartat per Estratègia Corporativa:</strong><br>' + escH(prev.comentari_admin || 'Sense motiu especificat');
   } else if(isAdminApproved) {
       body.appendChild(el('div','admin-alert-ok')).textContent = '✅ Aprovat per Direcció';
   }
@@ -717,6 +741,7 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
     ta.value = prev ? (prev[f.key] || '') : '';
     if(prev) card.dataset.st += ' ' + ta.value.toLowerCase();
     ta.addEventListener('input',(e)=>{
+      ta.style.borderColor = ''; ta.style.backgroundColor = ''; // Neteja l'error si escriu
       if(f.key === 'sug_titol_enfocament') titleSpan.textContent = e.target.value.trim() || 'Escriu el títol...';
       markPending(tid); card.dataset.st=[...card.querySelectorAll('textarea[data-key]')].map(t=>t.value).join(' ').toLowerCase();
     });
@@ -725,6 +750,14 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
   
   body.appendChild(makeAZ(tid,prev,true)); card.appendChild(body); return {el:card, id:tid, isNew:true, sub};
 }
+
+/* ══ FILTRE TAULES ADMIN ══ */
+window.filterAdminViews = function(val) {
+    document.querySelectorAll('#admin-view tr[data-area]').forEach(tr => {
+        if(val === 'all' || tr.dataset.area.toLowerCase().includes(val.toLowerCase())) tr.style.display = '';
+        else tr.style.display = 'none';
+    });
+};
 
 /* ══ RENDER DASHBOARD ADMIN ══ */
 function renderAdminDashboard(){
@@ -744,21 +777,86 @@ function renderAdminDashboard(){
     `;
     area.appendChild(grid);
 
-    const actionRow = el('div'); actionRow.style.marginBottom = '2rem';
-    const btnPdf = el('button', 'btn btn-primary', '📄 Generar Informe Final (Impressió/PDF)');
+    // Barra d'Accions i Filtres
+    const actionRow = el('div'); actionRow.style.marginBottom = '2rem'; actionRow.style.display = 'flex'; actionRow.style.justifyContent = 'space-between'; actionRow.style.alignItems = 'center'; actionRow.style.flexWrap = 'wrap'; actionRow.style.gap = '1rem';
     
-    // Alerta intel·ligent abans de fer l'informe
+    // Filtre d'Àrees
+    const uniqueAreas = Array.from(new Set(usuaris.flatMap(u => (u.area_assignada||'').split(',').map(a => a.trim())))).filter(a => a && a.toLowerCase() !== 'global' && a.toLowerCase() !== 'totes');
+    const filterHtml = `
+        <div style="display:flex; align-items:center; gap:.5rem;">
+            <label style="margin:0; font-weight:bold; font-size:.85rem; color:var(--g700);">Filtrar llistes per Àrea:</label>
+            <select onchange="filterAdminViews(this.value)" style="max-width:250px; padding:.3rem .6rem; border-radius:6px; border:1px solid var(--g200);">
+                <option value="all">Totes les àrees</option>
+                ${uniqueAreas.sort().map(a => `<option value="${escH(a)}">${escH(a)}</option>`).join('')}
+            </select>
+        </div>
+    `;
+    const filterContainer = el('div'); filterContainer.innerHTML = filterHtml;
+    actionRow.appendChild(filterContainer);
+
+    const btnPdf = el('button', 'btn btn-primary', '📄 Generar Informe Final (Impressió/PDF)');
     btnPdf.onclick = () => {
         if(pendentsAdmin.length > 0) {
-            if(!confirm(`⚠️ ATENCIÓ:\n\nHi ha ${pendentsAdmin.length} enfocaments nous pendents de validar que NO sortiran a l'informe.\n\nVols generar l'informe de totes maneres?`)) {
-                return;
-            }
+            if(!confirm(`⚠️ ATENCIÓ:\n\nHi ha ${pendentsAdmin.length} enfocaments nous pendents de validar que NO sortiran a l'informe.\n\nVols generar l'informe de totes maneres?`)) return;
         }
         generatePDF();
     };
-    
-    actionRow.appendChild(btnPdf); area.appendChild(actionRow);
+    actionRow.appendChild(btnPdf); 
+    area.appendChild(actionRow);
 
+    // 1. TAULA CONTROL PARTICIPACIÓ
+    const sec0 = el('div', 'admin-section');
+    sec0.innerHTML = `<div class="admin-title">📊 Control de Participació</div>`;
+    const t0 = document.createElement('table'); t0.className = 'admin-table';
+    t0.innerHTML = `<thead><tr><th>Usuari</th><th>Àrea assignada</th><th>Progrés (Targetes Existents)</th></tr></thead><tbody></tbody>`;
+    const tb0 = t0.querySelector('tbody');
+
+    usuaris.forEach(u => {
+        const uEmail = String(u.email_autoritzat||'').toLowerCase().trim();
+        const uAreas = String(u.area_assignada||'').toLowerCase().split(',').map(a=>a.trim());
+        const isGlob = uAreas.some(a => a.includes('global') || a.includes('totes'));
+        
+        // No mostrem els usuaris globals a l'estadística (normalment ets tu)
+        if(isGlob) return;
+
+        let totalCards = 0;
+        mem.forEach(m => {
+            if(!m.criteri || !m.subcriteri) return;
+            const rowAreas = String(m.area||'').toLowerCase().split(',').map(a=>a.trim());
+            if(uAreas.some(ua => rowAreas.includes(ua))) totalCards++;
+        });
+
+        const userResp = resp.filter(r => r.email.toLowerCase().trim() === uEmail && !String(r.id_enfocament).startsWith('NEW-'));
+        let doneCards = 0;
+        userResp.forEach(r => {
+            const isDone = (r.validat===true||r.validat==='TRUE'||r.validat==='1'||r.validat===1||r.validat==='true') || 
+                           (r.sug_desplegament || r.sug_avaluacio || r.sug_evidencies || r.comentari_general);
+            if(isDone) doneCards++;
+        });
+
+        let pct = totalCards > 0 ? Math.round((doneCards/totalCards)*100) : 0;
+        let barColor = pct === 100 ? 'var(--green)' : (pct > 0 ? 'var(--orange)' : 'var(--red)');
+
+        const tr = document.createElement('tr');
+        tr.dataset.area = escH(u.area_assignada);
+        tr.innerHTML = `
+            <td><strong>${escH(u.nom_usuari)}</strong><br><small style="color:var(--g300)">${escH(u.email_autoritzat)}</small></td>
+            <td>${escH(u.area_assignada)}</td>
+            <td>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-weight:bold; min-width:45px;">${doneCards} / ${totalCards}</span>
+                    <div style="flex:1; height:8px; background:var(--g100); border-radius:10px; overflow:hidden;">
+                        <div style="width:${pct}%; height:100%; background:${barColor};"></div>
+                    </div>
+                    <span style="font-size:.7rem; color:var(--g500); min-width:35px; text-align:right;">${pct}%</span>
+                </div>
+            </td>
+        `;
+        tb0.appendChild(tr);
+    });
+    sec0.appendChild(t0); area.appendChild(sec0);
+
+    // 2. TAULA NOUS ENFOCAMENTS
     const sec1 = el('div', 'admin-section');
     sec1.innerHTML = `<div class="admin-title">📋 Nous Enfocaments Creats</div>`;
     const t1 = document.createElement('table'); t1.className = 'admin-table';
@@ -769,6 +867,8 @@ function renderAdminDashboard(){
     
     novesPropostes.sort((a,b) => String(a.id_enfocament).localeCompare(String(b.id_enfocament))).forEach(r => {
         const tr = document.createElement('tr');
+        tr.dataset.area = escH(r.area_revisora);
+        
         const match = r.id_enfocament.match(/NEW-\d+-([\d.]+)-/);
         const subc = match ? match[1] : '?';
         let bcls = 'badge-pend', btxt = 'Pendent';
@@ -786,6 +886,7 @@ function renderAdminDashboard(){
     });
     sec1.appendChild(t1); area.appendChild(sec1);
 
+    // 3. TAULA MILLORES
     const sec2 = el('div', 'admin-section');
     sec2.innerHTML = `<div class="admin-title">✍️ Millores en Enfocaments Existents</div>`;
     const t2 = document.createElement('table'); t2.className = 'admin-table';
@@ -796,13 +897,14 @@ function renderAdminDashboard(){
 
     millores.forEach(r => {
         const tr = document.createElement('tr');
+        tr.dataset.area = escH(r.area_revisora);
+        
         let tocat = [];
         if(r.sug_desplegament) tocat.push('Desplegament');
         if(r.sug_avaluacio) tocat.push('Avaluació');
         if(r.sug_evidencies) tocat.push('Evidències');
         if(r.comentari_general) tocat.push('Comentari');
         
-        // Cercar el títol original per mostrar-lo en gran
         const orig = mem.find(m => String(m.id) === String(r.id_enfocament));
         const titolOriginal = orig ? orig.titol_enfocament : 'Enfocament existent';
         
@@ -936,7 +1038,7 @@ function generatePDF() {
 
 /* ══ UTILS DE DESAT I CARD STATE ══ */
 function markPending(id){ const c=document.querySelector('.card[data-id="'+id+'"]'); if(c){ c.classList.remove('saved'); c.classList.add('pending'); const b=c.querySelector('.cs-badge'); if(b){ b.className='cs-badge bp'; b.textContent='● Pendent';} updTabPending(); } }
-function markSaved(id){ const c=document.querySelector('.card[data-id="'+id+'"]'); if(c){ c.classList.remove('pending'); c.classList.add('saved'); if(c.classList.contains('cnew')) c.style.borderStyle='solid'; const b=c.querySelector('.cs-badge'); if(b){ b.className='cs-badge bs'; b.textContent='Revisat ✅';} updProgress(); updTabPending(); } }
+function markSaved(id){ const c=document.querySelector('.card[data-id="'+id+'"]'); if(c){ c.classList.remove('pending'); c.classList.add('saved'); if(c.classList.contains('cnew') && !c.classList.contains('rejected')) c.style.borderStyle='solid'; const b=c.querySelector('.cs-badge'); if(b){ b.className='cs-badge bs'; b.textContent='Revisat ✅';} updProgress(); updTabPending(); } }
 
 function updProgress(){ let tot=0,sav=0; Object.values(cards).forEach(arr=>{ tot+=arr.length; arr.forEach(({el:e})=>{ if(e.classList.contains('saved')) sav++; }); }); $('pfill').style.width=(tot?Math.round(sav/tot*100):0)+'%'; $('plbl').textContent=sav+' / '+tot; }
 
@@ -964,21 +1066,34 @@ function cardData(id){
 
 async function saveExisting(id,btn){
   if(!sess) return; const orig=btn.textContent; btn.textContent='Enviant…'; btn.disabled=true; const d=cardData(id);
-  
-  // NOMÉS ES CONSIDERA DONE SI EL CHECK ESTÀ MARCAT explícitament (Permet desar esborranys)
   const isDone = d.validat; 
-  
   const payload={ nom:sess.nom, email:sess.email, area_revisora:sess.area, id_enfocament:id, is_new:false, validat:d.validat, sug_titol_enfocament:'', sug_enfocament:'', sug_desplegament:d.sug_desplegament||'', sug_avaluacio:d.sug_avaluacio||'', sug_evidencies:d.sug_evidencies||'', comentari_general:d.comentari_general, timestamp:new Date().toISOString() };
   await doSave(payload,id,btn,orig,false, isDone);
 }
 
 async function saveNew(tid,btn){
   if(!sess) return; const card=document.querySelector('.card[data-id="'+tid+'"]'); if(!card) return;
+  
+  // VALIDACIÓ AMB MARCADOR VERMELL
+  let faltan = false;
   const requiredKeys = ['sug_titol_enfocament', 'sug_enfocament', 'sug_desplegament', 'sug_avaluacio', 'sug_evidencies'];
   for (let key of requiredKeys) {
     const ta = card.querySelector(`textarea[data-key="${key}"]`);
-    if (!ta || ta.value.trim() === '') { toast(`El camp és obligatori.`, 'terr'); ta?.focus(); return; }
+    if (!ta || ta.value.trim() === '') {
+        ta.style.borderColor = 'var(--red)';
+        ta.style.backgroundColor = '#fef2f2';
+        faltan = true;
+    } else {
+        ta.style.borderColor = '';
+        ta.style.backgroundColor = '';
+    }
   }
+  
+  if (faltan) {
+      toast('⚠️ Avís: Falten camps obligatoris per omplir.', 'terr');
+      return;
+  }
+
   const orig=btn.textContent; btn.textContent='Enviant…'; btn.disabled=true; const d=cardData(tid);
   const payload={ nom:sess.nom, email:sess.email, area_revisora:sess.area, id_enfocament:tid, is_new:true, validat:true, sug_titol_enfocament:d.sug_titol_enfocament||'', sug_enfocament:d.sug_enfocament||'', sug_desplegament:d.sug_desplegament||'', sug_avaluacio:d.sug_avaluacio||'', sug_evidencies:d.sug_evidencies||'', comentari_general:d.comentari_general, criteri:card.dataset.crit||'', subcriteri:card.dataset.sub||'', timestamp:new Date().toISOString() };
   await doSave(payload,tid,btn,orig,true, true);
