@@ -209,7 +209,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
       <button class="btn btn-primary btn-full" onclick="goS2()">Continuar →</button>
     </div>
     <div id="lform">
-      <label for="fe">Correu corporatiu</label>
+      <label for="fe">Correu corporatiu <span style="text-transform:lowercase; opacity:0.7; font-weight:500; letter-spacing:normal;">(@dipta.cat)</span></label>
       <input id="fe" type="email" placeholder="usuari@dipta.cat" autocomplete="email" onkeypress="if(event.key==='Enter') doLogin()"/>
       <div id="ferr" class="err hidden"></div>
       <button id="btn-login" class="btn btn-primary btn-full" onclick="doLogin()">Accedir a la revisió</button>
@@ -272,7 +272,6 @@ window.addEventListener('DOMContentLoaded', async ()=>{
     document.getElementById('wblock').classList.remove('hidden');
     document.getElementById('lform').classList.add('hidden');
   }
-  // Carreguem tot en obrir la pàgina perquè el login sigui instantani
   await loadBackendData();
 });
 
@@ -297,7 +296,14 @@ async function loadBackendData(){
     const d=await api('GET');
     mem=d.memoria||[]; 
     resp=d.respostes||[];
-    usuaris=d.usuaris||[]; // Nova llista d'usuaris
+    usuaris=d.usuaris||[]; 
+    
+    // NOU BLINDATGE ANTI-ERRORS: Convertim totes les cel·les a text pur
+    // Això evita el penjament (Processant dades...) si el full té algun número (ex: anys, codis)
+    const sanitize = arr => arr.forEach(r => Object.keys(r).forEach(k => r[k] = r[k] != null ? String(r[k]).trim() : ''));
+    sanitize(mem); 
+    sanitize(resp); 
+    sanitize(usuaris);
     
     if(btn) { btn.textContent = 'Accedir a la revisió'; btn.disabled = false; }
   } catch(e){ 
@@ -305,7 +311,7 @@ async function loadBackendData(){
   }
 }
 
-/* ══ LOGIN (SISTEMA NOU AMB CORREU) ══ */
+/* ══ LOGIN ══ */
 function doLogin(){
   const email = $('fe').value.trim().toLowerCase();
   const err = $('ferr');
@@ -319,15 +325,13 @@ function doLogin(){
     return;
   }
 
-  // Comprovar si l'usuari existeix a la pestanya 'usuaris'
-  const user = usuaris.find(u => (u.email_autoritzat || '').trim().toLowerCase() === email);
+  const user = usuaris.find(u => (u.email_autoritzat || '').toLowerCase() === email);
   
   if(!user){
     showErr(err, 'Accés denegat. Aquest correu no està a la llista d\'usuaris autoritzats.');
     return;
   }
 
-  // Si existeix, guardem la seva sessió automàticament
   err.classList.add('hidden');
   sess={
     nom: user.nom_usuari || 'Usuari',
@@ -362,12 +366,8 @@ async function goS2(){
 async function loadData(){
   $('sarea').innerHTML='<p style="color:var(--g300);padding:2rem;text-align:center">Processant dades…</p>';
   
-  // Si per algun motiu memòria està buida, la tornem a carregar
   if(mem.length === 0 && APPS_SCRIPT_URL) await loadBackendData();
   
-  mem.forEach(row => {
-    Object.keys(row).forEach(k => { if(typeof row[k] === 'string') row[k] = row[k].trim(); });
-  });
   mem.sort((a,b) => (a.id || '').localeCompare(b.id || ''));
   
   buildData(); buildTabs();
@@ -375,24 +375,24 @@ async function loadData(){
   if(first) selCrit(first);
 }
 
-/* ══ BUILD DATA (AMB VISIÓ FUSIONADA MULTI-ÀREA) ══ */
+/* ══ BUILD DATA ══ */
 function buildData(){
   cData={}; cards={};
   
-  // Lògica per a usuaris amb múltiples àrees o accés Global
   const areaUsuari = (sess.area || '').toLowerCase();
   const esGlobal = areaUsuari.includes('global') || areaUsuari.includes('totes');
   const llistaAreasUsuari = areaUsuari.split(',').map(a => a.trim());
 
   mem.forEach(row=>{
+    // Línia de seguretat extra per evitar que una fila buida faci crash
+    if(!row.criteri || !row.subcriteri) return; 
+
     const llistaAreasFila = (row.area||'').toLowerCase().split(',').map(a=>a.trim());
-    
-    // Si l'usuari és global, o si alguna de les seves àrees coincideix amb les de la fila
     const teAcces = esGlobal || llistaAreasUsuari.some(areaUs => llistaAreasFila.includes(areaUs));
     
     if(!teAcces) return;
 
-    const c=String(row.criteri||''), s=String(row.subcriteri||'');
+    const c=row.criteri, s=row.subcriteri;
     if(!cData[c]) cData[c]={titol:row.titol_criteri||'',subs:{}};
     if(!cData[c].titol&&row.titol_criteri) cData[c].titol=row.titol_criteri;
     
@@ -453,7 +453,7 @@ function renderCrit(c){
     
     let ep = null, evp = null;
 
-    if(sub.que_diu&&sub.que_diu.trim()){
+    if(sub.que_diu && sub.que_diu !== ''){
       const eb=el('button','efqm-btn'); eb.textContent='📖 Què diu el model?';
       ep=el('div','efqm-panel'); 
       ep.textContent=sub.que_diu; 
@@ -461,7 +461,7 @@ function renderCrit(c){
       actions.appendChild(eb);
     }
     
-    if(sub.preg_avaluadors&&sub.preg_avaluadors.trim()){
+    if(sub.preg_avaluadors && sub.preg_avaluadors !== ''){
       const evb=el('button','efqm-btn eval-btn'); evb.textContent='❓ Preguntes avaluadors';
       evp=el('div','eval-panel'); 
       evp.textContent=sub.preg_avaluadors; 
@@ -532,8 +532,8 @@ function buildCard(row,crit){
     hdr.addEventListener('click',()=>acc.classList.toggle('open'));
     const abody=el('div','acc-body');
     const ro=document.createElement('div');
-    ro.className=(b.text&&b.text.trim()?'ro '+b.roCls:'ro empty');
-    if(b.text&&b.text.trim()) ro.textContent=b.text;
+    ro.className=(b.text&&b.text !== ''?'ro '+b.roCls:'ro empty');
+    if(b.text&&b.text !== '') ro.textContent=b.text;
     else ro.textContent='— Sense contingut —';
     abody.appendChild(ro);
     if(b.taKey){
@@ -546,7 +546,7 @@ function buildCard(row,crit){
     acc.appendChild(hdr); acc.appendChild(abody); body.appendChild(acc);
   });
 
-  if(row.informe_ant && row.informe_ant.trim() !== ''){
+  if(row.informe_ant && row.informe_ant !== ''){
     const note=el('div','ctx');
     const cb=el('button','ctx-btn'); cb.innerHTML='💡 Informe anterior';
     const cbody=el('div','ctx-body');
@@ -569,7 +569,7 @@ function makeAZ(id,prev,isNew){
     const chk=document.createElement('input'); chk.type='checkbox'; chk.dataset.card=id;
     chk.className='chk-v';
     
-    const isChecked = prev&&(prev.validat===true||prev.validat==='TRUE'||prev.validat==='1'||prev.validat===1);
+    const isChecked = prev&&(prev.validat===true||prev.validat==='TRUE'||prev.validat==='1'||prev.validat===1||prev.validat==='true');
     chk.checked = isChecked;
     
     if(isChecked) {
@@ -854,7 +854,7 @@ function updResp(p){
 const $=id=>document.getElementById(id);
 const el=(tag,cls,txt)=>{ const e=document.createElement(tag); if(cls) e.className=cls; if(txt!==undefined) e.textContent=txt; return e; };
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
-const escH=t=>(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const escH=t=>String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 function toast(msg,cls){ const c=$('toasts'); const t=el('div','toast '+(cls||'')); t.textContent=msg; c.appendChild(t); setTimeout(()=>t.remove(),3400); }
 function showErr(e,m){ e.textContent=m; e.classList.remove('hidden'); }
 </script>
