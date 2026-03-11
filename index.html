@@ -92,7 +92,12 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .sub-sticky{position:sticky;top:0;z-index:50;background:var(--white);border-radius:8px;box-shadow:var(--sh);margin-bottom:.55rem;overflow:hidden;border:1px solid var(--g100)}
 .sub-title-row{display:flex;align-items:center;gap:.6rem;padding:.5rem .82rem}
 .sub-num{font-size:.68rem;font-weight:700;background:var(--navy);color:#fff;padding:.08rem .42rem;border-radius:5px;flex-shrink:0}
-.sub-title{font-size:.86rem;font-weight:800;color:var(--navy);flex:1}
+.sub-title{font-size:.86rem;font-weight:800;color:var(--navy);flex:1; display:flex; align-items:center; gap:.5rem;}
+
+/* Comptador de targetes per subcriteri */
+.sub-prog { font-size: .7rem; background: var(--g100); color: var(--g700); padding: .15rem .45rem; border-radius: 99px; font-weight: 700; letter-spacing: .02em; transition: all var(--tr);}
+.sub-prog.done { background: #dcfce7; color: #166534; }
+
 .efqm-btn{background:transparent;border:1.5px solid var(--g100);border-radius:6px;padding:.26rem .62rem;cursor:pointer;font-size:.73rem;font-weight:600;transition:background var(--tr);white-space:nowrap;flex-shrink:0}
 
 /* Botons de context */
@@ -111,14 +116,14 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .prev-panel { display:none; padding:.58rem .82rem .68rem; background:#f0fdfa; border-top:1px solid #99f6e4; font-size:.8rem; color:#115e59; white-space:pre-wrap; line-height:1.6; border-left:4px solid #0f766e; }
 .prev-panel.open { display:block; }
 
-
 /* ── CARD ── */
 .card{background:var(--white);border-radius:var(--r);box-shadow:var(--sh);margin-bottom:.5rem;border:2px solid transparent;transition:border-color var(--tr)}
-.card.saved{border-color:#86efac}
+/* ELIMINAT EL BORD VERD PER EVITAR SOROLL VISUAL */
+.card.saved{border-color:transparent;}
 
 /* new card normal i descartada */
 .card.cnew{border:2px dashed var(--vb);background:var(--vp)}
-.card.cnew.saved{border-style:solid;border-color:#86efac}
+.card.cnew.saved{border-style:solid;border-color:var(--vb)}
 .card.cnew.rejected { border-style: solid !important; border-color: var(--red) !important; background: #fff5f5 !important; }
 .card.cnew.rejected .new-banner { background: #fee2e2 !important; border-bottom: 1px solid #fca5a5 !important; }
 .card.cnew.rejected .new-label { color: var(--red) !important; }
@@ -330,7 +335,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
     </div>
     
     <div class="scroll-area" id="sarea"></div>
-    
     <div class="scroll-area hidden" id="admin-view" style="background: var(--bg);"></div>
   </div>
 </div>
@@ -484,16 +488,9 @@ function buildData(){
     if(!cData[c]) cData[c]={titol:row.titol_criteri||'',subs:{}};
     if(!cData[c].titol&&row.titol_criteri) cData[c].titol=row.titol_criteri;
     
-    if(!cData[c].subs[s]) cData[c].subs[s]={
-        titol:row.titol_subcriteri||'',
-        que_diu:row.que_diu_el_model||'',
-        preg_avaluadors:row.preg_avaluadors||'',
-        informe_ant:row.informe_ant||'',
-        rows:[]
-    };
+    if(!cData[c].subs[s]) cData[c].subs[s]={titol:row.titol_subcriteri||'',que_diu:row.que_diu_el_model||'',preg_avaluadors:row.preg_avaluadors||'',rows:[]};
     if(!cData[c].subs[s].que_diu&&row.que_diu_el_model) cData[c].subs[s].que_diu=row.que_diu_el_model;
     if(!cData[c].subs[s].preg_avaluadors&&row.preg_avaluadors) cData[c].subs[s].preg_avaluadors=row.preg_avaluadors;
-    if(!cData[c].subs[s].informe_ant&&row.informe_ant) cData[c].subs[s].informe_ant=row.informe_ant;
     
     cData[c].subs[s].rows.push(row);
   });
@@ -563,11 +560,17 @@ function renderCrit(c){
 
     const sticky=el('div','sub-sticky');
     const tr=el('div','sub-title-row');
+    
+    // Títol del subcriteri + Comptador progress
     tr.appendChild(el('span','sub-num',s));
-    tr.appendChild(el('div','sub-title',sub.titol||s));
+    const titleWrap = el('div','sub-title');
+    titleWrap.appendChild(document.createTextNode(sub.titol||s));
+    const subProg = el('span', 'sub-prog', '0 / 0');
+    titleWrap.appendChild(subProg);
+    tr.appendChild(titleWrap);
     
     const actions = el('div'); actions.style.display = 'flex'; actions.style.gap = '.5rem'; actions.style.flexWrap = 'wrap';
-    let ep = null, evp = null, ip = null;
+    let ep = null, evp = null;
 
     if(sub.que_diu && sub.que_diu !== ''){
       const eb=el('button','efqm-btn model-btn','📖 Què diu el model?');
@@ -583,15 +586,8 @@ function renderCrit(c){
       actions.appendChild(evb);
     }
 
-    if(sub.informe_ant && sub.informe_ant !== ''){
-      const ib=el('button','efqm-btn prev-btn','💡 Informe anterior');
-      ip=el('div','prev-panel'); ip.textContent=sub.informe_ant; 
-      ib.onclick=()=>{ ip.classList.toggle('open'); ib.textContent=(ip.classList.contains('open')?'▲ ':'💡 ')+'Informe anterior'; };
-      actions.appendChild(ib);
-    }
-
     if(actions.childNodes.length > 0) tr.appendChild(actions);
-    sticky.appendChild(tr); if(ep) sticky.appendChild(ep); if(evp) sticky.appendChild(evp); if(ip) sticky.appendChild(ip);
+    sticky.appendChild(tr); if(ep) sticky.appendChild(ep); if(evp) sticky.appendChild(evp);
     blk.appendChild(sticky);
 
     sub.rows.forEach(row=>{ const card=buildCard(row,c); blk.appendChild(card.el); cards[c].push(card); });
@@ -617,6 +613,8 @@ function buildCard(row,crit){
   const prev=resp.find(r=>r.email===sess.email&&r.id_enfocament===id);
   const card=document.createElement('div');
   
+  const isAdminRejected = prev && prev.estat_admin === 'Descartat';
+  const isAdminApproved = prev && prev.estat_admin === 'Aprovat';
   const isChecked = prev&&(prev.validat===true||prev.validat==='TRUE'||prev.validat==='1'||prev.validat===1||prev.validat==='true');
   
   card.className='card'+(isChecked?' saved':' pending');
@@ -627,12 +625,20 @@ function buildCard(row,crit){
   sum.appendChild(el('span','cs-title',row.titol_enfocament||'(sense títol)'));
   
   let bcls = isChecked ? 'bs' : 'bp'; let btxt = isChecked ? 'Revisat ✅' : '● Pendent';
+  if(isAdminRejected) { bcls = 'bdismiss'; btxt = '❌ Descartat'; }
   const sbadge = el('span','cs-badge '+bcls, btxt);
   sum.appendChild(sbadge); sum.appendChild(el('span','cs-chev','▼'));
   sum.addEventListener('click',()=>card.classList.toggle('expanded'));
   card.appendChild(sum);
 
   const body=el('div','card-body');
+  
+  if(isAdminRejected) {
+      const alert = el('div','admin-alert'); alert.innerHTML = '<strong>❌ Descartat per Estratègia Corporativa:</strong><br>' + escH(prev.comentari_admin || 'Sense comentaris');
+      body.appendChild(alert);
+  } else if(isAdminApproved) {
+      const alert = el('div','admin-alert-ok','✅ Aprovat per Direcció'); body.appendChild(alert);
+  }
 
   const BLOCKS=[
     {lbl:'Enfocament',         acls:'le', roCls:'ro-e', text:row.enfocament,   taKey:null},
@@ -656,6 +662,13 @@ function buildCard(row,crit){
     }
     acc.appendChild(hdr); acc.appendChild(abody); body.appendChild(acc);
   });
+
+  if(row.informe_ant && row.informe_ant !== ''){
+    const note=el('div','ctx'); const cb=el('button','ctx-btn','💡 Informe anterior');
+    const cbody=el('div','ctx-body'); const sec=el('div','ctx-sec ctx-prev'); sec.textContent=row.informe_ant; cbody.appendChild(sec);
+    cb.onclick=()=>{ cbody.classList.toggle('open'); cb.textContent=(cbody.classList.contains('open')?'▼ ':'💡 ')+'Informe anterior'; };
+    note.appendChild(cb); note.appendChild(cbody); body.appendChild(note);
+  }
 
   body.appendChild(makeAZ(id,prev,false)); card.appendChild(body); return {el:card, id, isNew:false};
 }
@@ -1035,12 +1048,31 @@ function generatePDF() {
     setTimeout(() => { window.print(); }, 500);
 }
 
-
 /* ══ UTILS DE DESAT I CARD STATE ══ */
-function markPending(id){ const c=document.querySelector('.card[data-id="'+id+'"]'); if(c){ c.classList.remove('saved'); c.classList.add('pending'); const b=c.querySelector('.cs-badge'); if(b){ b.className='cs-badge bp'; b.textContent='● Pendent';} updTabPending(); } }
+function markPending(id){ const c=document.querySelector('.card[data-id="'+id+'"]'); if(c){ c.classList.remove('saved'); c.classList.add('pending'); const b=c.querySelector('.cs-badge'); if(b){ b.className='cs-badge bp'; b.textContent='● Pendent';} updTabPending(); updProgress(); } }
 function markSaved(id){ const c=document.querySelector('.card[data-id="'+id+'"]'); if(c){ c.classList.remove('pending'); c.classList.add('saved'); if(c.classList.contains('cnew') && !c.classList.contains('rejected')) c.style.borderStyle='solid'; const b=c.querySelector('.cs-badge'); if(b){ b.className='cs-badge bs'; b.textContent='Revisat ✅';} updProgress(); updTabPending(); } }
 
-function updProgress(){ let tot=0,sav=0; Object.values(cards).forEach(arr=>{ tot+=arr.length; arr.forEach(({el:e})=>{ if(e.classList.contains('saved')) sav++; }); }); $('pfill').style.width=(tot?Math.round(sav/tot*100):0)+'%'; $('plbl').textContent=sav+' / '+tot; }
+function updProgress(){ 
+  let tot=0,sav=0; 
+  // Total global top bar
+  Object.values(cards).forEach(arr=>{ tot+=arr.length; arr.forEach(({el:e})=>{ if(e.classList.contains('saved')) sav++; }); }); 
+  $('pfill').style.width=(tot?Math.round(sav/tot*100):0)+'%'; $('plbl').textContent=sav+' / '+tot; 
+  
+  // Progress per subcriteri
+  document.querySelectorAll('.sb').forEach(blk => {
+      const cList = blk.querySelectorAll('.card');
+      if(cList.length === 0) return;
+      let sTot = cList.length;
+      let sSav = 0;
+      cList.forEach(c => { if(c.classList.contains('saved')) sSav++; });
+      const sp = blk.querySelector('.sub-prog');
+      if(sp) {
+          sp.textContent = sSav + ' / ' + sTot;
+          if(sSav === sTot) sp.classList.add('done');
+          else sp.classList.remove('done');
+      }
+  });
+}
 
 function setF(f,btn){ curF=f; document.querySelectorAll('.tog-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); applyF(); }
 function applyF(){
