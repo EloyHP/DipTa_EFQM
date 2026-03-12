@@ -5,648 +5,314 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Revisió Memòria EFQM - La DipTa</title>
 <style>
-/* ══ CONFIGURACIÓ DE COLORS CORPORATIUS La DipTa ══ */
+/* ══ COLORS I BASES ══ */
 :root{
-  --navy: #0083A9;       
-  --navy2: #006b8a;      
-  --navy-pale: #e6f6fa;  
-  --gray-dipta: #747678; 
-  --black-dipta: #000000;
-  
-  --orange: #f97316; --green: #16a34a; --red: #dc2626;
-  --violet: #7c3aed; --vp: #f5f3ff; --vb: #c4b5fd;
-  --bg: #f0f4f8; --white: #fff;
-  --g50: #f8fafc; --g100: #e2e8f0; --g200: #cbd5e1;
-  --g300: #94a3b8; --g500: #64748b; --g700: #334155; --g900: #0f172a;
-  
-  --sh: 0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.05);
-  --sh2: 0 4px 16px rgba(0,0,0,.1);
-  --r: 10px; --tr: .17s ease;
+  --navy: #0083A9; --navy2: #006b8a; --navy-pale: #e6f6fa; --gray-dipta: #747678; --black-dipta: #000000;
+  --orange: #f97316; --green: #16a34a; --red: #dc2626; --violet: #7c3aed; --vp: #f5f3ff; --vb: #c4b5fd;
+  --bg: #f0f4f8; --white: #fff; --g50: #f8fafc; --g100: #e2e8f0; --g200: #cbd5e1; --g300: #94a3b8; --g500: #64748b; --g700: #334155; --g900: #0f172a;
+  --sh: 0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.05); --sh2: 0 4px 16px rgba(0,0,0,.1); --r: 10px; --tr: .17s ease;
 }
-
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,-apple-system,'Inter','Segoe UI',sans-serif;background:var(--bg);color:var(--black-dipta);font-size:14px;line-height:1.55}
+body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--black-dipta);font-size:14px;line-height:1.55}
 
-/* ══ LOGIN ══ */
-#s1{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem;
-    background:linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%)}
-.lbox{background:var(--white);border-radius:18px;box-shadow:0 8px 32px rgba(0,0,0,.2);padding:2.5rem;width:100%;max-width:420px}
-.logo{display:flex;align-items:center;gap:.75rem;margin-bottom:2rem}
-.logo img{height: 46px; object-fit: contain;}
-.logo h1{font-size:1.05rem;font-weight:700;color:var(--navy);line-height:1.25}
-.logo p{font-size:.77rem;color:var(--gray-dipta)}
-label{display:block;font-size:.73rem;font-weight:700;color:var(--gray-dipta);margin:.85rem 0 .27rem;text-transform:uppercase;letter-spacing:.05em}
-input,select,textarea{width:100%;border:1.5px solid var(--g100);border-radius:8px;padding:.57rem .77rem;font-size:.9rem;font-family:inherit;color:var(--black-dipta);background:var(--white);transition:border-color var(--tr);outline:none}
-input:focus,select:focus,textarea:focus{border-color:var(--navy)}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;border:none;border-radius:8px;padding:.6rem 1.1rem;font-size:.84rem;font-weight:600;cursor:pointer;transition:all var(--tr)}
-.btn-primary{background:var(--navy);color:#fff}.btn-primary:hover{background:var(--navy2)}
-.btn-primary:disabled{opacity:.5;cursor:not-allowed}
-.btn-ghost{background:transparent;border:1.5px solid var(--g100);color:var(--gray-dipta)}.btn-ghost:hover{border-color:var(--navy);color:var(--navy)}
-.btn-danger{background:#fee2e2;color:var(--red);border:none}.btn-danger:hover{background:#fecaca}
-.btn-full{width:100%;margin-top:1.2rem}
-.welcome-box{background:var(--navy-pale);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:.9rem;display:flex;justify-content:space-between;align-items:center;gap:.75rem}
-.welcome-box strong{font-size:.9rem;color:var(--navy);display:block}
-.welcome-box small{color:var(--gray-dipta);font-size:.76rem}
-.err{color:var(--red);font-size:.76rem;margin-top:.27rem;text-align:center;font-weight:600}
-.hidden{display:none!important}
-
-/* ══ APP SHELL ══ */
+/* ══ ESTRUCTURA ══ */
+#s1{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem;background:linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%)}
+.lbox{background:var(--white);border-radius:18px;padding:2.5rem;width:100%;max-width:420px;box-shadow:0 8px 32px rgba(0,0,0,.2)}
 #s2{display:none;height:100vh;flex-direction:column}
-
-.topbar{flex-shrink:0;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:.52rem 1.2rem;gap:1rem;z-index:300}
-.tb-l{display:flex;align-items:center;gap:.65rem}
-.tb-title{font-size:.87rem;font-weight:700}
-.tb-sub{font-size:.69rem;opacity:.8;margin-top:.05rem}
-.tb-r{display:flex;align-items:center;gap:.65rem}
-.prog-wrap{display:flex;align-items:center;gap:.42rem}
-.prog-track{width:96px;height:5px;background:rgba(255,255,255,.22);border-radius:99px;overflow:hidden}
-.prog-fill{height:100%;background:#34d399;border-radius:99px;transition:width .4s ease}
-.prog-lbl{font-size:.69rem;opacity:.9;white-space:nowrap}
-
-.crit-tabs{flex-shrink:0;background:var(--white);border-bottom:1px solid var(--g100);display:flex;overflow-x:auto;scrollbar-width:none;padding:0 1rem}
-.crit-tabs::-webkit-scrollbar{display:none}
-.ctab{padding:.58rem .9rem;font-size:.8rem;font-weight:600;color:var(--gray-dipta);cursor:pointer;border:none;background:transparent;border-bottom:3px solid transparent;white-space:nowrap;transition:all var(--tr);display:flex;align-items:center;gap:.36rem;flex-shrink:0}
-.ctab:hover{color:var(--navy)}.ctab.active{color:var(--navy);border-bottom-color:var(--navy)}
-.tab-dot{width:7px;height:7px;border-radius:50%;background:var(--orange);display:none;flex-shrink:0}
-.ctab.has-pending .tab-dot{display:inline-block}
-
-.ctab-admin { color: var(--violet); }
-.ctab-admin:hover { color: #5b21b6; }
-.ctab-admin.active { border-bottom-color: var(--violet); color: var(--violet); background: var(--vp); }
+.topbar{flex-shrink:0;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:.5rem 1.2rem;z-index:300}
+.crit-tabs{flex-shrink:0;background:var(--white);border-bottom:1px solid var(--g100);display:flex;overflow-x:auto;padding:0 1rem}
+.ctab{padding:.7rem 1rem;font-size:.8rem;font-weight:600;color:var(--gray-dipta);cursor:pointer;border:none;background:transparent;border-bottom:3px solid transparent;white-space:nowrap}
+.ctab.active{color:var(--navy);border-bottom-color:var(--navy)}
+.ctab-admin{color:var(--violet)}.ctab-admin.active{border-bottom-color:var(--violet);background:var(--vp)}
 
 .main{flex:1;overflow:hidden;display:flex;flex-direction:column}
+.scroll-area{flex:1;overflow-y:auto;padding:1rem 1.2rem 3rem}
 
-.toolbar{flex-shrink:0;background:var(--g50);border-bottom:1px solid var(--g100);padding:.42rem 1.2rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
-.tog-group{display:flex;border:1.5px solid var(--g100);border-radius:7px;overflow:hidden;background:var(--white)}
-.tog-btn{padding:.3rem .68rem;font-size:.76rem;font-weight:600;border:none;background:transparent;cursor:pointer;color:var(--gray-dipta);transition:all var(--tr)}
-.tog-btn.active{background:var(--navy);color:#fff}
-.sw{flex:1;min-width:130px;position:relative}
-.sw input{padding:.32rem .62rem .32rem 1.82rem;font-size:.79rem;height:29px}
-.s-ico{position:absolute;left:.5rem;top:50%;transform:translateY(-50%);color:var(--g300);font-size:.8rem;pointer-events:none}
+/* ══ ELEMENTS ADMIN ══ */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+.kpi-card { background: white; padding: 1.2rem; border-radius: var(--r); box-shadow: var(--sh); border-left: 5px solid var(--violet); }
+.kpi-num { font-size: 2rem; font-weight: 800; color: var(--violet); }
+.admin-table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: var(--sh); }
+.admin-table th { background: var(--g50); padding: 0.8rem; text-align: left; font-size: 0.7rem; text-transform: uppercase; color: var(--g500); border-bottom: 2px solid var(--g100); }
+.admin-table td { padding: 0.8rem; border-bottom: 1px solid var(--g100); font-size: 0.85rem; }
 
-.scroll-area{flex:1;overflow-y:auto;padding:.9rem 1.2rem 3rem}
+/* Indicadors de millora a la taula */
+.indicator-row { display: flex; gap: 4px; margin-top: 4px; }
+.ind { font-size: 9px; font-weight: 900; padding: 1px 4px; border-radius: 3px; border: 1px solid transparent; }
+.ind-d { background: #e0f2fe; color: #0369a1; border-color: #bae6fd; } /* Desplegament */
+.ind-a { background: #fef3c7; color: #92400e; border-color: #fde68a; } /* Avaluació */
+.ind-e { background: #dcfce7; color: #15803d; border-color: #bbf7d0; } /* Evidències */
+.ind-c { background: #f3f4f6; color: #374151; border-color: #d1d5db; } /* Comentari */
 
-.sb{margin-bottom:1.5rem}
+/* ══ MODAL REVISIÓ ELEMENTAL ══ */
+.modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.7); z-index: 1000; display:none; align-items:center; justify-content:center; }
+.modal { background: white; border-radius: 12px; width: 95%; max-width: 900px; max-height: 90vh; display: flex; flex-direction: column; }
+.modal-header { padding: 1rem; border-bottom: 1px solid var(--g100); display: flex; justify-content: space-between; align-items:center; }
+.modal-body { padding: 1.5rem; overflow-y: auto; flex:1; }
+.rev-block { margin-bottom: 1.5rem; border: 1px solid var(--g100); border-radius: 8px; overflow: hidden; }
+.rev-header { background: var(--g50); padding: 0.5rem 1rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--g100); }
+.rev-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+.rev-col { padding: 1rem; font-size: 0.85rem; white-space: pre-wrap; }
+.rev-col.orig { background: #fafafa; color: #666; border-right: 1px solid var(--g100); }
+.rev-col.prop { background: #fffbeb; color: #92400e; font-weight: 500; }
+.rev-check { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 0.75rem; color: var(--navy); cursor: pointer; }
+.rev-check input { width: 18px; height: 18px; accent-color: var(--green); }
 
-.sub-sticky{position:sticky;top:0;z-index:50;background:var(--white);border-radius:8px;box-shadow:var(--sh);margin-bottom:.55rem;overflow:hidden;border:1px solid var(--g100)}
-.sub-title-row{display:flex;align-items:center;gap:.6rem;padding:.5rem .82rem}
-.sub-num{font-size:.68rem;font-weight:700;background:var(--navy);color:#fff;padding:.08rem .42rem;border-radius:5px;flex-shrink:0}
-.sub-title{font-size:.86rem;font-weight:800;color:var(--navy);flex:1; display:flex; align-items:center; gap:.5rem;}
+/* ══ BOTONS ══ */
+.btn { padding: 0.6rem 1rem; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; transition: 0.2s; }
+.btn-primary { background: var(--navy); color: white; }
+.btn-ok { background: var(--green); color: white; }
+.btn-ko { background: var(--red); color: white; }
+.btn-sm { padding: 0.3rem 0.6rem; font-size: 0.75rem; }
 
-.sub-prog { font-size: .7rem; background: var(--g100); color: var(--g700); padding: .15rem .45rem; border-radius: 99px; font-weight: 700; transition: all var(--tr);}
-.sub-prog.done { background: #dcfce7; color: #166534; }
-
-.efqm-btn{background:transparent;border:1.5px solid var(--g100);border-radius:6px;padding:.26rem .62rem;cursor:pointer;font-size:.73rem;font-weight:600;transition:background var(--tr);white-space:nowrap;flex-shrink:0}
-
-.model-btn { color: var(--navy); }
-.model-btn:hover { background: var(--navy-pale); }
-.efqm-panel { display:none; padding:.58rem .82rem .68rem; background:var(--navy-pale); border-top:1px solid #bfdbfe; font-size:.8rem; color:var(--navy2); white-space:pre-wrap; line-height:1.6; border-left:4px solid var(--navy); }
-.efqm-panel.open { display:block; }
-
-.eval-btn { color: var(--orange); border-color: #fed7aa; }
-.eval-btn:hover { background: #fff7ed; }
-.eval-panel { display:none; padding:.58rem .82rem .68rem; background:#fff7ed; border-top:1px solid #fed7aa; font-size:.8rem; color:#9a3412; white-space:pre-wrap; line-height:1.6; border-left:4px solid var(--orange); }
-.eval-panel.open { display:block; }
-
-.prev-btn { color: #0f766e; border-color: #99f6e4; }
-.prev-btn:hover { background: #f0fdfa; }
-.prev-panel { display:none; padding:.58rem .82rem .68rem; background:#f0fdfa; border-top:1px solid #99f6e4; font-size:.8rem; color:#115e59; white-space:pre-wrap; line-height:1.6; border-left:4px solid #0f766e; }
-.prev-panel.open { display:block; }
-
-
-.card{background:var(--white);border-radius:var(--r);box-shadow:var(--sh);margin-bottom:.5rem;border:2px solid transparent;transition:border-color var(--tr)}
-.card.saved{border-color:transparent;}
-
-.card.cnew{border:2px dashed var(--vb);background:var(--vp)}
-.card.cnew.saved{border-style:solid;border-color:var(--vb)}
-.card.cnew.rejected { border-style: solid !important; border-color: var(--red) !important; background: #fff5f5 !important; }
-.card.cnew.rejected .new-banner { background: #fee2e2 !important; border-bottom: 1px solid #fca5a5 !important; }
-
-.card-sum{display:flex;align-items:center;gap:.48rem;padding:.45rem .72rem;cursor:pointer;user-select:none;border-bottom:1px solid var(--g100);transition:background var(--tr)}
-.card-sum:hover{background:var(--g50)}
-.cs-title{flex:1;font-size:.82rem;font-weight:600;color:var(--black-dipta);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.cs-badge{font-size:.66rem;font-weight:700;padding:.1rem .42rem;border-radius:99px;flex-shrink:0;white-space:nowrap}
-.bp{background:#fff7ed;color:var(--orange);border:1px solid #fed7aa}
-.bs{background:#f0fdf4;color:var(--green);border:1px solid #bbf7d0}
-.bdismiss{background:#fef2f2;color:var(--red);border:1px solid #fecaca}
-
-.cs-chev{font-size:.62rem;color:var(--gray-dipta);transition:transform var(--tr);flex-shrink:0}
-.card.expanded .cs-chev{transform:rotate(180deg)}
-
-.card-body{display:none}
-.card.expanded .card-body{display:block}
-
-.admin-alert { background: #fef2f2; border: 1px solid #fca5a5; padding: .6rem; border-radius: 6px; margin: .5rem .72rem; color: #991b1b; font-size: .8rem; }
-.admin-alert-ok { background: #f0fdf4; border: 1px solid #bbf7d0; padding: .6rem; border-radius: 6px; margin: .5rem .72rem; color: #166534; font-size: .8rem; font-weight: bold;}
-
-.new-banner{display:flex;align-items:center;gap:.48rem;padding:.48rem .72rem;background:linear-gradient(135deg,var(--vp),#ede9fe);border-bottom:1px dashed var(--vb);transition:background var(--tr)}
-.new-label{display:flex;align-items:center;gap:.38rem;font-size:.74rem;font-weight:800;color:var(--violet);text-transform:uppercase;letter-spacing:.05em;flex:1;overflow:hidden;}
-.new-pill{background:var(--violet);color:#fff;font-size:.61rem;padding:.07rem .38rem;border-radius:99px;font-weight:700;flex-shrink:0;}
-.new-pill.rejected-pill { background: var(--red) !important; }
-.new-title-text{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--violet);font-weight:700;text-transform:none;}
-
-.btn-rm{background:transparent;border:1px solid transparent;color:var(--gray-dipta);cursor:pointer;font-size:.75rem;font-weight:600;padding:.2rem .5rem;border-radius:6px;transition:all var(--tr);flex-shrink:0;display:flex;align-items:center;gap:.25rem;}
-.btn-rm:hover{color:var(--red);background:#fee2e2;border-color:#fecaca;}
-
-.acc{border-bottom:1px solid var(--g100)}
-.acc-hdr{display:flex;align-items:center;gap:.42rem;padding:.4rem .72rem;cursor:pointer;user-select:none;transition:background var(--tr)}
-.acc-hdr:hover{background:var(--g50)}
-.acc-arr{font-size:.6rem;color:var(--gray-dipta);transition:transform var(--tr);flex-shrink:0;width:10px;text-align:center}
-.acc.open .acc-arr{transform:rotate(180deg)}
-.acc-lbl{font-size:.69rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;flex:1}
-.le{color:var(--navy)}.ld{color:var(--navy2)}.la{color:#0369a1}.lev{color:#0f766e}
-.acc-dot{width:6px;height:6px;border-radius:50%;background:var(--orange);flex-shrink:0;opacity:0;transition:opacity var(--tr)}
-.acc.has-content .acc-dot{opacity:1}
-.acc.has-content .acc-hdr{background:#fafffd}
-.acc-body{display:none;padding:.42rem .72rem .58rem;border-top:1px solid var(--g100);background:var(--g50)}
-.acc.open .acc-body{display:block}
-
-.ro{background:var(--white);border-left:3px solid var(--g200);padding:.42rem .58rem;border-radius:0 6px 6px 0;white-space:pre-wrap;font-size:.81rem;color:var(--black-dipta);cursor:not-allowed;line-height:1.55;user-select:none;margin-bottom:.42rem}
-.ro.empty{color:var(--gray-dipta);font-style:italic;font-size:.78rem;border-left-color:var(--g100)}
-.ro-e{border-left-color:var(--navy)}.ro-d{border-left-color:var(--navy2)}.ro-a{border-left-color:#0369a1}.ro-ev{border-left-color:#0f766e}
-
-.prop-lbl{font-size:.69rem;color:var(--orange);font-weight:700;margin-bottom:.2rem;display:block}
-.prop-ta{font-size:.81rem;resize:vertical;min-height:54px;background:#fffbf5;border-color:#fed7aa;border-radius:7px;transition:all var(--tr)}
-.prop-ta:focus{border-color:var(--orange);outline:none}
-
-.new-body{padding:.62rem .72rem;background:var(--white)}
-.nf{margin-bottom:.62rem}
-.nf-lbl{font-size:.69rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.22rem;display:flex;align-items:center;gap:.3rem}
-.nta{font-size:.81rem;resize:vertical;border-radius:7px;border-color:var(--vb);background:var(--white); transition: all var(--tr);}
-.nta:focus{border-color:var(--violet);outline:none}
-.nta.nta-t{min-height:44px;font-weight:600;border-color:var(--violet)}
-.nta.nta-b{min-height:54px}
-
-.az{display:flex;align-items:flex-start;gap:.58rem;flex-wrap:wrap;padding:.52rem .72rem;background:var(--g50);border-top:1.5px solid var(--g100);border-radius:0 0 calc(var(--r) - 2px) calc(var(--r) - 2px)}
-.card.cnew .az{background:#f3f0ff;border-top-color:var(--vb)}
-.chk-wrap{display:flex;align-items:center;gap:.36rem;cursor:pointer;flex-shrink:0;padding-top:.07rem}
-.chk-wrap input{width:15px;height:15px;accent-color:var(--navy);cursor:pointer}
-.chk-wrap span{font-size:.78rem;font-weight:600;color:var(--black-dipta);white-space:nowrap}
-.cmt-w{flex:1;min-width:150px}
-.cmt-w textarea{font-size:.78rem;resize:vertical;min-height:38px;border-radius:7px}
-.btn-sc{padding:.36rem .72rem;font-size:.76rem;flex-shrink:0;align-self:flex-end}
-.btn-sn{background:var(--violet);color:#fff;padding:.36rem .72rem;font-size:.76rem;flex-shrink:0;align-self:flex-end;border:none;border-radius:8px;cursor:pointer;font-weight:600;transition:background var(--tr)}
-.btn-sn:hover{background:#6d28d9}.btn-sn:disabled{opacity:.5;cursor:not-allowed}
-
-.btn-add{display:flex;align-items:center;justify-content:center;gap:.38rem;background:transparent;border:1.5px dashed var(--vb);border-radius:8px;padding:.42rem .82rem;font-size:.78rem;font-weight:600;color:var(--violet);cursor:pointer;transition:all var(--tr);margin-top:.32rem;width:100%}
-.btn-add:hover{background:var(--vp);border-color:var(--violet)}
-
-/* ══ VISTA D'ADMINISTRACIÓ ══ */
-.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
-.kpi-card { background: white; padding: 1.5rem; border-radius: var(--r); box-shadow: var(--sh); border-left: 5px solid var(--violet); }
-.kpi-num { font-size: 2.5rem; font-weight: 800; color: var(--violet); line-height: 1; margin-bottom: 0.2rem; }
-.kpi-lbl { font-size: 0.8rem; color: var(--gray-dipta); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
-
-.admin-section { background: white; padding: 1.5rem; border-radius: var(--r); box-shadow: var(--sh); margin-bottom: 2rem; }
-.admin-title { font-size: 1.1rem; font-weight: 800; color: var(--navy); margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;}
-.admin-table { width: 100%; border-collapse: collapse; text-align: left; }
-.admin-table th { background: var(--g50); padding: 0.75rem 1rem; font-size: 0.75rem; text-transform: uppercase; color: var(--g500); font-weight: 700; border-bottom: 2px solid var(--g100); }
-.admin-table td { padding: 0.8rem 1rem; font-size: 0.85rem; border-bottom: 1px solid var(--g100); vertical-align: middle; }
-.admin-table tr:hover { background: #f8fafc; }
-.btn-sm { padding: 0.4rem 0.8rem; font-size: 0.75rem; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; }
-.btn-sm-vio { background: var(--vp); color: var(--violet); border: 1px solid var(--vb); }
-.btn-sm-vio:hover { background: #ede9fe; }
-
-.badge-pend { background: #fff7ed; color: var(--orange); padding: 3px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; border: 1px solid #fed7aa;}
-.badge-ok { background: #f0fdf4; color: var(--green); padding: 3px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; border: 1px solid #bbf7d0;}
-.badge-ko { background: #fef2f2; color: var(--red); padding: 3px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; border: 1px solid #fecaca;}
-
-/* MODAL ADMIN */
-.modal-overlay { position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.6); z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 1rem; opacity: 0; pointer-events: none; transition: opacity var(--tr); }
-.modal-overlay.open { opacity: 1; pointer-events: all; }
-.modal { background: white; border-radius: 12px; width: 100%; max-width: 800px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 20px 40px rgba(0,0,0,0.2); transform: translateY(20px); transition: transform var(--tr); }
-.modal-overlay.open .modal { transform: translateY(0); }
-.modal-header { padding: 1rem 1.5rem; border-bottom: 1px solid var(--g100); display: flex; justify-content: space-between; align-items: center; }
-.modal-header h2 { font-size: 1.1rem; color: var(--navy); }
-.close-btn { background: transparent; border: none; font-size: 1.5rem; cursor: pointer; color: var(--g300); }
-.modal-body { padding: 1.5rem; overflow-y: auto; flex: 1; }
-.modal-footer { padding: 1rem 1.5rem; background: var(--g50); border-top: 1px solid var(--g100); border-radius: 0 0 12px 12px; display: flex; justify-content: flex-end; gap: 0.5rem; }
-
-.admin-item-box { background: var(--g50); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid var(--g100); }
-.admin-item-box strong { color: var(--navy); display: block; margin-bottom: 0.2rem; font-size: 0.75rem; text-transform: uppercase; }
-.admin-item-box p { font-size: 0.9rem; margin-bottom: 0.8rem; white-space: pre-wrap; }
-
-/* Vista Side-by-Side pel modal */
-.side-by-side { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
-.sb-col { background: var(--white); border: 1px solid var(--g100); border-radius: 8px; overflow: hidden;}
-.sb-hdr { background: var(--g50); padding: 0.5rem 0.8rem; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; border-bottom: 1px solid var(--g100); color: var(--g500);}
-.sb-body { padding: 1rem; font-size: 0.85rem; line-height: 1.5; white-space: pre-wrap; max-height: 300px; overflow-y: auto;}
-.sb-diff { background: #fffbeb; color: #92400e; font-style: italic; border-left: 3px solid #f59e0b;}
-
-/* ══ VISTA D'IMPRESSIÓ (PDF) ══ */
-#print-area { display: none; background: white; padding: 20px; color: black; }
+/* ══ IMPRESSIÓ ══ */
+#print-area { display: none; padding: 40px; }
 @media print {
-  body { background: white; }
-  #s1, #s2, .topbar, .crit-tabs, .toolbar, #admin-view, #toasts, .modal-overlay { display: none !important; }
-  #print-area { display: block !important; }
-  .p-crit { font-size: 24px; color: var(--navy); border-bottom: 3px solid var(--navy); margin: 40px 0 20px; padding-bottom: 5px; font-weight: 800; page-break-after: avoid;}
-  .p-sub { font-size: 18px; color: var(--navy2); margin: 20px 0 15px; font-weight: 700; page-break-after: avoid;}
-  .p-card { border: 1px solid #e2e8f0; padding: 15px; margin-bottom: 15px; border-radius: 8px; page-break-inside: avoid; }
-  .p-title { font-size: 14px; font-weight: bold; margin-bottom: 10px; color: black; }
-  .p-sec { font-size: 12px; margin-bottom: 15px; line-height: 1.5; text-align: justify;}
-  .p-sec-lbl { font-weight: bold; color: var(--gray-dipta); display: block; text-transform: uppercase; font-size: 10px; margin-bottom: 2px;}
-  .p-changed { background: #f0fdf4; padding: 5px; border-radius: 4px; border: 1px dashed var(--green); }
-  .p-badge-ch { display: inline-block; font-size: 8px; background: var(--green); color: white; padding: 1px 4px; border-radius: 3px; margin-bottom: 2px; }
+  body * { visibility: hidden; }
+  #print-area, #print-area * { visibility: visible; }
+  #print-area { display: block; position: absolute; left: 0; top: 0; width: 100%; }
+  .p-changed { background: #f0fdf4 !important; border: 1px dashed var(--green) !important; padding: 10px; }
 }
 
-#toasts{position:fixed;bottom:1rem;right:1rem;z-index:9999;display:flex;flex-direction:column;gap:.38rem;max-width:280px}
-.toast{background:var(--black-dipta);color:#fff;padding:.58rem .82rem;border-radius:9px;font-size:.79rem;font-weight:500;animation:fu .2s ease;box-shadow:var(--sh2)}
-.tok{background:#166534}.terr{background:#991b1b}.tinfo{background:var(--navy)}.tvio{background:var(--violet)}
-@keyframes fu{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+/* ══ UTILS ══ */
+.hidden { display: none !important; }
+.badge { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+.b-pend { background: #fff7ed; color: #c2410c; }
+.b-ok { background: #dcfce7; color: #15803d; }
 </style>
 </head>
 <body>
 
 <div id="s1">
-  <div class="lbox">
-    <div class="logo">
-      <img src="DIPTA_H_col.png" alt="Logo La DipTa">
-      <div><h1>Revisió Memòria EFQM</h1><p>Criteris Agents · Lògica REDER</p></div>
+    <div class="lbox">
+        <h2 style="margin-bottom:1rem; color:var(--navy)">Accés Revisió EFQM</h2>
+        <input type="email" id="fe" placeholder="el-teu-correu@dipta.cat" style="width:100%; padding:0.8rem; margin-bottom:1rem; border:1.5px solid var(--g100); border-radius:8px;">
+        <button class="btn btn-primary" style="width:100%" onclick="doLogin()">Entrar</button>
+        <div id="ferr" style="color:red; margin-top:0.5rem; font-size:0.8rem; display:none"></div>
     </div>
-    <div id="wblock" class="hidden">
-      <div class="welcome-box">
-        <div><strong id="wname"></strong><small id="wsub"></small></div>
-        <button class="btn btn-ghost" style="font-size:.72rem;padding:.28rem .62rem" onclick="clearSess()">No soc jo</button>
-      </div>
-      <button class="btn btn-primary btn-full" onclick="goS2()">Continuar →</button>
-    </div>
-    <div id="lform">
-      <label for="fe">Correu corporatiu <span style="text-transform:lowercase; opacity:0.7; font-weight:500; letter-spacing:normal;">(@dipta.cat)</span></label>
-      <input id="fe" type="email" placeholder="usuari@dipta.cat" autocomplete="email" onkeypress="if(event.key==='Enter') doLogin()"/>
-      <div id="ferr" class="err hidden"></div>
-      <button id="btn-login" class="btn btn-primary btn-full" onclick="doLogin()">Accedir a la revisió</button>
-    </div>
-  </div>
 </div>
 
 <div id="s2">
-  <div class="topbar">
-    <div class="tb-l">
-      <div class="tb-title">Revisió Memòria EFQM</div>
+    <div class="topbar">
+        <strong id="tb-user">Carregant...</strong>
+        <button class="btn btn-ko btn-sm" onclick="location.reload()">Sortir</button>
     </div>
-    <div class="tb-r">
-      <div class="tb-sub" id="tb-user" style="margin-right: 1rem;"></div>
-      <div class="prog-wrap" id="top-prog">
-        <div class="prog-track"><div class="prog-fill" id="pfill" style="width:0%"></div></div>
-        <span class="prog-lbl" id="plbl">0 / 0</span>
-      </div>
-      <button class="btn btn-danger" style="font-size:.72rem;padding:.3rem .62rem" onclick="doLogout()">Tancar sessió</button>
+    <div class="crit-tabs" id="ctabs"></div>
+    <div class="main">
+        <div class="scroll-area" id="sarea"></div>
+        <div class="scroll-area hidden" id="admin-view"></div>
     </div>
-  </div>
-
-  <div class="crit-tabs" id="ctabs"></div>
-
-  <div class="main">
-    <div class="toolbar" id="main-toolbar">
-      <div class="tog-group">
-        <button class="tog-btn active" onclick="setF('all',this)">Tots</button>
-        <button class="tog-btn" onclick="setF('pending',this)">Pendents de validar</button>
-        <button class="tog-btn" onclick="setF('validated',this)">Validats i Desats</button>
-        <button class="tog-btn" onclick="setF('new',this)">Nous proposats</button>
-      </div>
-      <div class="sw">
-        <span class="s-ico">🔍</span>
-        <input type="text" id="srch" placeholder="Cerca…" oninput="applyF()"/>
-      </div>
-    </div>
-    
-    <div class="scroll-area" id="sarea"></div>
-    <div class="scroll-area hidden" id="admin-view" style="background: var(--bg);"></div>
-  </div>
 </div>
 
-<div class="modal-overlay" id="admin-modal">
-  <div class="modal">
-    <div class="modal-header">
-      <h2 id="modal-title">Revisió</h2>
-      <button class="close-btn" onclick="closeModal()">✕</button>
+<div class="modal-overlay" id="modal-rev">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="m-title">Revisió de Propostes</h3>
+            <button onclick="closeModal()" style="border:none; background:none; font-size:1.5rem; cursor:pointer;">&times;</button>
+        </div>
+        <div class="modal-body" id="m-body">
+            </div>
+        <div style="padding:1rem; border-top:1px solid var(--g100); display:flex; justify-content:flex-end; gap:1rem; background:var(--g50)">
+            <button class="btn btn-ko" onclick="adminAction('Descartat')">Descartar-ho tot</button>
+            <button class="btn btn-ok" onclick="adminAction('Revisat')">Desar decisions</button>
+        </div>
     </div>
-    <div class="modal-body" id="modal-content"></div>
-    
-    <div id="admin-feedback-section" style="padding: 0 1.5rem 1rem;">
-      <label style="margin-top:0;">Comentari intern (Opcional)</label>
-      <textarea id="admin-comment" rows="2" placeholder="Anota el motiu de la decisió..."></textarea>
-    </div>
-
-    <div class="modal-footer" id="modal-footer">
-      <button class="btn btn-danger" id="btn-ko" onclick="submitAdminDecision('Descartat')">❌ Descartar proposta</button>
-      <button class="btn btn-primary" id="btn-ok" style="background:#16a34a;" onclick="submitAdminDecision('Aprovat')">✅ Aprovar per la memòria</button>
-    </div>
-  </div>
 </div>
 
 <div id="print-area"></div>
-<div id="toasts"></div>
 
 <script>
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbynrl8dl98JTPXd0sycbke2s21JtedYTIU90S21uHuWBDwNJHnvbhEIK23MDYQpQlEAEQ/exec"; 
+const URL = "https://script.google.com/macros/s/AKfycbynrl8dl98JTPXd0sycbke2s21JtedYTIU90S21uHuWBDwNJHnvbhEIK23MDYQpQlEAEQ/exec";
+let mem=[], resp=[], usuaris=[], sess=null, curR=null;
 
-let mem=[], resp=[], usuaris=[], sess=null, cards={}, curC=null, curF='all', currentAdminCardId = null;
-
-window.addEventListener('DOMContentLoaded', async ()=>{
-  const st=localStorage.getItem('efqm_v4');
-  if(st){
-    sess=JSON.parse(st);
-    document.getElementById('wname').textContent='Benvinguda/t de nou, '+sess.nom;
-    document.getElementById('wsub').textContent=sess.email+' · '+sess.area;
-    document.getElementById('wblock').classList.remove('hidden');
-    document.getElementById('lform').classList.add('hidden');
-  }
-  await loadBackendData();
-});
-
-async function api(method, body){
-  const o = { redirect: 'follow' };
-  if(method === 'POST'){ o.method = 'POST'; o.headers = { 'Content-Type': 'text/plain;charset=utf-8' }; o.body = JSON.stringify(body); }
-  const r = await fetch(APPS_SCRIPT_URL, o); return r.json();
+async function api(p){ 
+    const r = await fetch(URL, { method:'POST', mode:'no-cors', body: JSON.stringify(p)}); 
+    // Com que es no-cors, per actualitzar dades fem un reload o fetch nou
+    setTimeout(loadData, 1500);
 }
 
-async function loadBackendData(){
-  if(!APPS_SCRIPT_URL) return;
-  try{
-    const btn = $('btn-login'); if(btn) { btn.textContent = 'Carregant...'; btn.disabled = true; }
-    const d=await api('GET'); mem=d.memoria||[]; resp=d.respostes||[]; usuaris=d.usuaris||[]; 
-    const sanitize = arr => arr.forEach(r => Object.keys(r).forEach(k => r[k] = r[k] != null ? String(r[k]).trim() : ''));
-    sanitize(mem); sanitize(resp); sanitize(usuaris);
-    if(btn) { btn.textContent = 'Accedir a la revisió'; btn.disabled = false; }
-  } catch(e){ showErr($('ferr'), 'Error servidor.'); }
+async function loadData(){
+    const r = await fetch(URL); const d = await r.json();
+    mem=d.memoria; resp=d.respostes; usuaris=d.usuaris;
+    renderTabs();
 }
 
 function doLogin(){
-  const email = $('fe').value.trim().toLowerCase();
-  if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ showErr($('ferr'),'Email invàlid.'); return; }
-  const user = usuaris.find(u => String(u.email_autoritzat || '').toLowerCase() === email);
-  if(!user){ showErr($('ferr'), 'Accés denegat.'); return; }
-  sess={ nom: user.nom_usuari || 'Usuari', email: email, area: user.area_assignada || '' };
-  localStorage.setItem('efqm_v4',JSON.stringify(sess));
-  goS2();
-}
-function clearSess(){ localStorage.removeItem('efqm_v4'); sess=null; $('wblock').classList.add('hidden'); $('lform').classList.remove('hidden'); $('fe').value = ''; }
-function doLogout(){ if(document.querySelectorAll('.card.pending').length>0 && !confirm('Tens canvis pendents. Continuar?')) return; clearSess(); $('s2').style.display='none'; $('s1').style.display='flex'; }
-async function goS2(){ $('s1').style.display='none'; $('s2').style.display='flex'; $('tb-user').textContent=sess.nom+' · '+sess.area; await loadData(); }
-
-async function loadData(){
-  try {
-    if(mem.length === 0 && APPS_SCRIPT_URL) await loadBackendData();
-    mem.sort((a,b) => String(a.id || '').localeCompare(String(b.id || '')));
-    buildData(); buildTabs();
-    if(isGlobal()) showAdminView(); else { const first=Object.keys(cData).sort()[0]; if(first) selCrit(first); }
-  } catch(err) { $('sarea').innerHTML='<p style="color:var(--red);padding:2rem">Error dades</p>'; }
+    const email = document.getElementById('fe').value.toLowerCase().trim();
+    const user = usuaris.find(u => u.email_autoritzat.toLowerCase() === email);
+    if(user){
+        sess = { nom: user.nom_usuari, email, area: user.area_assignada };
+        document.getElementById('s1').style.display='none';
+        document.getElementById('s2').style.display='flex';
+        document.getElementById('tb-user').textContent = sess.nom;
+        loadData();
+    } else {
+        document.getElementById('ferr').style.display='block';
+        document.getElementById('ferr').textContent='Usuari no autoritzat.';
+    }
 }
 
-function isGlobal() { return String(sess.area || '').toLowerCase().includes('global') || String(sess.area || '').toLowerCase().includes('totes'); }
-
-function buildData(){
-  cData={}; cards={};
-  const areaUs = String(sess.area || '').toLowerCase();
-  const esGlob = isGlobal();
-  const llistaAreasUs = areaUs.split(',').map(a => a.trim());
-  mem.forEach(row=>{
-    if(!row.criteri || !row.subcriteri) return; 
-    const llistaAreasFila = String(row.area||'').toLowerCase().split(',').map(a=>a.trim());
-    if(!esGlob && !llistaAreasUs.some(area => llistaAreasFila.includes(area))) return;
-    const c=String(row.criteri), s=String(row.subcriteri);
-    if(!cData[c]) cData[c]={titol:row.titol_criteri||'',subs:{}};
-    if(!cData[c].subs[s]) cData[c].subs[s]={titol:row.titol_subcriteri||'',que_diu:'',preg_avaluadors:'',informe_ant:'',rows:[]};
-    const target = cData[c].subs[s];
-    if(row.que_diu_el_model?.trim()) target.que_diu = row.que_diu_el_model;
-    if(row.preg_avaluadors?.trim()) target.preg_avaluadors = row.preg_avaluadors;
-    if(row.informe_ant?.trim()) target.informe_ant = row.informe_ant;
-    cData[c].subs[s].rows.push(row);
-  });
+function renderTabs(){
+    const nav = document.getElementById('ctabs'); nav.innerHTML='';
+    const esAdmin = sess.area.toLowerCase().includes('global');
+    if(esAdmin){
+        const b = document.createElement('button'); b.className='ctab ctab-admin'; b.textContent='👑 Administració';
+        b.onclick = () => showAdmin(); nav.appendChild(b);
+    }
+    // Agrupar criteris
+    const crits = [...new Set(mem.map(m => m.criteri))].sort();
+    crits.forEach(c => {
+        const b = document.createElement('button'); b.className='ctab'; b.textContent='Criteri ' + c;
+        b.onclick = () => renderCrit(c); nav.appendChild(b);
+    });
 }
 
-function buildTabs(){
-  const nav=$('ctabs'); nav.innerHTML='';
-  if(isGlobal()) { const ba=el('button','ctab ctab-admin','👑 Administració'); ba.onclick=()=>showAdminView(); nav.appendChild(ba); }
-  Object.keys(cData).sort().forEach(c=>{
-    const b=el('button','ctab normal-tab', ''); b.dataset.c=c;
-    b.innerHTML=escH(c+(cData[c].titol?' — '+cData[c].titol:''))+' <span class="tab-dot"></span>';
-    b.onclick=()=>selCrit(c); nav.appendChild(b);
-  });
-}
+function showAdmin(){
+    document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('active'));
+    document.querySelector('.ctab-admin').classList.add('active');
+    document.getElementById('sarea').classList.add('hidden');
+    const av = document.getElementById('admin-view'); av.classList.remove('hidden');
+    
+    // Filtres millores
+    const millores = resp.filter(r => !r.id_enfocament.startsWith('NEW-'));
+    const nous = resp.filter(r => r.id_enfocament.startsWith('NEW-'));
 
-function selCrit(c){
-  curC=c; $('admin-view').classList.add('hidden'); $('sarea').classList.remove('hidden'); $('main-toolbar').style.display='flex'; $('top-prog').style.display='flex';
-  document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('active'));
-  document.querySelector('.ctab[data-c="'+c+'"]').classList.add('active');
-  renderCrit(c);
-}
-
-function showAdminView(){
-  curC='admin'; $('sarea').classList.add('hidden'); $('admin-view').classList.remove('hidden'); $('main-toolbar').style.display='none'; $('top-prog').style.display='none';
-  document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('active'));
-  document.querySelector('.ctab-admin').classList.add('active');
-  renderAdminDashboard();
-}
-
-function renderCrit(c){
-  const area=$('sarea'); area.innerHTML=''; if(!cData[c]) return;
-  const exNew=(cards[c]||[]).filter(x=>x.isNew); cards[c]=[];
-  Object.keys(cData[c].subs).sort().forEach(s=>{
-    const sub=cData[c].subs[s]; const blk=el('div','sb'); blk.dataset.s=s;
-    const sticky=el('div','sub-sticky'); const tr=el('div','sub-title-row');
-    tr.appendChild(el('span','sub-num',s));
-    const titleWrap = el('div','sub-title', (sub.titol||s));
-    const subProg = el('span', 'sub-prog', '0 / 0');
-    titleWrap.appendChild(subProg); tr.appendChild(titleWrap);
-    const actions = el('div'); actions.style.display = 'flex'; actions.style.gap = '.5rem';
-    if(sub.que_diu){ const eb=el('button','efqm-btn model-btn','📖 Què diu el model?'); const ep=el('div','efqm-panel',sub.que_diu); eb.onclick=()=>{ ep.classList.toggle('open'); }; actions.appendChild(eb); sticky.appendChild(ep); }
-    if(sub.preg_avaluadors){ const evb=el('button','efqm-btn eval-btn','❓ Preguntes avaluadors'); const evp=el('div','eval-panel',sub.preg_avaluadors); evb.onclick=()=>{ evp.classList.toggle('open'); }; actions.appendChild(evb); sticky.appendChild(evp); }
-    if(sub.informe_ant){ const ib=el('button','efqm-btn prev-btn','💡 Informe anterior'); const ip=el('div','prev-panel',sub.informe_ant); ib.onclick=()=>{ ip.classList.toggle('open'); }; actions.appendChild(ib); sticky.appendChild(ip); }
-    tr.appendChild(actions); sticky.insertBefore(tr, sticky.firstChild); blk.appendChild(sticky);
-    sub.rows.forEach(row=>{ const card=buildCard(row,c); blk.appendChild(card.el); cards[c].push(card); });
-    exNew.filter(x=>x.sub===s).forEach(x=>{ blk.appendChild(x.el); cards[c].push(x); });
-    const strSearch = 'NEW-' + c + '-' + s + '-';
-    resp.filter(r => r.email === sess.email && r.id_enfocament && String(r.id_enfocament).startsWith(strSearch)).forEach(r => { if (!exNew.find(x => x.id === r.id_enfocament)) { const card = buildNewCard(r.id_enfocament, c, s, sub.titol, r); blk.appendChild(card.el); cards[c].push(card); } });
-    const ab=el('button','btn-add'); ab.innerHTML='➕ Proposar un nou enfocament per a <strong>'+escH(s)+'</strong>'; ab.onclick=()=>insertNew(c,s,sub.titol,blk,ab); blk.appendChild(ab); area.appendChild(blk);
-  });
-  updProgress();
-}
-
-function buildCard(row,crit){
-  const id=row.id||''; const prev=resp.find(r=>r.email===sess.email&&r.id_enfocament===id);
-  const isChecked = prev&&(prev.validat===true||prev.validat==='TRUE'||prev.validat==='true'||prev.validat==='1'||prev.validat===1);
-  const card=el('div','card '+(isChecked?'saved':'pending')); card.dataset.id=id; card.dataset.isNew='0';
-  const sum=el('div','card-sum'); sum.appendChild(el('span','cs-title',row.titol_enfocament));
-  sum.appendChild(el('span','cs-badge '+(isChecked?'bs':'bp'), isChecked?'Revisat ✅':'● Pendent'));
-  sum.appendChild(el('span','cs-chev','▼')); sum.onclick=()=>card.classList.toggle('expanded'); card.appendChild(sum);
-  const body=el('div','card-body');
-  const BLOCKS=[ {lbl:'Enfocament', acls:'le', text:row.enfocament, taKey:null}, {lbl:'Desplegament', acls:'ld', text:row.desplegament, taKey:'sug_desplegament', taVal:prev?.sug_desplegament}, {lbl:'Avaluació i Revisió',acls:'la', text:row.avaluacio, taKey:'sug_avaluacio', taVal:prev?.sug_avaluacio}, {lbl:'Evidències', acls:'lev', text:row.evidencies, taKey:'sug_evidencies', taVal:prev?.sug_evidencies} ];
-  BLOCKS.forEach(b=>{
-    const acc=el('div','acc'); if(b.taKey&&(b.taVal||'').trim()) acc.classList.add('has-content');
-    const hdr=el('div','acc-hdr'); hdr.innerHTML='<span class="acc-arr">▼</span><span class="acc-lbl '+b.acls+'">'+escH(b.lbl)+'</span><span class="acc-dot"></span>';
-    hdr.onclick=(e)=>{e.stopPropagation(); acc.classList.toggle('open');};
-    const abody=el('div','acc-body'); abody.appendChild(el('div',(b.text?'ro':'ro empty'), b.text||'— Buit —'));
-    if(b.taKey){ abody.appendChild(el('span','prop-lbl','Millora')); const ta=el('textarea','prop-ta'); ta.value=b.taVal||''; ta.oninput=()=>markPending(id); abody.appendChild(ta); ta.dataset.key=b.taKey; }
-    acc.appendChild(hdr); acc.appendChild(abody); body.appendChild(acc);
-  });
-  body.appendChild(makeAZ(id,prev,false)); card.appendChild(body); return {el:card, id};
-}
-
-function makeAZ(id,prev,isNew){
-  const az=el('div','az');
-  if(!isNew){
-    const cl=el('label','chk-wrap'); const chk=el('input','chk-v'); chk.type='checkbox'; chk.dataset.card=id;
-    const isDone = prev&&(prev.validat===true||prev.validat==='TRUE'||prev.validat==='true'||prev.validat==='1'||prev.validat===1);
-    chk.checked = isDone; if(isDone) chk.disabled=true; else chk.onchange=()=>markPending(id);
-    cl.appendChild(chk); cl.appendChild(el('span','','✅ Revisió finalitzada')); az.appendChild(cl);
-  }
-  const cw=el('div','cmt-w'); const cta=el('textarea','ta-cmt'); cta.value=prev?.comentari_general||''; cta.oninput=()=>markPending(id); cw.appendChild(cta); az.appendChild(cw);
-  const sb=el('button','btn btn-primary btn-sc','Desar');
-  sb.onclick=()=>isNew?saveNew(id,sb):saveExisting(id,sb); az.appendChild(sb); return az;
-}
-
-function insertNew(crit,sub,subTitol,blk,addBtn){
-  const tid='NEW-'+crit+'-'+sub+'-'+Date.now(); const card=buildNewCard(tid,crit,sub,subTitol);
-  blk.insertBefore(card.el,addBtn); cards[crit]=cards[crit]||[]; cards[crit].push(card); updProgress();
-}
-
-function buildNewCard(tid,crit,sub,subTitol,prev=null){
-  const card=el('div','card cnew '+(prev?'saved':'pending expanded')); 
-  const rejected = prev && prev.estat_admin === 'Descartat';
-  if(rejected) card.classList.add('rejected'); card.dataset.id=tid; card.dataset.isNew='1';
-  const ban=el('div','new-banner'); ban.onclick=()=>card.classList.toggle('expanded');
-  const nl=el('div','new-label'); nl.innerHTML=`<span class="new-pill ${rejected?'rejected-pill':''}">${rejected?'DESCARTAT':'NOU'}</span>`;
-  const titleSpan = el('span', 'new-title-text', prev?.sug_titol_enfocament || 'Nou Enfocament...'); nl.appendChild(titleSpan);
-  const rm=el('button','btn-rm','🗑️'); 
-  rm.onclick=async(e)=>{ e.stopPropagation(); if(confirm('Eliminar?')){ try{ await api('POST',{email:sess.email,id_enfocament:tid,esborrar:true}); card.remove(); loadData(); }catch(e){}} };
-  ban.appendChild(nl); ban.appendChild(el('span','cs-chev','▼')); ban.appendChild(rm); card.appendChild(ban);
-  const body=el('div','card-body new-body');
-  if(rejected) body.appendChild(el('div','admin-alert','❌ Descartat: '+prev.comentari_admin));
-  const NFIELDS=[ {key:'sug_titol_enfocament', lbl:'Títol'}, {key:'sug_enfocament', lbl:'Enfocament'}, {key:'sug_desplegament', lbl:'Desplegament'}, {key:'sug_avaluacio', lbl:'Avaluació'}, {key:'sug_evidencies', lbl:'Evidències'} ];
-  NFIELDS.forEach(f=>{
-    body.appendChild(el('div','nf-lbl', f.lbl)); const ta=el('textarea','nta'); ta.value=prev?prev[f.key]:''; ta.dataset.key=f.key; 
-    ta.oninput=()=>{ markPending(tid); if(f.key==='sug_titol_enfocament') titleSpan.textContent=ta.value; }; body.appendChild(ta);
-  });
-  body.appendChild(makeAZ(tid,prev,true)); card.appendChild(body); return {el:card, id:tid, isNew:true};
-}
-
-/* ══ DASHBOARD ADMIN ══ */
-function renderAdminDashboard(){
-    const area=$('admin-view'); area.innerHTML='';
-    const noves = resp.filter(r => String(r.id_enfocament).startsWith('NEW-'));
-    const millores = resp.filter(r => !String(r.id_enfocament).startsWith('NEW-') && (r.sug_desplegament||r.sug_avaluacio||r.sug_evidencies||r.comentari_general) && (r.estat_admin !== 'Aprovat' && r.estat_admin !== 'Descartat'));
-    const pendentsVal = noves.filter(r => !r.estat_admin || r.estat_admin === '' || r.estat_admin === 'Pendent');
-
-    area.innerHTML = `
+    av.innerHTML = `
         <div class="kpi-grid">
-            <div class="kpi-card"><div class="kpi-num">${noves.length}</div><div class="kpi-lbl">Nous Enfocaments</div></div>
-            <div class="kpi-card" style="border-left-color:var(--orange)"><div class="kpi-num" style="color:var(--orange)">${pendentsVal.length}</div><div class="kpi-lbl">Pendents Validar</div></div>
-            <div class="kpi-card" style="border-left-color:var(--green)"><div class="kpi-num" style="color:var(--green)">${millores.length}</div><div class="kpi-lbl">Millores Pendents</div></div>
+            <div class="kpi-card"><div class="kpi-num">${nous.length}</div><div style="font-size:0.7rem">NOUS ENFOCAMENTS</div></div>
+            <div class="kpi-card" style="border-left-color:var(--orange)"><div class="kpi-num">${millores.length}</div><div style="font-size:0.7rem">MILLORES PROPOSADES</div></div>
         </div>
-        <div style="margin-bottom:2rem; display:flex; justify-content:space-between; align-items:center;">
-             <button class="btn btn-primary" onclick="generatePDF()">📄 Generar Informe d'Esborrany Final (Fusionat)</button>
-        </div>
-        <div class="admin-section"><div class="admin-title">📋 Nous Enfocaments i Millores Pendents</div><table class="admin-table" id="admin-table"><thead><tr><th>Tipus</th><th>Enfocament</th><th>Usuari</th><th>Estat</th><th>Acció</th></tr></thead><tbody></tbody></table></div>
+        <button class="btn btn-primary" style="margin-bottom:1rem" onclick="generatePDF()">📄 Generar Esborrany Final Fusionat</button>
+        <table class="admin-table">
+            <thead><tr><th>Tipus</th><th>Enfocament / Canvis</th><th>Usuari</th><th>Estat</th><th>Acció</th></tr></thead>
+            <tbody id="admin-tbody"></tbody>
+        </table>
     `;
 
-    const tbody = area.querySelector('tbody');
-    noves.concat(millores).forEach(r => {
-        const isNew = String(r.id_enfocament).startsWith('NEW-');
-        const orig = !isNew ? mem.find(m => m.id === r.id_enfocament) : null;
-        const tr = el('tr');
-        tr.innerHTML = `<td>${isNew?'NOU':'MILLORA'}</td><td><b>${escH(isNew?r.sug_titol_enfocament:orig?.titol_enfocament)}</b></td><td>${r.nom_visible}</td><td><span class="badge-pend">${r.estat_admin||'Pendent'}</span></td><td><button class="btn-sm btn-sm-vio" onclick="openAdminModal('${r.id_enfocament}', ${isNew})">Revisar</button></td>`;
+    const tbody = document.getElementById('admin-tbody');
+    resp.forEach(r => {
+        const isNew = r.id_enfocament.startsWith('NEW-');
+        const m = mem.find(x => x.id === r.id_enfocament);
+        const tr = document.createElement('tr');
+        
+        let indicators = '';
+        if(!isNew) {
+            if(r.sug_desplegament) indicators += '<span class="ind ind-d">D</span>';
+            if(r.sug_avaluacio) indicators += '<span class="ind ind-a">A</span>';
+            if(r.sug_evidencies) indicators += '<span class="ind ind-e">E</span>';
+            if(r.comentari_general) indicators += '<span class="ind ind-c">C</span>';
+        }
+
+        tr.innerHTML = `
+            <td><span class="badge ${isNew?'b-ok':'b-pend'}">${isNew?'NOU':'MILLORA'}</span></td>
+            <td>
+                <strong>${isNew ? r.sug_titol_enfocament : (m?.titol_enfocament || '---')}</strong>
+                <div class="indicator-row">${indicators}</div>
+            </td>
+            <td>${r.nom_visible}</td>
+            <td><span class="badge">${r.estat_admin || 'Pendent'}</span></td>
+            <td><button class="btn btn-primary btn-sm" onclick="openReview('${r.id_enfocament}', '${r.email}')">Revisar</button></td>
+        `;
         tbody.appendChild(tr);
     });
 }
 
-function openAdminModal(id, isNew){
-    const r = resp.find(x => x.id_enfocament === id); currentAdminCardId = r;
-    const content = $('modal-content');
+function openReview(id, email){
+    curR = resp.find(x => x.id_enfocament === id && x.email === email);
+    const isNew = id.startsWith('NEW-');
+    const m = mem.find(x => x.id === id);
+    const body = document.getElementById('m-body');
+    body.innerHTML = '';
+
     if(isNew){
-        content.innerHTML = `<div class="admin-item-box"><strong>Títol</strong><p>${r.sug_titol_enfocament}</p></div><div class="admin-item-box"><strong>Enfocament</strong><p>${r.sug_enfocament}</p></div><div class="admin-item-box"><strong>Desplegament</strong><p>${r.sug_desplegament}</p></div><div class="admin-item-box"><strong>Avaluació</strong><p>${r.sug_avaluacio}</p></div><div class="admin-item-box"><strong>Evidències</strong><p>${r.sug_evidencies}</p></div>`;
+        body.innerHTML = `<div class="rev-block"><div class="rev-header">NOU ENFOCAMENT</div><div style="padding:1rem"><strong>${curR.sug_titol_enfocament}</strong><p>${curR.sug_enfocament}</p></div></div>`;
     } else {
-        const o = mem.find(m => m.id === r.id_enfocament); let h = '';
-        ['desplegament','avaluacio','evidencies'].forEach(k => {
-            if(r['sug_'+k]) h += `<strong>${k.toUpperCase()}</strong><div class="side-by-side"><div class="sb-col"><div class="sb-hdr">Original</div><div class="sb-body">${o[k]}</div></div><div class="sb-col"><div class="sb-hdr">Proposta</div><div class="sb-body sb-diff">${r['sug_'+k]}</div></div></div>`;
+        const fields = [
+            {k: 'desplegament', l: 'Desplegament (D)', s: 'sug_desplegament'},
+            {k: 'avaluacio', l: 'Avaluació i Revisió (A)', s: 'sug_avaluacio'},
+            {k: 'evidencies', l: 'Evidències (E)', s: 'sug_evidencies'}
+        ];
+        fields.forEach(f => {
+            if(curR[f.s]){
+                const div = document.createElement('div'); div.className='rev-block';
+                div.innerHTML = `
+                    <div class="rev-header">
+                        <span>${f.l}</span>
+                        <label class="rev-check"><input type="checkbox" id="chk-${f.k}" ${curR['aprovat_'+f.k]?'checked':''}> Aprovar aquest element</label>
+                    </div>
+                    <div class="rev-grid">
+                        <div class="rev-col orig">${m[f.k]}</div>
+                        <div class="rev-col prop">${curR[f.s]}</div>
+                    </div>
+                `;
+                body.appendChild(div);
+            }
         });
-        content.innerHTML = h;
     }
-    $('admin-modal').classList.add('open');
+    document.getElementById('modal-rev').style.display='flex';
 }
 
-async function submitAdminDecision(estat){
-    const r = currentAdminCardId;
-    try{
-        await api('POST', { email: r.email, id_enfocament: r.id_enfocament, estat_admin: estat, comentari_admin: $('admin-comment').value });
-        toast('Actualitzat'); closeModal(); await loadBackendData(); renderAdminDashboard();
-    } catch(e){ toast('Error'); }
-}
-function closeModal(){ $('admin-modal').classList.remove('open'); }
+function closeModal(){ document.getElementById('modal-rev').style.display='none'; }
 
-/* ══ LÒGICA PDF FUSIONADA ══ */
+async function adminAction(estat){
+    const updates = {
+        email: curR.email,
+        id_enfocament: curR.id_enfocament,
+        estat_admin: estat,
+        aprovat_desplegament: document.getElementById('chk-desplegament')?.checked || false,
+        aprovat_avaluacio: document.getElementById('chk-avaluacio')?.checked || false,
+        aprovat_evidencies: document.getElementById('chk-evidencies')?.checked || false
+    };
+    
+    // Enviem al servidor
+    const r = await fetch(URL, { method:'POST', body: JSON.stringify(updates)});
+    closeModal();
+    alert("Decisió desada. Les dades s'actualitzaran en uns segons.");
+    loadData();
+}
+
 function generatePDF() {
-    const pa = $('print-area'); pa.innerHTML = '<h1 style="text-align:center; color:#0083A9;">Informe d\'Esborrany Final - Memòria EFQM</h1><p style="text-align:center; font-style:italic;">Aquest document mostra el text original substituint els apartats on s\'ha aprovat una millora.</p>';
-    Object.keys(cData).sort().forEach(c => {
-        pa.innerHTML += `<div class="p-crit">Criteri ${c} - ${escH(cData[c].titol)}</div>`;
-        Object.keys(cData[c].subs).sort().forEach(s => {
-            const sub = cData[c].subs[s]; pa.innerHTML += `<div class="p-sub">${s} ${escH(sub.titol)}</div>`;
-            sub.rows.forEach(row => {
-                const approvedSug = resp.find(x => x.id_enfocament === row.id && x.estat_admin === 'Aprovat');
-                let h = `<div class="p-card"><div class="p-title">${escH(row.titol_enfocament)}</div>`;
-                ['enfocament', 'desplegament', 'avaluacio', 'evidencies'].forEach(k => {
-                    const textToDisplay = (approvedSug && approvedSug['sug_'+k]) ? approvedSug['sug_'+k] : row[k];
-                    const isChanged = approvedSug && approvedSug['sug_'+k];
-                    if(textToDisplay) {
-                        h += `<div class="p-sec ${isChanged?'p-changed':''}">
-                            <span class="p-sec-lbl">${k.toUpperCase()}</span>
-                            ${isChanged?`<span class="p-badge-ch">MILLORA APROVADA (${approvedSug.nom_visible})</span><br>`:''}
-                            ${escH(textToDisplay)}
-                        </div>`;
-                    }
-                });
-                pa.innerHTML += h + '</div>';
-            });
-            resp.filter(r => String(r.id_enfocament).startsWith('NEW-'+c+'-'+s+'-') && r.estat_admin === 'Aprovat').forEach(r => {
-                pa.innerHTML += `<div class="p-card"><span class="p-new-badge">NOU ENFOCAMENT</span><div class="p-title">${escH(r.sug_titol_enfocament)}</div><div class="p-sec">${escH(r.sug_enfocament)}</div></div>`;
-            });
+    const pa = document.getElementById('print-area');
+    pa.innerHTML = '<h1>Esborrany Memòria EFQM (Fusionat)</h1>';
+    
+    const crits = [...new Set(mem.map(m => m.criteri))].sort();
+    crits.forEach(c => {
+        pa.innerHTML += `<h2>Criteri ${c}</h2>`;
+        mem.filter(m => m.criteri === c).forEach(row => {
+            const r = resp.find(x => x.id_enfocament === row.id && x.estat_admin === 'Revisat');
+            let h = `<div style="margin-bottom:20px; border-bottom:1px solid #ccc; padding-bottom:10px;">`;
+            h += `<h3>${row.titol_enfocament}</h3>`;
+            
+            // Lògica de fusió
+            const textD = (r && r.aprovat_desplegament) ? `<div class="p-changed"><strong>[MILLORA]</strong> ${r.sug_desplegament}</div>` : row.desplegament;
+            const textA = (r && r.aprovat_avaluacio) ? `<div class="p-changed"><strong>[MILLORA]</strong> ${r.sug_avaluacio}</div>` : row.avaluacio;
+            const textE = (r && r.aprovat_evidencies) ? `<div class="p-changed"><strong>[MILLORA]</strong> ${r.sug_evidencies}</div>` : row.evidencies;
+
+            h += `<p><strong>Desplegament:</strong> ${textD}</p>`;
+            h += `<p><strong>Avaluació:</strong> ${textA}</p>`;
+            h += `<p><strong>Evidències:</strong> ${textE}</p>`;
+            h += `</div>`;
+            pa.innerHTML += h;
         });
     });
-    setTimeout(() => { window.print(); }, 500);
+    window.print();
 }
 
-/* ══ UTILS ══ */
-function markPending(id){ const c=document.querySelector('.card[data-id="'+id+'"]'); if(c){ c.classList.replace('saved','pending'); updProgress(); } }
-function markSaved(id){ const c=document.querySelector('.card[data-id="'+id+'"]'); if(c){ c.classList.replace('pending','saved'); updProgress(); } }
-function updProgress(){ 
-  let tot=0,sav=0; Object.values(cards).forEach(arr=>{ tot+=arr.length; arr.forEach(({el:e})=>{ if(e.classList.contains('saved')) sav++; }); }); 
-  $('pfill').style.width=(tot?Math.round(sav/tot*100):0)+'%'; $('plbl').textContent=sav+' / '+tot; 
-  document.querySelectorAll('.sb').forEach(blk => {
-      const cList = blk.querySelectorAll('.card[data-is-new="0"]'); if(cList.length === 0) return;
-      let sSav = 0; cList.forEach(c => { if(c.classList.contains('saved')) sSav++; });
-      const sp = blk.querySelector('.sub-prog'); if(sp) { sp.textContent = sSav + ' / ' + cList.length; sp.classList.toggle('done', sSav===cList.length); }
-  });
+function renderCrit(c){
+    document.getElementById('admin-view').classList.add('hidden');
+    document.getElementById('sarea').classList.remove('hidden');
+    document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('active'));
+    // (Faltaria marcar el tab actiu aquí)
+    const area = document.getElementById('sarea');
+    area.innerHTML = `<h2>Criteri ${c}</h2>`;
+    mem.filter(m => m.criteri === c).forEach(row => {
+        const d = document.createElement('div'); d.style = "background:white; padding:1rem; margin-bottom:1rem; border-radius:8px; shadow:var(--sh)";
+        d.innerHTML = `<strong>${row.titol_enfocament}</strong><p style="font-size:0.8rem; color:#666">${row.desplegament.substring(0,100)}...</p>`;
+        area.appendChild(d);
+    });
 }
-function setF(f,btn){ curF=f; document.querySelectorAll('.tog-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); applyF(); }
-function applyF(){
-  const kw=$('srch').value.toLowerCase().trim();
-  (cards[curC]||[]).forEach(({el:e})=>{
-    let show=true; if(curF==='pending') show = !e.classList.contains('saved'); else if(curF==='validated') show = e.classList.contains('saved'); else if(curF==='new') show = e.dataset.isNew==='1';
-    if(show&&kw) show=(e.dataset.st||'').includes(kw); e.style.display=show?'':'none';
-  });
-}
-async function saveExisting(id,btn){
-  const d={}; const c=document.querySelector('.card[data-id="'+id+'"]');
-  c.querySelectorAll('textarea[data-key]').forEach(ta=>d[ta.dataset.key]=ta.value); d.validat=c.querySelector('.chk-v')?.checked;
-  const p={ nom:sess.nom, email:sess.email, area_revisora:sess.area, id_enfocament:id, is_new:false, validat:d.validat, sug_desplegament:d.sug_desplegament, sug_avaluacio:d.sug_avaluacio, sug_evidencies:d.sug_evidencies, comentari_general:c.querySelector('.ta-cmt').value, timestamp:new Date().toISOString() };
-  await doSave(p, id, btn, d.validat);
-}
-async function saveNew(id,btn){
-  const c=document.querySelector('.card[data-id="'+id+'"]'); const d={};
-  c.querySelectorAll('textarea[data-key]').forEach(ta=>d[ta.dataset.key]=ta.value);
-  const p={ nom:sess.nom, email:sess.email, area_revisora:sess.area, id_enfocament:id, is_new:true, validat:true, sug_titol_enfocament:d.sug_titol_enfocament, sug_enfocament:d.sug_enfocament, sug_desplegament:d.sug_desplegament, sug_avaluacio:d.sug_avaluacio, sug_evidencies:d.sug_evidencies, comentari_general:c.querySelector('.ta-cmt').value, criteri:c.dataset.crit, subcriteri:c.dataset.sub, timestamp:new Date().toISOString() };
-  await doSave(p, id, btn, true);
-}
-async function doSave(p,id,btn,isDone){
-  btn.textContent='...'; try{ await api('POST',p); if(isDone) markSaved(id); toast('Desat'); } catch(e){ toast('Error','terr'); }
-  btn.textContent='Desar';
-}
-const $=id=>document.getElementById(id);
-const el=(t,c,h)=>{ const e=document.createElement(t); if(c)e.className=c; if(h!==undefined)e.textContent=h; return e; };
-const escH=t=>String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-function toast(m,c){ const t=el('div','toast '+(c||''),m); $('toasts').appendChild(t); setTimeout(()=>t.remove(),3000); }
-function showErr(e,m){ e.textContent=m; e.classList.remove('hidden'); }
+
+window.onload = loadData;
 </script>
 </body>
 </html>
