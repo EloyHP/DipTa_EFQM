@@ -61,9 +61,9 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .prog-wrap{display:flex;align-items:center;gap:.42rem}
 .prog-track{width:96px;height:5px;background:rgba(255,255,255,.22);border-radius:99px;overflow:hidden}
 .prog-fill{height:100%;background:#34d399;border-radius:99px;transition:width .4s ease}
-.prog-lbl{font-size:.69rem;opacity:.9;white-space:nowrap}
+.prog-lbl{font-size:.69rem;opacity:.9;white-space:nowrap;font-weight:600;}
 
-.crit-tabs{flex-shrink:0;background:var(--white);border-bottom:1px solid var(--g100);display:flex;overflow-x:auto;scrollbar-width:none;padding:0 1rem}
+.crit-tabs{flex-shrink:0;background:var(--white);border-bottom:1px solid var(--g100);display:flex;overflow-x:auto;scrollbar-width:none;padding:0 1rem;align-items:center;}
 .crit-tabs::-webkit-scrollbar{display:none}
 .ctab{padding:.58rem .9rem;font-size:.8rem;font-weight:600;color:var(--gray-dipta);cursor:pointer;border:none;background:transparent;border-bottom:3px solid transparent;white-space:nowrap;transition:all var(--tr);display:flex;align-items:center;gap:.36rem;flex-shrink:0}
 .ctab:hover{color:var(--navy)}.ctab.active{color:var(--navy);border-bottom-color:var(--navy)}
@@ -72,6 +72,10 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 
 .ctab-admin { color: var(--violet); }
 .ctab-admin.active { border-bottom-color: var(--violet); color: var(--violet); background: var(--vp); }
+
+/* Pestanya Usuari */
+.ctab-user { margin-left: auto; color: var(--navy); border-left: 1px solid var(--g100); padding-left: 1.2rem; }
+.ctab-user.active { background: var(--navy-pale); border-bottom-color: var(--navy); }
 
 .main{flex:1;overflow:hidden;display:flex;flex-direction:column}
 
@@ -113,12 +117,10 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .prev-panel { display:none; padding:.58rem .82rem .68rem; background:#f0fdfa; border-top:1px solid #99f6e4; font-size:.8rem; color:#115e59; white-space:pre-wrap; line-height:1.6; border-left:4px solid #0f766e; }
 .prev-panel.open { display:block; }
 
-
 /* ── CARD ── */
 .card{background:var(--white);border-radius:var(--r);box-shadow:var(--sh);margin-bottom:.5rem;border:2px solid transparent;transition:border-color var(--tr)}
 .card.saved{border-color:transparent;}
 
-/* new card normal i descartada */
 .card.cnew{border:2px dashed var(--vb);background:var(--vp)}
 .card.cnew.saved{border-style:solid;border-color:var(--vb)}
 .card.cnew.rejected { border-style: solid !important; border-color: var(--red) !important; background: #fff5f5 !important; }
@@ -140,7 +142,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .card-body{display:none}
 .card.expanded .card-body{display:block}
 
-/* Feedback Admin Alert dins la targeta */
 .admin-alert { background: #fef2f2; border: 1px solid #fca5a5; padding: .6rem; border-radius: 6px; margin: .5rem .72rem; color: #991b1b; font-size: .8rem; }
 .admin-alert-ok { background: #f0fdf4; border: 1px solid #bbf7d0; padding: .6rem; border-radius: 6px; margin: .5rem .72rem; color: #166534; font-size: .8rem; font-weight: bold;}
 
@@ -267,20 +268,8 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 #print-area { display: none; background: white; padding: 20px; color: black; }
 @media print {
   body { background: white; }
-  #s1, #s2, .topbar, .crit-tabs, .toolbar, #admin-view, #toasts, .modal-overlay { display: none !important; }
+  #s1, #s2, .topbar, .crit-tabs, .toolbar, #admin-view, #user-view, #toasts, .modal-overlay { display: none !important; }
   #print-area { display: block !important; }
-  .p-crit { font-size: 24px; color: var(--navy); border-bottom: 3px solid var(--navy); margin: 40px 0 20px; padding-bottom: 5px; font-weight: 800; page-break-after: avoid;}
-  .p-sub { font-size: 18px; color: var(--navy2); margin: 20px 0 15px; font-weight: 700; page-break-after: avoid;}
-  .p-card { border: 1px solid #e2e8f0; padding: 15px; margin-bottom: 15px; border-radius: 8px; page-break-inside: avoid; }
-  .p-title { font-size: 14px; font-weight: bold; margin-bottom: 10px; color: black; }
-  .p-sec { font-size: 12px; margin-bottom: 15px; line-height: 1.5; text-align: justify;}
-  .p-sec-lbl { font-weight: bold; color: var(--gray-dipta); display: block; text-transform: uppercase; font-size: 10px; margin-bottom: 2px;}
-  .p-sug { background: #fef9c3; border-left: 4px solid #eab308; padding: 8px; margin-top: 5px; font-style: italic; }
-  .p-new { border: 2px dashed var(--violet); background: #faf5ff; }
-  .p-new-badge { display: inline-block; background: var(--violet); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; margin-bottom: 10px; }
-  
-  .p-changed { background: #f0fdf4; padding: 8px; border-radius: 4px; border: 1px dashed var(--green); margin-top: 8px; }
-  .p-badge-ch { display: inline-block; font-size: 8px; background: var(--green); color: white; padding: 2px 6px; border-radius: 3px; margin-bottom: 4px; font-weight:bold;}
 }
 
 #toasts{position:fixed;bottom:1rem;right:1rem;z-index:9999;display:flex;flex-direction:column;gap:.38rem;max-width:280px}
@@ -327,6 +316,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
       <div class="tb-sub" id="tb-user" style="margin-right: 1rem;"></div>
       <div id="sync-status">☁️ Connectat</div>
       <div class="prog-wrap" id="top-prog" style="margin-left: 10px;">
+        <div class="prog-lbl" style="font-size:.65rem; margin-right:4px;">PROGRÉS GLOBAL:</div>
         <div class="prog-track"><div class="prog-fill" id="pfill" style="width:0%"></div></div>
         <span class="prog-lbl" id="plbl">0 / 0</span>
       </div>
@@ -352,6 +342,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
     
     <div class="scroll-area" id="sarea"></div>
     <div class="scroll-area hidden" id="admin-view" style="background: var(--bg);"></div>
+    <div class="scroll-area hidden" id="user-view" style="background: var(--bg);"></div>
   </div>
 </div>
 
@@ -545,6 +536,14 @@ function buildTabs(){
     b.innerHTML=escH(c+(cData[c].titol?' — '+cData[c].titol:''))+' <span class="tab-dot"></span>';
     b.onclick=()=>selCrit(c); nav.appendChild(b);
   });
+
+  // NOU: Pestanya de l'usuari
+  const bu = document.createElement('button');
+  bu.className = 'ctab ctab-user';
+  bu.dataset.c = 'user_summary';
+  bu.innerHTML = '📊 Les meves aportacions';
+  bu.onclick = (e) => showUserSummary(e.currentTarget);
+  nav.appendChild(bu);
 }
 
 function updTabPending(){
@@ -557,10 +556,10 @@ function updTabPending(){
 function selCrit(c){
   curC=c;
   $('admin-view').classList.add('hidden');
+  $('user-view').classList.add('hidden');
   $('sarea').classList.remove('hidden');
   $('main-toolbar').style.display='flex';
-  $('top-prog').style.display='flex';
-
+  
   document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('active'));
   document.querySelector('.ctab[data-c="'+c+'"]').classList.add('active');
   
@@ -572,14 +571,27 @@ function selCrit(c){
 function showAdminView(){
   curC='admin';
   $('sarea').classList.add('hidden');
+  $('user-view').classList.add('hidden');
   $('admin-view').classList.remove('hidden');
   $('main-toolbar').style.display='none';
-  $('top-prog').style.display='none';
 
   document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('active'));
   document.querySelector('.ctab-admin').classList.add('active');
   
   renderAdminDashboard();
+}
+
+function showUserSummary(btnElement){
+  curC='user';
+  $('sarea').classList.add('hidden');
+  $('admin-view').classList.add('hidden');
+  $('user-view').classList.remove('hidden');
+  $('main-toolbar').style.display='none';
+
+  document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('active'));
+  btnElement.classList.add('active');
+  
+  renderUserDashboard();
 }
 
 /* ══ RENDER CRITERI NORMAL ══ */
@@ -661,7 +673,6 @@ function buildCard(row,crit){
   card.className='card'+(isChecked?' saved':' pending');
   card.dataset.id=id; card.dataset.isNew='0';
   
-  // SOLUCIÓ BUG: Generem un diccionari amb les dades actuals perquè el cercador ho trobi
   const searchString = [
       row.titol_enfocament, row.enfocament, row.desplegament, row.avaluacio, row.evidencies, row.titol_subcriteri,
       prev?.sug_desplegament, prev?.sug_avaluacio, prev?.sug_evidencies, prev?.comentari_general
@@ -705,7 +716,6 @@ function buildCard(row,crit){
       const pl=el('span','prop-lbl','Proposta de millora');
       const ta=document.createElement('textarea'); ta.className='prop-ta'; ta.dataset.key=b.taKey; ta.rows=2; ta.value=b.taVal||'';
       
-      // SOLUCIÓ BUG: Actualitzar string de cerca al escriure
       ta.addEventListener('input',()=>{ 
           markPending(id); 
           acc.classList.toggle('has-content',ta.value.trim()!==''); 
@@ -734,7 +744,6 @@ function makeAZ(id,prev,isNew){
   const cta=document.createElement('textarea'); cta.className='ta-cmt'; cta.dataset.card=id;
   cta.rows=2; cta.placeholder='Comentari (opcional)'; cta.value=prev?.comentari_general||'';
   
-  // SOLUCIÓ BUG: Cerca en comentaris vells
   cta.addEventListener('input',(e)=>{ 
       markPending(id); 
       const card = document.querySelector(`.card[data-id="${id}"]`);
@@ -783,7 +792,7 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
       if(confirm('Segur que vols eliminar-lo definitivament?')){
         const origBtn = rm.innerHTML; rm.textContent = '⏳';
         try {
-          const r = await api('POST', { email: sess.email, id_enfocament: tid, esborrar: true });
+          const r = await api('POST', { action:'delete', email: sess.email, id_enfocament: tid, esborrar: true });
           if(!r.success) throw new Error(r.error);
           card.remove(); cards[crit]=(cards[crit]||[]).filter(x=>x.id!==tid); resp = resp.filter(r => r.id_enfocament !== tid);
           updProgress(); updTabPending(); toast('Eliminat.', 'tinfo');
@@ -833,6 +842,47 @@ window.filterAdminViews = function(val) {
     });
 };
 
+/* ══ RENDER DASHBOARD USUARI NORMAL ══ */
+function renderUserDashboard() {
+    const area = $('user-view');
+    const myResp = resp.filter(r => r.email === sess.email && (r.id_enfocament.startsWith('NEW-') || r.sug_desplegament || r.sug_avaluacio || r.sug_evidencies || r.comentari_general));
+    
+    let html = `
+    <div class="admin-section">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:1rem;">
+            <div class="admin-title" style="margin:0;">📊 Resum de les meves aportacions</div>
+            <button class="btn btn-primary" onclick="downloadUserSummary('${sess.email}', '${sess.nom}')">⬇️ Descarregar el meu resum (.doc)</button>
+        </div>`;
+    
+    if(myResp.length === 0) {
+        html += `<p style="color:var(--g500); text-align:center; padding:2rem;">Encara no has fet cap proposta de millora ni has creat cap nou enfocament.</p></div>`;
+        area.innerHTML = html;
+        return;
+    }
+    
+    html += `<table class="admin-table"><thead><tr><th>Tipus</th><th>Enfocament / Títol</th><th>Estat</th><th>Retorn de Direcció</th></tr></thead><tbody>`;
+    
+    myResp.forEach(r => {
+        const isNew = String(r.id_enfocament).startsWith('NEW-');
+        const o = mem.find(m => String(m.id) === String(r.id_enfocament));
+        const title = isNew ? r.sug_titol_enfocament : (o ? o.titol_enfocament : r.id_enfocament);
+        
+        let bcls = 'badge-pend', btxt = 'Pendent de revisió';
+        if(r.estat_admin === 'Aprovat') { bcls = 'badge-ok'; btxt = 'Aprovat'; }
+        if(r.estat_admin === 'Descartat') { bcls = 'badge-ko'; btxt = 'Descartat'; }
+        
+        html += `<tr>
+            <td><span class="badge ${isNew?'b-ok':'b-pend'}">${isNew?'NOU':'MILLORA'}</span></td>
+            <td><b>${escH(title)}</b></td>
+            <td><span class="${bcls}">${btxt}</span></td>
+            <td style="color:var(--gray-dipta); font-size:0.8rem; max-width:300px;">${escH(r.comentari_admin || '---')}</td>
+        </tr>`;
+    });
+    
+    html += `</tbody></table></div>`;
+    area.innerHTML = html;
+}
+
 /* ══ RENDER DASHBOARD ADMIN ══ */
 function renderAdminDashboard(){
     const area=$('admin-view'); area.innerHTML='';
@@ -866,7 +916,7 @@ function renderAdminDashboard(){
     const filterContainer = el('div'); filterContainer.innerHTML = filterHtml;
     actionRow.appendChild(filterContainer);
 
-    const btnPdf = el('button', 'btn btn-primary', '📄 Generar Esborrany Final (Descarregar .doc)');
+    const btnPdf = el('button', 'btn btn-primary', '📄 Generar Informe Memòria amb Millores (PDF)');
     btnPdf.onclick = () => {
         if(pendentsAdmin.length > 0) {
             if(!confirm(`⚠️ ATENCIÓ:\n\nHi ha ${pendentsAdmin.length} enfocaments nous pendents de validar que NO sortiran a l'informe.\n\nVols generar l'informe de totes maneres?`)) return;
@@ -1070,6 +1120,7 @@ async function submitAdminDecision(estat){
     const isNew = String(origR.id_enfocament).startsWith('NEW-');
     
     const payload = {
+        action: 'save',
         email: origR.email, 
         id_enfocament: origR.id_enfocament,
         estat_admin: estat,
@@ -1107,7 +1158,7 @@ async function submitAdminDecision(estat){
         closeModal(); renderAdminDashboard();
     } catch(err) {
         setSync('err');
-        toast('Error guardant.', 'terr');
+        toast('Error guardant: ' + err.message, 'terr');
     }
     $('btn-ok').disabled = false; $('btn-ko').disabled = false;
 }
@@ -1119,7 +1170,7 @@ function downloadUserSummary(email, nomUsuari) {
 
     const pInc=[], eInc=[], pDes=[], eDes=[];
     uResp.forEach(r => {
-        const isN = r.id_enfocament.startsWith('NEW-');
+        const isN = String(r.id_enfocament).startsWith('NEW-');
         if(r.estat_admin==='Aprovat') { isN ? eInc.push(r) : pInc.push(r); }
         else { isN ? eDes.push(r) : pDes.push(r); }
     });
@@ -1127,28 +1178,39 @@ function downloadUserSummary(email, nomUsuari) {
     let h = `<div style="font-family:sans-serif; color:#333;"><h2>Resum de decisions - Memòria EFQM</h2><p>Aquest és el retorn de la Direcció sobre les teves aportacions:</p>`;
 
     if(pInc.length>0){
-        h += `<h3 style="color:#16a34a">✅ Propostes incorporades</h3><ul>`;
-        pInc.forEach(r => { const o = mem.find(m=>m.id===r.id_enfocament); h += `<li><b>${escH(o?.titol_enfocament||r.id_enfocament)}</b> (Canvis parcials o totals aprovats)</li>`; });
+        h += `<h3 style="color:#16a34a">[ACTUALITZAT] Propostes incorporades a la memòria</h3><ul>`;
+        pInc.forEach(r => { 
+            const o = mem.find(m=>String(m.id)===String(r.id_enfocament)); 
+            
+            // Lògica per detallar què s'ha aprovat
+            let camps = [];
+            if(r.aprovat_desplegament === true || r.aprovat_desplegament === 'true' || r.aprovat_desplegament === 'TRUE') camps.push('Desplegament');
+            if(r.aprovat_avaluacio === true || r.aprovat_avaluacio === 'true' || r.aprovat_avaluacio === 'TRUE') camps.push('Avaluació');
+            if(r.aprovat_evidencies === true || r.aprovat_evidencies === 'true' || r.aprovat_evidencies === 'TRUE') camps.push('Evidències');
+            let detall = camps.length > 0 ? `(Camps incorporats: ${camps.join(', ')})` : '(Revisió i comentari gestionats)';
+
+            h += `<li style="margin-bottom:8px;"><b>${escH(o?.titol_enfocament||r.id_enfocament)}</b><br><i style="font-size:12px; color:#555;">${detall}</i></li>`; 
+        });
         h += `</ul>`;
     }
     if(eInc.length>0){
-        h += `<h3 style="color:#16a34a">🌟 Nous enfocs afegits a la memòria</h3><ul>`;
+        h += `<h3 style="color:#16a34a">[ACTUALITZAT] Nous enfocs afegits</h3><ul>`;
         eInc.forEach(r => h += `<li><b>${escH(r.sug_titol_enfocament)}</b></li>`);
         h += `</ul>`;
     }
     if(pDes.length>0){
-        h += `<h3 style="color:#dc2626">❌ Propostes desestimades</h3><ul>`;
-        pDes.forEach(r => { const o = mem.find(m=>m.id===r.id_enfocament); h += `<li style="margin-bottom:10px">A l'enfocament <b>${escH(o?.titol_enfocament||r.id_enfocament)}</b><br><i style="color:#666">Motiu: ${escH(r.comentari_admin||'Sense motiu especificat')}</i></li>`; });
+        h += `<h3 style="color:#dc2626">[DESCARTAT] Propostes desestimades</h3><ul>`;
+        pDes.forEach(r => { const o = mem.find(m=>String(m.id)===String(r.id_enfocament)); h += `<li style="margin-bottom:10px">A l'enfocament <b>${escH(o?.titol_enfocament||r.id_enfocament)}</b><br><i style="color:#666">Motiu: ${escH(r.comentari_admin||'Sense motiu especificat')}</i></li>`; });
         h += `</ul>`;
     }
     if(eDes.length>0){
-        h += `<h3 style="color:#dc2626">❌ Enfocs nous desestimats</h3><ul>`;
+        h += `<h3 style="color:#dc2626">[DESCARTAT] Enfocs nous desestimats</h3><ul>`;
         eDes.forEach(r => h += `<li style="margin-bottom:10px">Enfoc proposat: <b>${escH(r.sug_titol_enfocament)}</b><br><i style="color:#666">Motiu: ${escH(r.comentari_admin||'Sense motiu especificat')}</i></li>`);
         h += `</ul>`;
     }
     h += `</div>`;
 
-    const preHtml = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Resum</title></head><body>";
+    const preHtml = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Resum Usuari</title></head><body>";
     const postHtml = "</body></html>";
     const html = preHtml + h + postHtml;
 
@@ -1171,7 +1233,7 @@ function exportToWord() {
             pa += `<h3 style="color:#006b8a; margin-top:20px;">${s} ${escH(sub.titol)}</h3>`;
             
             sub.rows.forEach(row => {
-                const approvedSugs = resp.filter(x => x.id_enfocament === row.id && x.estat_admin === 'Aprovat'); 
+                const approvedSugs = resp.filter(x => String(x.id_enfocament) === String(row.id) && x.estat_admin === 'Aprovat'); 
                 
                 pa += `<div style="border:1px solid #ccc; padding:15px; margin-bottom:15px;"><h4>${escH(row.titol_enfocament || 'Sense títol')}</h4>`;
                 
@@ -1191,19 +1253,37 @@ function exportToWord() {
                         approvedSugs.forEach(appR => {
                             if (f.ak && (appR[f.ak] === true || appR[f.ak] === 'true' || appR[f.ak] === 'TRUE') && appR[f.sk] && appR[f.sk].trim() !== '') {
                                 pa += `<div style="background:#f0fdf4; border:1px dashed #16a34a; padding:8px; margin-top:5px;">
-                                    <strong style="color:#16a34a; font-size:11px;">[+] MILLORA APROVADA APLICADA (${escH(appR.nom_visible)}):</strong><br>
+                                    <strong style="color:#16a34a; font-size:11px;">[MILLORA APROVADA APLICADA] (${escH(appR.nom_visible)}):</strong><br>
                                     ${escH(appR[f.sk])}
                                 </div>`;
                             }
                         });
                         pa += `</div>`;
+                    } else {
+                        let hasImprovements = false;
+                        let impHtml = '';
+                        approvedSugs.forEach(appR => {
+                            if (f.ak && (appR[f.ak] === true || appR[f.ak] === 'true' || appR[f.ak] === 'TRUE') && appR[f.sk] && appR[f.sk].trim() !== '') {
+                                hasImprovements = true;
+                                impHtml += `<div style="background:#f0fdf4; border:1px dashed #16a34a; padding:8px; margin-top:5px;">
+                                    <strong style="color:#16a34a; font-size:11px;">[MILLORA APROVADA APLICADA] (${escH(appR.nom_visible)}):</strong><br>
+                                    ${escH(appR[f.sk])}
+                                </div>`;
+                            }
+                        });
+                        if (hasImprovements) {
+                            pa += `<div style="margin-bottom:15px;">
+                                <strong>${f.k.toUpperCase()} (Buit originalment)</strong>
+                                ${impHtml}
+                            </div>`;
+                        }
                     }
                 });
 
                 approvedSugs.forEach(appR => {
                     if (appR.comentari_general && appR.comentari_general.trim() !== '') {
                         pa += `<div style="background:#f1f5f9; border-left: 4px solid #94a3b8; padding: 8px; margin-top: 5px; font-size: 12px;">
-                            <strong>💬 COMENTARI GENERAL (${escH(appR.nom_visible)}):</strong><br>
+                            <strong>[COMENTARI GENERAL] (${escH(appR.nom_visible)}):</strong><br>
                             ${escH(appR.comentari_general)}
                         </div>`;
                     }
@@ -1266,10 +1346,10 @@ function updProgress(){
 
 function setF(f,btn){ curF=f; document.querySelectorAll('.tog-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); applyF(); }
 function applyF(){
-  const kw=$('srch').value.toLowerCase().trim();
+  const kw=document.getElementById('srch').value.toLowerCase().trim();
   (cards[curC]||[]).forEach(({el:e})=>{
     let show=true;
-    // Solució al filtre "Nous": ara ignora si està guardat, només mira que sigui nou.
+    // Fix: El filtre nous només mira que sigui nou, independentment de si està desat o no
     if(curF==='pending') show = !e.classList.contains('saved');
     else if(curF==='validated') show = e.classList.contains('saved');
     else if(curF==='new') show = e.dataset.isNew==='1';
@@ -1288,13 +1368,15 @@ function cardData(id){
 }
 
 async function saveExisting(id,btn){
+  setSync('syncing');
   if(!sess) return; const orig=btn.textContent; btn.textContent='Enviant…'; btn.disabled=true; const d=cardData(id);
   const isDone = d.validat; 
-  const payload={ nom:sess.nom, email:sess.email, area_revisora:sess.area, id_enfocament:id, is_new:false, validat:d.validat, sug_titol_enfocament:'', sug_enfocament:'', sug_desplegament:d.sug_desplegament||'', sug_avaluacio:d.sug_avaluacio||'', sug_evidencies:d.sug_evidencies||'', comentari_general:d.comentari_general, timestamp:new Date().toISOString() };
+  const payload={ action: 'save', nom:sess.nom, email:sess.email, area_revisora:sess.area, id_enfocament:id, is_new:false, validat:d.validat, sug_titol_enfocament:'', sug_enfocament:'', sug_desplegament:d.sug_desplegament||'', sug_avaluacio:d.sug_avaluacio||'', sug_evidencies:d.sug_evidencies||'', comentari_general:d.comentari_general, timestamp:new Date().toISOString() };
   await doSave(payload,id,btn,orig,false, isDone);
 }
 
 async function saveNew(tid,btn){
+  setSync('syncing');
   if(!sess) return; const card=document.querySelector('.card[data-id="'+tid+'"]'); if(!card) return;
   
   let faltan = false;
@@ -1313,16 +1395,16 @@ async function saveNew(tid,btn){
   
   if (faltan) {
       toast('⚠️ Avís: Falten camps obligatoris per omplir.', 'terr');
+      setSync('err');
       return;
   }
 
   const orig=btn.textContent; btn.textContent='Enviant…'; btn.disabled=true; const d=cardData(tid);
-  const payload={ nom:sess.nom, email:sess.email, area_revisora:sess.area, id_enfocament:tid, is_new:true, validat:true, sug_titol_enfocament:d.sug_titol_enfocament||'', sug_enfocament:d.sug_enfocament||'', sug_desplegament:d.sug_desplegament||'', sug_avaluacio:d.sug_avaluacio||'', sug_evidencies:d.sug_evidencies||'', comentari_general:d.comentari_general, criteri:card.dataset.crit||'', subcriteri:card.dataset.sub||'', timestamp:new Date().toISOString() };
+  const payload={ action: 'save', nom:sess.nom, email:sess.email, area_revisora:sess.area, id_enfocament:tid, is_new:true, validat:true, sug_titol_enfocament:d.sug_titol_enfocament||'', sug_enfocament:d.sug_enfocament||'', sug_desplegament:d.sug_desplegament||'', sug_avaluacio:d.sug_avaluacio||'', sug_evidencies:d.sug_evidencies||'', comentari_general:d.comentari_general, criteri:card.dataset.crit||'', subcriteri:card.dataset.sub||'', timestamp:new Date().toISOString() };
   await doSave(payload,tid,btn,orig,true, true);
 }
 
 async function doSave(payload,id,btn,orig,isNew, isDone){
-  setSync('syncing');
   try{
     if(!APPS_SCRIPT_URL) await wait(500); else{ const r=await api('POST',payload); if(!r.success) throw new Error(r.error||'Error servidor'); }
     updResp(payload); 
@@ -1333,7 +1415,7 @@ async function doSave(payload,id,btn,orig,isNew, isDone){
     if(c){ if(isNew && isDone) c.classList.remove('expanded'); const chk = c.querySelector('.chk-v'); if(chk && chk.checked){ chk.disabled = true; chk.parentElement.style.opacity = '0.6'; chk.parentElement.style.cursor = 'not-allowed'; } }
   } catch(e){ 
       btn.textContent='Error ❌'; 
-      toast('Error: '+e.message,'terr'); 
+      toast('Error de xarxa','terr'); 
       setSync('err');
   }
   setTimeout(()=>{ btn.textContent=orig; btn.disabled=false; },3000);
