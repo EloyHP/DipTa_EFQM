@@ -155,7 +155,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .btn-rm:hover{color:var(--red);background:#fee2e2;border-color:#fecaca;}
 
 .acc{border-bottom:1px solid var(--g100)}
-.acc:last-of-type{border-bottom:none}
 .acc-hdr{display:flex;align-items:center;gap:.42rem;padding:.4rem .72rem;cursor:pointer;user-select:none;transition:background var(--tr)}
 .acc-hdr:hover{background:var(--g50)}
 .acc-arr{font-size:.6rem;color:var(--gray-dipta);transition:transform var(--tr);flex-shrink:0;width:10px;text-align:center}
@@ -185,16 +184,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .nta:focus{border-color:var(--violet);outline:none}
 .nta.nta-t{min-height:44px;font-weight:600;border-color:var(--violet)}
 .nta.nta-b{min-height:54px}
-.req{color:var(--red);margin-left:.13rem}
-
-.ctx{margin:.38rem .72rem;border-radius:7px;overflow:hidden;border:1px solid var(--g100)}
-.ctx-btn{width:100%;text-align:left;background:var(--g50);border:none;padding:.36rem .65rem;font-size:.72rem;font-weight:600;color:var(--gray-dipta);cursor:pointer;display:flex;align-items:center;gap:.28rem;transition:background var(--tr)}
-.ctx-btn:hover{background:var(--g100)}
-.ctx-body{display:none}.ctx-body.open{display:block}
-.ctx-sec{padding:.48rem .65rem;font-size:.78rem;white-space:pre-wrap;line-height:1.5}
-.ctx-sec+.ctx-sec{border-top:1px solid var(--g100)}
-.ctx-qa{background:#fafeff;color:var(--navy2)}.ctx-prev{color:var(--gray-dipta)}
-.ctx-st{font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;opacity:.8;margin-bottom:.16rem}
 
 .az{display:flex;align-items:flex-start;gap:.58rem;flex-wrap:wrap;padding:.52rem .72rem;background:var(--g50);border-top:1.5px solid var(--g100);border-radius:0 0 calc(var(--r) - 2px) calc(var(--r) - 2px)}
 .card.cnew .az{background:#f3f0ff;border-top-color:var(--vb)}
@@ -273,12 +262,14 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
   .p-sub { font-size: 18px; color: var(--navy2); margin: 20px 0 15px; font-weight: 700; page-break-after: avoid;}
   .p-card { border: 1px solid #e2e8f0; padding: 15px; margin-bottom: 15px; border-radius: 8px; page-break-inside: avoid; }
   .p-title { font-size: 14px; font-weight: bold; margin-bottom: 10px; color: black; }
-  .p-sec { font-size: 12px; margin-bottom: 8px; line-height: 1.5; }
+  .p-sec { font-size: 12px; margin-bottom: 15px; line-height: 1.5; text-align: justify;}
   .p-sec-lbl { font-weight: bold; color: var(--gray-dipta); display: block; text-transform: uppercase; font-size: 10px; margin-bottom: 2px;}
   .p-sug { background: #fef9c3; border-left: 4px solid #eab308; padding: 8px; margin-top: 5px; font-style: italic; }
   .p-new { border: 2px dashed var(--violet); background: #faf5ff; }
   .p-new-badge { display: inline-block; background: var(--violet); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; margin-bottom: 10px; }
-  .p-changed { background: #f0fdf4; padding: 8px; border-radius: 4px; border: 1px dashed var(--green); }
+  
+  /* P-CHANGED actualitzat per veure el text afegit a sota */
+  .p-changed { background: #f0fdf4; padding: 8px; border-radius: 4px; border: 1px dashed var(--green); margin-top: 8px; }
   .p-badge-ch { display: inline-block; font-size: 8px; background: var(--green); color: white; padding: 2px 6px; border-radius: 3px; margin-bottom: 4px; font-weight:bold;}
 }
 
@@ -362,8 +353,8 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
     </div>
 
     <div class="modal-footer" id="modal-footer">
-      <button class="btn btn-danger" id="btn-ko" onclick="submitAdminDecision('Descartat')">❌ Descartar</button>
-      <button class="btn btn-primary" id="btn-ok" style="background:#16a34a;" onclick="submitAdminDecision('Aprovat')">✅ Desar decisions d'aprovació</button>
+      <button class="btn btn-danger" id="btn-ko" onclick="submitAdminDecision('Descartat')">❌ Descartar proposta</button>
+      <button class="btn btn-primary" id="btn-ok" style="background:#16a34a;" onclick="submitAdminDecision('Aprovat')">✅ Aprovar i incloure a l'informe</button>
     </div>
   </div>
 </div>
@@ -830,7 +821,7 @@ function renderAdminDashboard(){
     const filterContainer = el('div'); filterContainer.innerHTML = filterHtml;
     actionRow.appendChild(filterContainer);
 
-    const btnPdf = el('button', 'btn btn-primary', '📄 Generar Informe Final Fusionat (Impressió/PDF)');
+    const btnPdf = el('button', 'btn btn-primary', '📄 Generar Informe Memòria amb Millores (PDF)');
     btnPdf.onclick = () => {
         if(pendentsAdmin.length > 0) {
             if(!confirm(`⚠️ ATENCIÓ:\n\nHi ha ${pendentsAdmin.length} enfocaments nous pendents de validar que NO sortiran a l'informe.\n\nVols generar l'informe de totes maneres?`)) return;
@@ -913,7 +904,7 @@ function renderAdminDashboard(){
             <td>${escH(r.sug_titol_enfocament || 'Sense títol')}</td>
             <td>${escH(r.nom_visible)}<br><small style="color:var(--g300)">${escH(r.area_revisora)}</small></td>
             <td><span class="${bcls}">${btxt}</span></td>
-            <td><button class="btn-sm btn-sm-vio" onclick="openAdminModal('${r.id_enfocament}')">Revisar</button></td>
+            <td><button class="btn-sm btn-sm-vio" onclick="openAdminModal('${r.id_enfocament}', '${r.email}')">Revisar</button></td>
         `;
         tb1.appendChild(tr);
     });
@@ -942,7 +933,7 @@ function renderAdminDashboard(){
         const titolOriginal = orig ? orig.titol_enfocament : 'Enfocament existent';
 
         let bcls = 'badge-pend', btxt = 'Pendent';
-        if(r.estat_admin === 'Aprovat') { bcls = 'badge-ok'; btxt = 'Aprovat (Global o Parcial)'; }
+        if(r.estat_admin === 'Aprovat') { bcls = 'badge-ok'; btxt = 'Revisat'; }
         if(r.estat_admin === 'Descartat') { bcls = 'badge-ko'; btxt = 'Descartat'; }
         
         tr.innerHTML = `
@@ -955,7 +946,7 @@ function renderAdminDashboard(){
             </td>
             <td>${escH(r.nom_visible)} <small style="color:var(--g300)">(${escH(r.area_revisora)})</small></td>
             <td><span class="${bcls}">${btxt}</span></td>
-            <td><button class="btn-sm btn-sm-vio" onclick="openAdminModal('${r.id_enfocament}')">Revisar</button></td>
+            <td><button class="btn-sm btn-sm-vio" onclick="openAdminModal('${r.id_enfocament}', '${r.email}')">Revisar</button></td>
         `;
         tb2.appendChild(tr);
     });
@@ -963,8 +954,8 @@ function renderAdminDashboard(){
 }
 
 /* ══ MODAL ADMIN FUNCTIONS ══ */
-function openAdminModal(id){
-    const r = resp.find(x => x.id_enfocament === id);
+function openAdminModal(id, email){
+    const r = resp.find(x => x.id_enfocament === id && x.email === email);
     if(!r) return;
     currentAdminCardId = r; 
     const isNew = String(id).startsWith('NEW-');
@@ -1075,10 +1066,10 @@ async function submitAdminDecision(estat){
     $('btn-ok').disabled = false; $('btn-ko').disabled = false;
 }
 
-/* ══ GENERADOR INFORME PDF FUSIONAT ══ */
+/* ══ GENERADOR INFORME PDF ORIGINAL + MILLORES ══ */
 function generatePDF() {
     const pa = $('print-area');
-    pa.innerHTML = '<h1 style="text-align:center; font-size:32px; color:#0083A9; margin-bottom:10px;">Esborrany Memòria EFQM (Fusionat)</h1><p style="text-align:center; font-style:italic; font-size:12px; margin-bottom:40px; color:#666;">Aquest document mostra el text original de la memòria. Les parts amb el contorn verd han estat substituïdes automàticament per les millores aprovades per la direcció.</p>';
+    pa.innerHTML = '<h1 style="text-align:center; font-size:32px; color:#0083A9; margin-bottom:10px;">Informe Memòria EFQM amb Millores</h1><p style="text-align:center; font-style:italic; font-size:12px; margin-bottom:40px; color:#666;">Aquest document mostra el text original de la memòria. A sota de cada apartat, amb un contorn verd, hi figuren les propostes de millora que han estat aprovades per la direcció per tal de facilitar-ne la integració manual al document oficial.</p>';
 
     Object.keys(cData).sort().forEach(c => {
         pa.innerHTML += `<div class="p-crit">Criteri ${c} - ${escH(cData[c].titol)}</div>`;
@@ -1088,8 +1079,8 @@ function generatePDF() {
             pa.innerHTML += `<div class="p-sub">${s} ${escH(sub.titol)}</div>`;
             
             sub.rows.forEach(row => {
-                // Busquem si hi ha alguna proposta d'algun usuari que estigui 'Aprovat' per aquest enfocament
-                const appR = resp.find(x => x.id_enfocament === row.id && x.estat_admin === 'Aprovat'); 
+                // Busquem TOTES les millores aprovades per a aquest enfocament, sense importar quin usuari les hagi fet
+                const approvedSugs = resp.filter(x => x.id_enfocament === row.id && x.estat_admin === 'Aprovat'); 
                 
                 let html = `<div class="p-card"><div class="p-title">${escH(row.titol_enfocament || 'Sense títol')}</div>`;
                 
@@ -1101,15 +1092,50 @@ function generatePDF() {
                 ];
 
                 keysMap.forEach(f => {
+                    // 1. Mostrar l'original SEMPRE (si existeix)
                     if(row[f.k] && row[f.k].trim() !== '') {
-                        // Mirem si la millora per aquest camp concret va ser aprovada via Checkbox (el boolean pot venir com a string del full)
-                        const isAppr = appR && (appR[f.ak] === true || appR[f.ak] === 'true' || appR[f.ak] === 'TRUE') && appR[f.sk];
-                        const textToDisplay = isAppr ? appR[f.sk] : row[f.k];
-                        
-                        html += `<div class="p-sec ${isAppr ? 'p-changed' : ''}">
+                        html += `<div class="p-sec">
                             <span class="p-sec-lbl">${f.k.toUpperCase()}</span>
-                            ${isAppr ? `<span class="p-badge-ch">MILLORA APROVADA APLICADA (${escH(appR.nom_visible)})</span><br>` : ''}
-                            ${escH(textToDisplay)}
+                            <div style="margin-bottom: 5px;">${escH(row[f.k])}</div>`;
+                        
+                        // 2. Apilar totes les millores aprovades A SOTA de l'original
+                        approvedSugs.forEach(appR => {
+                            if (f.ak && (appR[f.ak] === true || appR[f.ak] === 'true' || appR[f.ak] === 'TRUE') && appR[f.sk] && appR[f.sk].trim() !== '') {
+                                html += `<div class="p-changed">
+                                    <span class="p-badge-ch">➕ MILLORA APROVADA (${escH(appR.nom_visible)})</span><br>
+                                    ${escH(appR[f.sk])}
+                                </div>`;
+                            }
+                        });
+                        html += `</div>`;
+                    } else {
+                        // Si l'original estava buit però algú ha suggerit omplir-ho
+                        let hasImprovements = false;
+                        let impHtml = '';
+                        approvedSugs.forEach(appR => {
+                            if (f.ak && (appR[f.ak] === true || appR[f.ak] === 'true' || appR[f.ak] === 'TRUE') && appR[f.sk] && appR[f.sk].trim() !== '') {
+                                hasImprovements = true;
+                                impHtml += `<div class="p-changed">
+                                    <span class="p-badge-ch">➕ MILLORA APROVADA (${escH(appR.nom_visible)})</span><br>
+                                    ${escH(appR[f.sk])}
+                                </div>`;
+                            }
+                        });
+                        if (hasImprovements) {
+                            html += `<div class="p-sec">
+                                <span class="p-sec-lbl">${f.k.toUpperCase()} (Buit originalment)</span>
+                                ${impHtml}
+                            </div>`;
+                        }
+                    }
+                });
+
+                // Incloure els comentaris generals de l'usuari (Això ajuda a entendre el context del canvi)
+                approvedSugs.forEach(appR => {
+                    if (appR.comentari_general && appR.comentari_general.trim() !== '') {
+                        html += `<div class="p-sug" style="background:#f1f5f9; border-left: 4px solid #94a3b8; padding: 8px; margin-top: 5px; font-size: 11px;">
+                            <strong>💬 COMENTARI GENERAL (${escH(appR.nom_visible)}):</strong><br>
+                            ${escH(appR.comentari_general)}
                         </div>`;
                     }
                 });
