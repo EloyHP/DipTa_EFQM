@@ -87,17 +87,28 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .sw input{padding:.32rem .62rem .32rem 1.82rem;font-size:.79rem;height:29px}
 .s-ico{position:absolute;left:.5rem;top:50%;transform:translateY(-50%);color:var(--g300);font-size:.8rem;pointer-events:none}
 
+/* Botons Collapse Toolbar */
+.toolbar-actions { display:flex; gap:0.5rem; margin-left:auto; }
+
 .scroll-area{flex:1;overflow-y:auto;padding:.9rem 1.2rem 3rem}
 
 .sb{margin-bottom:1.5rem}
 
 .sub-sticky{position:sticky;top:0;z-index:50;background:var(--white);border-radius:8px;box-shadow:var(--sh);margin-bottom:.55rem;overflow:hidden;border:1px solid var(--g100)}
-.sub-title-row{display:flex;align-items:center;gap:.6rem;padding:.5rem .82rem}
+.sub-title-row{display:flex;align-items:center;gap:.6rem;padding:.5rem .82rem; cursor:pointer; transition:background var(--tr);}
+.sub-title-row:hover{background:var(--g50);}
 .sub-num{font-size:.68rem;font-weight:700;background:var(--navy);color:#fff;padding:.08rem .42rem;border-radius:5px;flex-shrink:0}
 .sub-title{font-size:.86rem;font-weight:800;color:var(--navy);flex:1; display:flex; align-items:center; gap:.5rem;}
 
+/* Comptador i Chevron de Subcriteri */
 .sub-prog { font-size: .7rem; background: var(--g100); color: var(--g700); padding: .15rem .45rem; border-radius: 99px; font-weight: 700; transition: all var(--tr);}
 .sub-prog.done { background: #dcfce7; color: #166534; }
+.sub-chev { font-size: 0.8rem; color: var(--navy); transition: transform var(--tr); margin-left: auto; }
+
+/* Amagar contingut si està col·lapsat */
+.sb.collapsed .sb-content { display: none; }
+.sb.collapsed .sub-chev { transform: rotate(-90deg); }
+.sb-content { padding-top: 0.5rem; }
 
 .efqm-btn{background:transparent;border:1.5px solid var(--g100);border-radius:6px;padding:.26rem .62rem;cursor:pointer;font-size:.73rem;font-weight:600;transition:background var(--tr);white-space:nowrap;flex-shrink:0}
 
@@ -339,6 +350,10 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
       <div class="sw">
         <span class="s-ico">🔍</span>
         <input type="text" id="srch" placeholder="Cerca…" oninput="applyF()"/>
+      </div>
+      <div class="toolbar-actions">
+          <button class="btn btn-ghost" style="padding:.3rem .6rem; font-size:.7rem" onclick="expandAllSub()">▼ Expandir tot</button>
+          <button class="btn btn-ghost" style="padding:.3rem .6rem; font-size:.7rem" onclick="collapseAllSub()">▶ Col·lapsar tot</button>
       </div>
     </div>
     
@@ -601,6 +616,14 @@ function showUserSummary(btnElement){
   renderUserDashboard();
 }
 
+/* ══ COLLAPSE/EXPAND ALL ══ */
+window.expandAllSub = function() {
+    document.querySelectorAll('.sb').forEach(sb => sb.classList.remove('collapsed'));
+};
+window.collapseAllSub = function() {
+    document.querySelectorAll('.sb').forEach(sb => sb.classList.add('collapsed'));
+};
+
 /* ══ RENDER CRITERI NORMAL ══ */
 function renderCrit(c){
   const area=$('sarea'); area.innerHTML='';
@@ -608,12 +631,19 @@ function renderCrit(c){
   const exNew=(cards[c]||[]).filter(x=>x.isNew);
   cards[c]=[];
 
+  let idx = 0;
   Object.keys(cData[c].subs).sort().forEach(s=>{
     const sub=cData[c].subs[s];
     const blk=el('div','sb'); blk.dataset.s=s;
+    if (idx !== 0) blk.classList.add('collapsed');
+    idx++;
 
     const sticky=el('div','sub-sticky');
     const tr=el('div','sub-title-row');
+    tr.onclick = (e) => {
+        if(e.target.closest('button')) return;
+        blk.classList.toggle('collapsed');
+    };
     
     tr.appendChild(el('span','sub-num',s));
     const titleWrap = el('div','sub-title');
@@ -628,42 +658,51 @@ function renderCrit(c){
     if(sub.que_diu && sub.que_diu !== ''){
       const eb=el('button','efqm-btn model-btn','📖 Què diu el model?');
       ep=el('div','efqm-panel'); ep.textContent=sub.que_diu; 
-      eb.onclick=()=>{ ep.classList.toggle('open'); eb.textContent=(ep.classList.contains('open')?'▲ ':'📖 ')+'Què diu el model?'; };
+      eb.onclick=(e)=>{ e.stopPropagation(); ep.classList.toggle('open'); eb.textContent=(ep.classList.contains('open')?'▲ ':'📖 ')+'Què diu el model?'; };
       actions.appendChild(eb);
     }
     
     if(sub.preg_avaluadors && sub.preg_avaluadors !== ''){
       const evb=el('button','efqm-btn eval-btn','❓ Preguntes avaluadors');
       evp=el('div','eval-panel'); evp.textContent=sub.preg_avaluadors; 
-      evb.onclick=()=>{ evp.classList.toggle('open'); evb.textContent=(evp.classList.contains('open')?'▲ ':'❓ ')+'Preguntes avaluadors'; };
+      evb.onclick=(e)=>{ e.stopPropagation(); evp.classList.toggle('open'); evb.textContent=(evp.classList.contains('open')?'▲ ':'❓ ')+'Preguntes avaluadors'; };
       actions.appendChild(evb);
     }
 
     if(sub.informe_ant && sub.informe_ant !== ''){
       const ib=el('button','efqm-btn prev-btn','💡 Informe anterior');
       ip=el('div','prev-panel'); ip.textContent=sub.informe_ant; 
-      ib.onclick=()=>{ ip.classList.toggle('open'); ib.textContent=(ip.classList.contains('open')?'▲ ':'💡 ')+'Informe anterior'; };
+      ib.onclick=(e)=>{ e.stopPropagation(); ip.classList.toggle('open'); ib.textContent=(ip.classList.contains('open')?'▲ ':'💡 ')+'Informe anterior'; };
       actions.appendChild(ib);
     }
 
     if(actions.childNodes.length > 0) tr.appendChild(actions);
+    
+    const chev = el('span', 'sub-chev', '▼');
+    tr.appendChild(chev);
+    
     sticky.appendChild(tr); if(ep) sticky.appendChild(ep); if(evp) sticky.appendChild(evp); if(ip) sticky.appendChild(ip);
     blk.appendChild(sticky);
 
-    sub.rows.forEach(row=>{ const card=buildCard(row,c); blk.appendChild(card.el); cards[c].push(card); });
-    exNew.filter(x=>x.sub===s).forEach(x=>{ blk.appendChild(x.el); cards[c].push(x); });
+    const contentWrap = el('div', 'sb-content');
+
+    sub.rows.forEach(row=>{ const card=buildCard(row,c); contentWrap.appendChild(card.el); cards[c].push(card); });
+    exNew.filter(x=>x.sub===s).forEach(x=>{ contentWrap.appendChild(x.el); cards[c].push(x); });
 
     const strSearch = 'NEW-' + c + '-' + s + '-';
     resp.filter(r => r.email === sess.email && r.id_enfocament && String(r.id_enfocament).startsWith(strSearch)).forEach(r => {
       if (!exNew.find(x => x.id === r.id_enfocament)) {
         const card = buildNewCard(r.id_enfocament, c, s, sub.titol, r);
-        blk.appendChild(card.el); cards[c].push(card);
+        contentWrap.appendChild(card.el); cards[c].push(card);
       }
     });
 
     const ab=el('button','btn-add'); ab.innerHTML='➕ Proposar un nou enfocament per a <strong style="margin-left:.25rem">'+escH(s)+'</strong>';
-    ab.addEventListener('click',()=>insertNew(c,s,sub.titol,blk,ab));
-    blk.appendChild(ab); area.appendChild(blk);
+    ab.addEventListener('click',()=>{ insertNew(c,s,sub.titol,contentWrap,ab); blk.classList.remove('collapsed'); });
+    contentWrap.appendChild(ab); 
+    
+    blk.appendChild(contentWrap);
+    area.appendChild(blk);
   });
   updProgress(); updTabPending(); 
 }
@@ -764,10 +803,10 @@ function makeAZ(id,prev,isNew){
   az.appendChild(sb); return az;
 }
 
-function insertNew(crit,sub,subTitol,blk,addBtn){
+function insertNew(crit,sub,subTitol,contentWrap,addBtn){
   const tid='NEW-'+crit+'-'+sub+'-'+Date.now();
   const card=buildNewCard(tid,crit,sub,subTitol);
-  blk.insertBefore(card.el,addBtn); cards[crit]=cards[crit]||[]; cards[crit].push(card);
+  contentWrap.insertBefore(card.el,addBtn); cards[crit]=cards[crit]||[]; cards[crit].push(card);
   updProgress(); updTabPending();
   setTimeout(()=>card.el.scrollIntoView({behavior:'smooth',block:'nearest'}),60);
 }
@@ -849,7 +888,6 @@ window.filterAdminViews = function(val) {
     });
 };
 
-// Funció helper per escapar el nom de l'usuari als enllaços onclick inline
 const escJS = t => String(t||'').replace(/'/g, "\\'").replace(/"/g, "&quot;");
 
 /* ══ RENDER DASHBOARD USUARI NORMAL ══ */
@@ -861,7 +899,7 @@ function renderUserDashboard() {
     <div class="admin-section">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem; flex-wrap:wrap; gap:1rem;">
             <div class="admin-title" style="margin:0;">📊 Resum de les meves aportacions</div>
-            <button class="btn btn-primary" onclick="downloadUserSummary(sess.email, sess.nom)">⬇️ Descarregar el meu resum (.doc)</button>
+            <button class="btn btn-primary" onclick="downloadUserSummary()">⬇️ Descarregar el meu resum (.doc)</button>
         </div>
         <div style="font-size:0.75rem; color:var(--g500); margin-bottom:1.5rem;">Dades actualitzades: ${lastSyncTime ? lastSyncTime.toLocaleString() : 'Ara'}</div>`;
     
@@ -935,7 +973,7 @@ function renderAdminDashboard(){
     const filterContainer = el('div'); filterContainer.innerHTML = filterHtml;
     actionRow.appendChild(filterContainer);
 
-    const btnPdf = el('button', 'btn btn-primary', '📄 Generar Informe Memòria amb Millores (Word .doc)');
+    const btnPdf = el('button', 'btn btn-primary', '📄 Generar Informe Memòria amb Millores (.doc)');
     btnPdf.onclick = () => {
         if(pendentsAdmin.length > 0) {
             if(!confirm(`⚠️ ATENCIÓ:\n\nHi ha ${pendentsAdmin.length} enfocaments nous pendents de validar que NO sortiran a l'informe.\n\nVols generar l'informe de totes maneres?`)) return;
@@ -990,7 +1028,7 @@ function renderAdminDashboard(){
                     <span style="font-size:.7rem; color:var(--g500); min-width:35px; text-align:right;">${pct}%</span>
                 </div>
             </td>
-            <td><button class="btn btn-ghost btn-sm" onclick="downloadUserSummary('${escJS(u.email_autoritzat)}', '${escJS(u.nom_usuari)}')">⬇️ Descarregar resum (.doc)</button></td>
+            <td><button class="btn btn-ghost btn-sm" onclick="downloadAdminUserSummary('${escJS(u.email_autoritzat)}', '${escJS(u.nom_usuari)}')">⬇️ Descarregar resum (.doc)</button></td>
         `;
         tb0.appendChild(tr);
     });
@@ -1187,7 +1225,15 @@ async function submitAdminDecision(estat){
 }
 
 /* ══ EXPORTACIÓ A WORD - RESUM USUARI ══ */
-function downloadUserSummary(email, nomUsuari) {
+function downloadUserSummary() {
+    _downloadSummary(sess.email, sess.nom);
+}
+
+function downloadAdminUserSummary(email, nom) {
+    _downloadSummary(email, nom);
+}
+
+function _downloadSummary(email, nomUsuari) {
     const uResp = resp.filter(r => r.email === email && (r.estat_admin === 'Aprovat' || r.estat_admin === 'Descartat'));
     if(uResp.length === 0) { toast("Aquest usuari no té decisions preses encara.", "tinfo"); return; }
 
@@ -1204,11 +1250,13 @@ function downloadUserSummary(email, nomUsuari) {
         h += `<h3 style="color:#16a34a">[ACTUALITZAT] Propostes incorporades a la memòria</h3><ul>`;
         pInc.forEach(r => { 
             const o = mem.find(m=>String(m.id)===String(r.id_enfocament)); 
+            
             let camps = [];
             if(r.aprovat_desplegament === true || r.aprovat_desplegament === 'true' || r.aprovat_desplegament === 'TRUE') camps.push('Desplegament');
             if(r.aprovat_avaluacio === true || r.aprovat_avaluacio === 'true' || r.aprovat_avaluacio === 'TRUE') camps.push('Avaluació');
             if(r.aprovat_evidencies === true || r.aprovat_evidencies === 'true' || r.aprovat_evidencies === 'TRUE') camps.push('Evidències');
             let detall = camps.length > 0 ? `(Camps incorporats: ${camps.join(', ')})` : '(Revisió i comentari gestionats)';
+
             h += `<li style="margin-bottom:8px;"><b>${escH(o?.titol_enfocament||r.id_enfocament)}</b><br><i style="font-size:12px; color:#555;">${detall}</i></li>`; 
         });
         h += `</ul>`;
@@ -1273,7 +1321,7 @@ function exportToWord() {
                         approvedSugs.forEach(appR => {
                             if (f.ak && (appR[f.ak] === true || appR[f.ak] === 'true' || appR[f.ak] === 'TRUE') && appR[f.sk] && appR[f.sk].trim() !== '') {
                                 pa += `<div style="background:#f0fdf4; border:1px dashed #16a34a; padding:8px; margin-top:5px;">
-                                    <strong style="color:#16a34a; font-size:11px;">[+] MILLORA APROVADA APLICADA (${escH(appR.nom_visible)}):</strong><br>
+                                    <strong style="color:#16a34a; font-size:11px;">[MILLORA APROVADA APLICADA] (${escH(appR.nom_visible)}):</strong><br>
                                     ${escH(appR[f.sk])}
                                 </div>`;
                             }
@@ -1286,7 +1334,7 @@ function exportToWord() {
                             if (f.ak && (appR[f.ak] === true || appR[f.ak] === 'true' || appR[f.ak] === 'TRUE') && appR[f.sk] && appR[f.sk].trim() !== '') {
                                 hasImprovements = true;
                                 impHtml += `<div style="background:#f0fdf4; border:1px dashed #16a34a; padding:8px; margin-top:5px;">
-                                    <strong style="color:#16a34a; font-size:11px;">[+] MILLORA APROVADA APLICADA (${escH(appR.nom_visible)}):</strong><br>
+                                    <strong style="color:#16a34a; font-size:11px;">[MILLORA APROVADA APLICADA] (${escH(appR.nom_visible)}):</strong><br>
                                     ${escH(appR[f.sk])}
                                 </div>`;
                             }
@@ -1375,7 +1423,12 @@ function applyF(){
     if(show&&kw) show=(e.dataset.st||'').includes(kw);
     e.style.display=show?'':'none';
   });
-  document.querySelectorAll('.sb').forEach(b=>{ b.style.display=[...b.querySelectorAll('.card')].some(c=>c.style.display!=='none')?'':'none'; });
+  
+  document.querySelectorAll('.sb').forEach(b=>{ 
+      const hasVis = [...b.querySelectorAll('.card')].some(c=>c.style.display!=='none');
+      b.style.display = hasVis ? '' : 'none'; 
+      if (kw && hasVis) { b.classList.remove('collapsed'); }
+  });
 }
 
 function cardData(id){
