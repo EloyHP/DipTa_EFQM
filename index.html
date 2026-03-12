@@ -116,6 +116,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .prev-panel { display:none; padding:.58rem .82rem .68rem; background:#f0fdfa; border-top:1px solid #99f6e4; font-size:.8rem; color:#115e59; white-space:pre-wrap; line-height:1.6; border-left:4px solid #0f766e; }
 .prev-panel.open { display:block; }
 
+
 /* ── CARD ── */
 .card{background:var(--white);border-radius:var(--r);box-shadow:var(--sh);margin-bottom:.5rem;border:2px solid transparent;transition:border-color var(--tr)}
 /* ELIMINAT EL BORD VERD PER EVITAR SOROLL VISUAL */
@@ -324,8 +325,8 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
     <div class="toolbar" id="main-toolbar">
       <div class="tog-group">
         <button class="tog-btn active" onclick="setF('all',this)">Tots</button>
-        <button class="tog-btn" onclick="setF('pending',this)">Pendents</button>
-        <button class="tog-btn" onclick="setF('validated',this)">Revisats</button>
+        <button class="tog-btn" onclick="setF('pending',this)">Pendents de validar</button>
+        <button class="tog-btn" onclick="setF('validated',this)">Validats i Desats</button>
         <button class="tog-btn" onclick="setF('new',this)">Nous proposats</button>
       </div>
       <div class="sw">
@@ -335,6 +336,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
     </div>
     
     <div class="scroll-area" id="sarea"></div>
+    
     <div class="scroll-area hidden" id="admin-view" style="background: var(--bg);"></div>
   </div>
 </div>
@@ -488,9 +490,18 @@ function buildData(){
     if(!cData[c]) cData[c]={titol:row.titol_criteri||'',subs:{}};
     if(!cData[c].titol&&row.titol_criteri) cData[c].titol=row.titol_criteri;
     
-    if(!cData[c].subs[s]) cData[c].subs[s]={titol:row.titol_subcriteri||'',que_diu:row.que_diu_el_model||'',preg_avaluadors:row.preg_avaluadors||'',rows:[]};
-    if(!cData[c].subs[s].que_diu&&row.que_diu_el_model) cData[c].subs[s].que_diu=row.que_diu_el_model;
-    if(!cData[c].subs[s].preg_avaluadors&&row.preg_avaluadors) cData[c].subs[s].preg_avaluadors=row.preg_avaluadors;
+    // CORRECCIÓ: Mapegem context del subcriteri (buscant a qualsevol fila on estigui informat)
+    if(!cData[c].subs[s]) cData[c].subs[s]={
+        titol:row.titol_subcriteri||'',
+        que_diu:'',
+        preg_avaluadors:'',
+        informe_ant:'',
+        rows:[]
+    };
+    const target = cData[c].subs[s];
+    if(row.que_diu_el_model && row.que_diu_el_model.trim() !== '') target.que_diu = row.que_diu_el_model;
+    if(row.preg_avaluadors && row.preg_avaluadors.trim() !== '') target.preg_avaluadors = row.preg_avaluadors;
+    if(row.informe_ant && row.informe_ant.trim() !== '') target.informe_ant = row.informe_ant;
     
     cData[c].subs[s].rows.push(row);
   });
@@ -570,7 +581,7 @@ function renderCrit(c){
     tr.appendChild(titleWrap);
     
     const actions = el('div'); actions.style.display = 'flex'; actions.style.gap = '.5rem'; actions.style.flexWrap = 'wrap';
-    let ep = null, evp = null;
+    let ep = null, evp = null, ip = null;
 
     if(sub.que_diu && sub.que_diu !== ''){
       const eb=el('button','efqm-btn model-btn','📖 Què diu el model?');
@@ -586,8 +597,15 @@ function renderCrit(c){
       actions.appendChild(evb);
     }
 
+    if(sub.informe_ant && sub.informe_ant !== ''){
+      const ib=el('button','efqm-btn prev-btn','💡 Informe anterior');
+      ip=el('div','prev-panel'); ip.textContent=sub.informe_ant; 
+      ib.onclick=()=>{ ip.classList.toggle('open'); ib.textContent=(ip.classList.contains('open')?'▲ ':'💡 ')+'Informe anterior'; };
+      actions.appendChild(ib);
+    }
+
     if(actions.childNodes.length > 0) tr.appendChild(actions);
-    sticky.appendChild(tr); if(ep) sticky.appendChild(ep); if(evp) sticky.appendChild(evp);
+    sticky.appendChild(tr); if(ep) sticky.appendChild(ep); if(evp) sticky.appendChild(evp); if(ip) sticky.appendChild(ip);
     blk.appendChild(sticky);
 
     sub.rows.forEach(row=>{ const card=buildCard(row,c); blk.appendChild(card.el); cards[c].push(card); });
@@ -663,13 +681,6 @@ function buildCard(row,crit){
     acc.appendChild(hdr); acc.appendChild(abody); body.appendChild(acc);
   });
 
-  if(row.informe_ant && row.informe_ant !== ''){
-    const note=el('div','ctx'); const cb=el('button','ctx-btn','💡 Informe anterior');
-    const cbody=el('div','ctx-body'); const sec=el('div','ctx-sec ctx-prev'); sec.textContent=row.informe_ant; cbody.appendChild(sec);
-    cb.onclick=()=>{ cbody.classList.toggle('open'); cb.textContent=(cbody.classList.contains('open')?'▼ ':'💡 ')+'Informe anterior'; };
-    note.appendChild(cb); note.appendChild(cbody); body.appendChild(note);
-  }
-
   body.appendChild(makeAZ(id,prev,false)); card.appendChild(body); return {el:card, id, isNew:false};
 }
 
@@ -685,7 +696,8 @@ function makeAZ(id,prev,isNew){
     cl.appendChild(chk); cl.appendChild(el('span','','✅ Revisió finalitzada')); az.appendChild(cl);
   }
   const cw=el('div','cmt-w');
-  const cta=document.createElement('textarea'); cta.className='ta-cmt'; cta.dataset.card=id; cta.rows=2; cta.placeholder='Comentari (opcional)'; cta.value=prev?.comentari_general||'';
+  const cta=document.createElement('textarea'); cta.className='ta-cmt'; cta.dataset.card=id;
+  cta.rows=2; cta.placeholder='Comentari (opcional)'; cta.value=prev?.comentari_general||'';
   cta.addEventListener('input',()=>markPending(id)); cw.appendChild(cta); az.appendChild(cw);
   const sb=document.createElement('button');
   if(isNew){ sb.className='btn-sn btn-sc'; sb.textContent= prev ? 'Actualitzar proposta' : 'Desar proposta'; sb.addEventListener('click',()=>saveNew(id,sb)); } 
@@ -1058,9 +1070,9 @@ function updProgress(){
   Object.values(cards).forEach(arr=>{ tot+=arr.length; arr.forEach(({el:e})=>{ if(e.classList.contains('saved')) sav++; }); }); 
   $('pfill').style.width=(tot?Math.round(sav/tot*100):0)+'%'; $('plbl').textContent=sav+' / '+tot; 
   
-  // Progress per subcriteri
+  // Progress per subcriteri (CORRECCIÓ: Ignorem els nous del comptador X/Y)
   document.querySelectorAll('.sb').forEach(blk => {
-      const cList = blk.querySelectorAll('.card');
+      const cList = blk.querySelectorAll('.card[data-is-new="0"]'); 
       if(cList.length === 0) return;
       let sTot = cList.length;
       let sSav = 0;
