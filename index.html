@@ -211,7 +211,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .btn-add{display:flex;align-items:center;justify-content:center;gap:.38rem;background:transparent;border:1.5px dashed var(--vb);border-radius:8px;padding:.42rem .82rem;font-size:.78rem;font-weight:600;color:var(--violet);cursor:pointer;transition:all var(--tr);margin-top:.32rem;width:100%}
 .btn-add:hover{background:var(--vp);border-color:var(--violet)}
 
-/* ══ VISTA D'ADMINISTRACIÓ ══ */
+/* ══ VISTA D'ADMINISTRACIÓ I USUARI ══ */
 .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
 .kpi-card { background: white; padding: 1.5rem; border-radius: var(--r); box-shadow: var(--sh); border-left: 5px solid var(--violet); }
 .kpi-num { font-size: 2.5rem; font-weight: 800; color: var(--violet); line-height: 1; margin-bottom: 0.2rem; }
@@ -379,6 +379,7 @@ let mem=[], resp=[], usuaris=[], sess=null;
 let cData={}, curC=null, curF='all';
 let cards={}, nc=0;
 let currentAdminCardId = null;
+let lastSyncTime = null; // TIMESTAMP DE CÀRREGA
 
 /* ══ SYNC UI ══ */
 function setSync(state) {
@@ -423,6 +424,8 @@ async function loadBackendData(){
     mem=d.memoria||[]; 
     resp=d.respostes||[];
     usuaris=d.usuaris||[]; 
+    
+    lastSyncTime = new Date(); // Guardem el moment de la descàrrega
     
     const sanitize = arr => arr.forEach(r => Object.keys(r).forEach(k => r[k] = r[k] != null ? String(r[k]).trim() : ''));
     sanitize(mem); sanitize(resp); sanitize(usuaris);
@@ -559,6 +562,7 @@ function selCrit(c){
   $('user-view').classList.add('hidden');
   $('sarea').classList.remove('hidden');
   $('main-toolbar').style.display='flex';
+  $('top-prog').style.display='flex'; // Tornem a mostrar la barra de progrés
   
   document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('active'));
   document.querySelector('.ctab[data-c="'+c+'"]').classList.add('active');
@@ -574,6 +578,7 @@ function showAdminView(){
   $('user-view').classList.add('hidden');
   $('admin-view').classList.remove('hidden');
   $('main-toolbar').style.display='none';
+  $('top-prog').style.display='none'; // Ocultem a la vista admin
 
   document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('active'));
   document.querySelector('.ctab-admin').classList.add('active');
@@ -587,6 +592,7 @@ function showUserSummary(btnElement){
   $('admin-view').classList.add('hidden');
   $('user-view').classList.remove('hidden');
   $('main-toolbar').style.display='none';
+  $('top-prog').style.display='none'; // Ocultem a la vista usuari
 
   document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('active'));
   btnElement.classList.add('active');
@@ -845,37 +851,47 @@ window.filterAdminViews = function(val) {
 /* ══ RENDER DASHBOARD USUARI NORMAL ══ */
 function renderUserDashboard() {
     const area = $('user-view');
-    const myResp = resp.filter(r => r.email === sess.email && (r.id_enfocament.startsWith('NEW-') || r.sug_desplegament || r.sug_avaluacio || r.sug_evidencies || r.comentari_general));
+    // CORRECCIÓ: Ara el dashboard recull TOTS els treballs de l'usuari (també els "simplement validats")
+    const myResp = resp.filter(r => r.email === sess.email && (r.id_enfocament.startsWith('NEW-') || r.sug_desplegament || r.sug_avaluacio || r.sug_evidencies || r.comentari_general || r.validat === true || r.validat === 'true' || r.validat === 'TRUE'));
     
     let html = `
     <div class="admin-section">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:1rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem; flex-wrap:wrap; gap:1rem;">
             <div class="admin-title" style="margin:0;">📊 Resum de les meves aportacions</div>
             <button class="btn btn-primary" onclick="downloadUserSummary('${sess.email}', '${sess.nom}')">⬇️ Descarregar el meu resum (.doc)</button>
-        </div>`;
+        </div>
+        <div style="font-size:0.75rem; color:var(--g500); margin-bottom:1.5rem;">Dades actualitzades: ${lastSyncTime ? lastSyncTime.toLocaleString() : 'Ara'}</div>`;
     
     if(myResp.length === 0) {
-        html += `<p style="color:var(--g500); text-align:center; padding:2rem;">Encara no has fet cap proposta de millora ni has creat cap nou enfocament.</p></div>`;
+        html += `<p style="color:var(--g500); text-align:center; padding:2rem;">Encara no has validat cap targeta, fet cap proposta de millora ni creat cap nou enfocament.</p></div>`;
         area.innerHTML = html;
         return;
     }
     
-    html += `<table class="admin-table"><thead><tr><th>Tipus</th><th>Enfocament / Títol</th><th>Estat</th><th>Retorn de Direcció</th></tr></thead><tbody>`;
+    html += `<table class="admin-table"><thead><tr><th>Tipus</th><th>Enfocament / Títol</th><th>Estat (Direcció)</th><th>Retorn de Direcció</th></tr></thead><tbody>`;
     
     myResp.forEach(r => {
         const isNew = String(r.id_enfocament).startsWith('NEW-');
+        const hasImps = r.sug_desplegament || r.sug_avaluacio || r.sug_evidencies || r.comentari_general;
+        const isJustVal = !isNew && !hasImps && (r.validat === true || r.validat === 'true' || r.validat === 'TRUE');
+
         const o = mem.find(m => String(m.id) === String(r.id_enfocament));
         const title = isNew ? r.sug_titol_enfocament : (o ? o.titol_enfocament : r.id_enfocament);
         
         let bcls = 'badge-pend', btxt = 'Pendent de revisió';
         if(r.estat_admin === 'Aprovat') { bcls = 'badge-ok'; btxt = 'Aprovat'; }
-        if(r.estat_admin === 'Descartat') { bcls = 'badge-ko'; btxt = 'Descartat'; }
+        else if(r.estat_admin === 'Descartat') { bcls = 'badge-ko'; btxt = 'Descartat'; }
+        else if(isJustVal) { bcls = 'badge-ok'; btxt = 'Sense canvis (Conforme)'; }
         
+        let typeCls = 'badge-pend', typeTxt = 'MILLORA';
+        if(isNew) { typeCls = 'badge-ok'; typeTxt = 'NOU'; }
+        else if(isJustVal) { typeCls = 'badge-ok'; typeTxt = 'REVISAT'; }
+
         html += `<tr>
-            <td><span class="badge ${isNew?'b-ok':'b-pend'}">${isNew?'NOU':'MILLORA'}</span></td>
+            <td><span class="${typeCls}">${typeTxt}</span></td>
             <td><b>${escH(title)}</b></td>
             <td><span class="${bcls}">${btxt}</span></td>
-            <td style="color:var(--gray-dipta); font-size:0.8rem; max-width:300px;">${escH(r.comentari_admin || '---')}</td>
+            <td style="color:var(--gray-dipta); font-size:0.8rem; max-width:300px;">${isJustVal ? '---' : escH(r.comentari_admin || '---')}</td>
         </tr>`;
     });
     
@@ -927,7 +943,7 @@ function renderAdminDashboard(){
     area.appendChild(actionRow);
 
     const sec0 = el('div', 'admin-section');
-    sec0.innerHTML = `<div class="admin-title">📊 Control de Participació i Retorn a Usuaris</div>`;
+    sec0.innerHTML = `<div class="admin-title">📊 Control de Participació i Retorn a Usuaris</div><div style="font-size:0.75rem; color:var(--g500); margin-bottom:1rem;">Dades actualitzades: ${lastSyncTime ? lastSyncTime.toLocaleString() : 'Ara'}</div>`;
     const t0 = document.createElement('table'); t0.className = 'admin-table';
     t0.innerHTML = `<thead><tr><th>Usuari</th><th>Àrea assignada</th><th>Progrés (Targetes Existents)</th><th>Acció</th></tr></thead><tbody></tbody>`;
     const tb0 = t0.querySelector('tbody');
@@ -1155,7 +1171,12 @@ async function submitAdminDecision(estat){
         }
         
         setSync('ok');
-        closeModal(); renderAdminDashboard();
+        closeModal(); 
+        
+        // Refresca la vista en la que estiguem
+        if(curC === 'admin') renderAdminDashboard();
+        else if (curC === 'user') renderUserDashboard();
+        
     } catch(err) {
         setSync('err');
         toast('Error guardant: ' + err.message, 'terr');
@@ -1182,7 +1203,7 @@ function downloadUserSummary(email, nomUsuari) {
         pInc.forEach(r => { 
             const o = mem.find(m=>String(m.id)===String(r.id_enfocament)); 
             
-            // Lògica per detallar què s'ha aprovat
+            // Fix: Detallem exactament quins camps s'han aprovat en text pla (sense emojis)
             let camps = [];
             if(r.aprovat_desplegament === true || r.aprovat_desplegament === 'true' || r.aprovat_desplegament === 'TRUE') camps.push('Desplegament');
             if(r.aprovat_avaluacio === true || r.aprovat_avaluacio === 'true' || r.aprovat_avaluacio === 'TRUE') camps.push('Avaluació');
@@ -1252,6 +1273,7 @@ function exportToWord() {
                         
                         approvedSugs.forEach(appR => {
                             if (f.ak && (appR[f.ak] === true || appR[f.ak] === 'true' || appR[f.ak] === 'TRUE') && appR[f.sk] && appR[f.sk].trim() !== '') {
+                                // Fix: Text pla sense emojis pel Word
                                 pa += `<div style="background:#f0fdf4; border:1px dashed #16a34a; padding:8px; margin-top:5px;">
                                     <strong style="color:#16a34a; font-size:11px;">[MILLORA APROVADA APLICADA] (${escH(appR.nom_visible)}):</strong><br>
                                     ${escH(appR[f.sk])}
@@ -1282,6 +1304,7 @@ function exportToWord() {
 
                 approvedSugs.forEach(appR => {
                     if (appR.comentari_general && appR.comentari_general.trim() !== '') {
+                        // Fix: Text pla sense emojis pel Word
                         pa += `<div style="background:#f1f5f9; border-left: 4px solid #94a3b8; padding: 8px; margin-top: 5px; font-size: 12px;">
                             <strong>[COMENTARI GENERAL] (${escH(appR.nom_visible)}):</strong><br>
                             ${escH(appR.comentari_general)}
@@ -1368,16 +1391,18 @@ function cardData(id){
 }
 
 async function saveExisting(id,btn){
+  if(!sess) return; 
   setSync('syncing');
-  if(!sess) return; const orig=btn.textContent; btn.textContent='Enviant…'; btn.disabled=true; const d=cardData(id);
+  const orig=btn.textContent; btn.textContent='Enviant…'; btn.disabled=true; 
+  const d=cardData(id);
   const isDone = d.validat; 
   const payload={ action: 'save', nom:sess.nom, email:sess.email, area_revisora:sess.area, id_enfocament:id, is_new:false, validat:d.validat, sug_titol_enfocament:'', sug_enfocament:'', sug_desplegament:d.sug_desplegament||'', sug_avaluacio:d.sug_avaluacio||'', sug_evidencies:d.sug_evidencies||'', comentari_general:d.comentari_general, timestamp:new Date().toISOString() };
   await doSave(payload,id,btn,orig,false, isDone);
 }
 
 async function saveNew(tid,btn){
-  setSync('syncing');
-  if(!sess) return; const card=document.querySelector('.card[data-id="'+tid+'"]'); if(!card) return;
+  if(!sess) return; 
+  const card=document.querySelector('.card[data-id="'+tid+'"]'); if(!card) return;
   
   let faltan = false;
   const requiredKeys = ['sug_titol_enfocament', 'sug_enfocament', 'sug_desplegament', 'sug_avaluacio', 'sug_evidencies'];
@@ -1395,10 +1420,10 @@ async function saveNew(tid,btn){
   
   if (faltan) {
       toast('⚠️ Avís: Falten camps obligatoris per omplir.', 'terr');
-      setSync('err');
       return;
   }
 
+  setSync('syncing');
   const orig=btn.textContent; btn.textContent='Enviant…'; btn.disabled=true; const d=cardData(tid);
   const payload={ action: 'save', nom:sess.nom, email:sess.email, area_revisora:sess.area, id_enfocament:tid, is_new:true, validat:true, sug_titol_enfocament:d.sug_titol_enfocament||'', sug_enfocament:d.sug_enfocament||'', sug_desplegament:d.sug_desplegament||'', sug_avaluacio:d.sug_avaluacio||'', sug_evidencies:d.sug_evidencies||'', comentari_general:d.comentari_general, criteri:card.dataset.crit||'', subcriteri:card.dataset.sub||'', timestamp:new Date().toISOString() };
   await doSave(payload,tid,btn,orig,true, true);
