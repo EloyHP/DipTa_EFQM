@@ -117,7 +117,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .prev-panel { display:none; padding:.58rem .82rem .68rem; background:#f0fdfa; border-top:1px solid #99f6e4; font-size:.8rem; color:#115e59; white-space:pre-wrap; line-height:1.6; border-left:4px solid #0f766e; }
 .prev-panel.open { display:block; }
 
-
 /* ── CARD ── */
 .card{background:var(--white);border-radius:var(--r);box-shadow:var(--sh);margin-bottom:.5rem;border:2px solid transparent;transition:border-color var(--tr)}
 .card.saved{border-color:transparent;}
@@ -231,7 +230,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .badge-pend { background: #fff7ed; color: var(--orange); padding: 3px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; border: 1px solid #fed7aa;}
 .badge-ok { background: #f0fdf4; color: var(--green); padding: 3px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; border: 1px solid #bbf7d0;}
 .badge-ko { background: #fef2f2; color: var(--red); padding: 3px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; border: 1px solid #fecaca;}
-.badge-neutral { background: #f1f5f9; color: #475569; padding: 3px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; border: 1px solid #cbd5e1;}
 
 /* Indicadors de millora a la taula */
 .indicator-row { display: flex; gap: 4px; margin-top: 4px; }
@@ -381,7 +379,7 @@ let mem=[], resp=[], usuaris=[], sess=null;
 let cData={}, curC=null, curF='all';
 let cards={}, nc=0;
 let currentAdminCardId = null;
-let lastSyncTime = null;
+let lastSyncTime = null; // TIMESTAMP DE CÀRREGA
 
 /* ══ SYNC UI ══ */
 function setSync(state) {
@@ -427,7 +425,7 @@ async function loadBackendData(){
     resp=d.respostes||[];
     usuaris=d.usuaris||[]; 
     
-    lastSyncTime = new Date();
+    lastSyncTime = new Date(); // Guardem el moment de la descàrrega
     
     const sanitize = arr => arr.forEach(r => Object.keys(r).forEach(k => r[k] = r[k] != null ? String(r[k]).trim() : ''));
     sanitize(mem); sanitize(resp); sanitize(usuaris);
@@ -542,6 +540,7 @@ function buildTabs(){
     b.onclick=()=>selCrit(c); nav.appendChild(b);
   });
 
+  // NOU: Pestanya de l'usuari
   const bu = document.createElement('button');
   bu.className = 'ctab ctab-user';
   bu.dataset.c = 'user_summary';
@@ -563,7 +562,7 @@ function selCrit(c){
   $('user-view').classList.add('hidden');
   $('sarea').classList.remove('hidden');
   $('main-toolbar').style.display='flex';
-  $('top-prog').style.display='flex';
+  $('top-prog').style.display='flex'; // Tornem a mostrar la barra de progrés
   
   document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('active'));
   document.querySelector('.ctab[data-c="'+c+'"]').classList.add('active');
@@ -579,7 +578,7 @@ function showAdminView(){
   $('user-view').classList.add('hidden');
   $('admin-view').classList.remove('hidden');
   $('main-toolbar').style.display='none';
-  $('top-prog').style.display='none';
+  $('top-prog').style.display='none'; // Ocultem a la vista admin
 
   document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('active'));
   document.querySelector('.ctab-admin').classList.add('active');
@@ -593,7 +592,7 @@ function showUserSummary(btnElement){
   $('admin-view').classList.add('hidden');
   $('user-view').classList.remove('hidden');
   $('main-toolbar').style.display='none';
-  $('top-prog').style.display='none';
+  $('top-prog').style.display='none'; // Ocultem a la vista usuari
 
   document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('active'));
   btnElement.classList.add('active');
@@ -799,7 +798,7 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
       if(confirm('Segur que vols eliminar-lo definitivament?')){
         const origBtn = rm.innerHTML; rm.textContent = '⏳';
         try {
-          const r = await api('POST', { action: 'delete', email: sess.email, id_enfocament: tid, esborrar: true });
+          const r = await api('POST', { action:'delete', email: sess.email, id_enfocament: tid, esborrar: true });
           if(!r.success) throw new Error(r.error);
           card.remove(); cards[crit]=(cards[crit]||[]).filter(x=>x.id!==tid); resp = resp.filter(r => r.id_enfocament !== tid);
           updProgress(); updTabPending(); toast('Eliminat.', 'tinfo');
@@ -849,19 +848,17 @@ window.filterAdminViews = function(val) {
     });
 };
 
-// Funció helper per escapar el nom de l'usuari als enllaços onclick inline
-const escJS = t => String(t||'').replace(/'/g, "\\'").replace(/"/g, "&quot;");
-
 /* ══ RENDER DASHBOARD USUARI NORMAL ══ */
 function renderUserDashboard() {
     const area = $('user-view');
+    // CORRECCIÓ: Ara el dashboard recull TOTS els treballs de l'usuari (també els "simplement validats")
     const myResp = resp.filter(r => r.email === sess.email && (r.id_enfocament.startsWith('NEW-') || r.sug_desplegament || r.sug_avaluacio || r.sug_evidencies || r.comentari_general || r.validat === true || r.validat === 'true' || r.validat === 'TRUE'));
     
     let html = `
     <div class="admin-section">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem; flex-wrap:wrap; gap:1rem;">
             <div class="admin-title" style="margin:0;">📊 Resum de les meves aportacions</div>
-            <button class="btn btn-primary" onclick="downloadUserSummary(sess.email, sess.nom)">⬇️ Descarregar el meu resum (.doc)</button>
+            <button class="btn btn-primary" onclick="downloadUserSummary('${sess.email}', '${sess.nom}')">⬇️ Descarregar el meu resum (.doc)</button>
         </div>
         <div style="font-size:0.75rem; color:var(--g500); margin-bottom:1.5rem;">Dades actualitzades: ${lastSyncTime ? lastSyncTime.toLocaleString() : 'Ara'}</div>`;
     
@@ -884,11 +881,11 @@ function renderUserDashboard() {
         let bcls = 'badge-pend', btxt = 'Pendent de revisió';
         if(r.estat_admin === 'Aprovat') { bcls = 'badge-ok'; btxt = 'Aprovat'; }
         else if(r.estat_admin === 'Descartat') { bcls = 'badge-ko'; btxt = 'Descartat'; }
-        else if(isJustVal) { bcls = 'badge-neutral'; btxt = 'Sense canvis (Conforme)'; }
+        else if(isJustVal) { bcls = 'badge-ok'; btxt = 'Sense canvis (Conforme)'; }
         
         let typeCls = 'badge-pend', typeTxt = 'MILLORA';
         if(isNew) { typeCls = 'badge-ok'; typeTxt = 'NOU'; }
-        else if(isJustVal) { typeCls = 'badge-neutral'; typeTxt = 'REVISAT'; }
+        else if(isJustVal) { typeCls = 'badge-ok'; typeTxt = 'REVISAT'; }
 
         html += `<tr>
             <td><span class="${typeCls}">${typeTxt}</span></td>
@@ -935,7 +932,7 @@ function renderAdminDashboard(){
     const filterContainer = el('div'); filterContainer.innerHTML = filterHtml;
     actionRow.appendChild(filterContainer);
 
-    const btnPdf = el('button', 'btn btn-primary', '📄 Generar Informe Memòria amb Millores (Word .doc)');
+    const btnPdf = el('button', 'btn btn-primary', '📄 Generar Informe Memòria amb Millores (PDF)');
     btnPdf.onclick = () => {
         if(pendentsAdmin.length > 0) {
             if(!confirm(`⚠️ ATENCIÓ:\n\nHi ha ${pendentsAdmin.length} enfocaments nous pendents de validar que NO sortiran a l'informe.\n\nVols generar l'informe de totes maneres?`)) return;
@@ -990,7 +987,7 @@ function renderAdminDashboard(){
                     <span style="font-size:.7rem; color:var(--g500); min-width:35px; text-align:right;">${pct}%</span>
                 </div>
             </td>
-            <td><button class="btn btn-ghost btn-sm" onclick="downloadUserSummary('${escJS(u.email_autoritzat)}', '${escJS(u.nom_usuari)}')">⬇️ Descarregar resum (.doc)</button></td>
+            <td><button class="btn btn-ghost btn-sm" onclick="downloadUserSummary('${escH(u.email_autoritzat)}', '${escH(u.nom_usuari)}')">⬇️ Descarregar resum (.doc)</button></td>
         `;
         tb0.appendChild(tr);
     });
@@ -1019,7 +1016,7 @@ function renderAdminDashboard(){
             <td>${escH(r.sug_titol_enfocament || 'Sense títol')}</td>
             <td>${escH(r.nom_visible)}<br><small style="color:var(--g300)">${escH(r.area_revisora)}</small></td>
             <td><span class="${bcls}">${btxt}</span></td>
-            <td><button class="btn-sm btn-sm-vio" onclick="openAdminModal('${escJS(r.id_enfocament)}', '${escJS(r.email)}')">Revisar</button></td>
+            <td><button class="btn-sm btn-sm-vio" onclick="openAdminModal('${r.id_enfocament}', '${r.email}')">Revisar</button></td>
         `;
         tb1.appendChild(tr);
     });
@@ -1061,7 +1058,7 @@ function renderAdminDashboard(){
             </td>
             <td>${escH(r.nom_visible)} <small style="color:var(--g300)">(${escH(r.area_revisora)})</small></td>
             <td><span class="${bcls}">${btxt}</span></td>
-            <td><button class="btn-sm btn-sm-vio" onclick="openAdminModal('${escJS(r.id_enfocament)}', '${escJS(r.email)}')">Revisar</button></td>
+            <td><button class="btn-sm btn-sm-vio" onclick="openAdminModal('${r.id_enfocament}', '${r.email}')">Revisar</button></td>
         `;
         tb2.appendChild(tr);
     });
@@ -1176,6 +1173,7 @@ async function submitAdminDecision(estat){
         setSync('ok');
         closeModal(); 
         
+        // Refresca la vista en la que estiguem
         if(curC === 'admin') renderAdminDashboard();
         else if (curC === 'user') renderUserDashboard();
         
@@ -1204,11 +1202,14 @@ function downloadUserSummary(email, nomUsuari) {
         h += `<h3 style="color:#16a34a">[ACTUALITZAT] Propostes incorporades a la memòria</h3><ul>`;
         pInc.forEach(r => { 
             const o = mem.find(m=>String(m.id)===String(r.id_enfocament)); 
+            
+            // Fix: Detallem exactament quins camps s'han aprovat en text pla (sense emojis)
             let camps = [];
             if(r.aprovat_desplegament === true || r.aprovat_desplegament === 'true' || r.aprovat_desplegament === 'TRUE') camps.push('Desplegament');
             if(r.aprovat_avaluacio === true || r.aprovat_avaluacio === 'true' || r.aprovat_avaluacio === 'TRUE') camps.push('Avaluació');
             if(r.aprovat_evidencies === true || r.aprovat_evidencies === 'true' || r.aprovat_evidencies === 'TRUE') camps.push('Evidències');
             let detall = camps.length > 0 ? `(Camps incorporats: ${camps.join(', ')})` : '(Revisió i comentari gestionats)';
+
             h += `<li style="margin-bottom:8px;"><b>${escH(o?.titol_enfocament||r.id_enfocament)}</b><br><i style="font-size:12px; color:#555;">${detall}</i></li>`; 
         });
         h += `</ul>`;
@@ -1272,8 +1273,9 @@ function exportToWord() {
                         
                         approvedSugs.forEach(appR => {
                             if (f.ak && (appR[f.ak] === true || appR[f.ak] === 'true' || appR[f.ak] === 'TRUE') && appR[f.sk] && appR[f.sk].trim() !== '') {
+                                // Fix: Text pla sense emojis pel Word
                                 pa += `<div style="background:#f0fdf4; border:1px dashed #16a34a; padding:8px; margin-top:5px;">
-                                    <strong style="color:#16a34a; font-size:11px;">[+] MILLORA APROVADA APLICADA (${escH(appR.nom_visible)}):</strong><br>
+                                    <strong style="color:#16a34a; font-size:11px;">[MILLORA APROVADA APLICADA] (${escH(appR.nom_visible)}):</strong><br>
                                     ${escH(appR[f.sk])}
                                 </div>`;
                             }
@@ -1286,7 +1288,7 @@ function exportToWord() {
                             if (f.ak && (appR[f.ak] === true || appR[f.ak] === 'true' || appR[f.ak] === 'TRUE') && appR[f.sk] && appR[f.sk].trim() !== '') {
                                 hasImprovements = true;
                                 impHtml += `<div style="background:#f0fdf4; border:1px dashed #16a34a; padding:8px; margin-top:5px;">
-                                    <strong style="color:#16a34a; font-size:11px;">[+] MILLORA APROVADA APLICADA (${escH(appR.nom_visible)}):</strong><br>
+                                    <strong style="color:#16a34a; font-size:11px;">[MILLORA APROVADA APLICADA] (${escH(appR.nom_visible)}):</strong><br>
                                     ${escH(appR[f.sk])}
                                 </div>`;
                             }
@@ -1302,6 +1304,7 @@ function exportToWord() {
 
                 approvedSugs.forEach(appR => {
                     if (appR.comentari_general && appR.comentari_general.trim() !== '') {
+                        // Fix: Text pla sense emojis pel Word
                         pa += `<div style="background:#f1f5f9; border-left: 4px solid #94a3b8; padding: 8px; margin-top: 5px; font-size: 12px;">
                             <strong>[COMENTARI GENERAL] (${escH(appR.nom_visible)}):</strong><br>
                             ${escH(appR.comentari_general)}
@@ -1369,6 +1372,7 @@ function applyF(){
   const kw=document.getElementById('srch').value.toLowerCase().trim();
   (cards[curC]||[]).forEach(({el:e})=>{
     let show=true;
+    // Fix: El filtre nous només mira que sigui nou, independentment de si està desat o no
     if(curF==='pending') show = !e.classList.contains('saved');
     else if(curF==='validated') show = e.classList.contains('saved');
     else if(curF==='new') show = e.dataset.isNew==='1';
@@ -1387,16 +1391,18 @@ function cardData(id){
 }
 
 async function saveExisting(id,btn){
+  if(!sess) return; 
   setSync('syncing');
-  if(!sess) return; const orig=btn.textContent; btn.textContent='Enviant…'; btn.disabled=true; const d=cardData(id);
+  const orig=btn.textContent; btn.textContent='Enviant…'; btn.disabled=true; 
+  const d=cardData(id);
   const isDone = d.validat; 
   const payload={ action: 'save', nom:sess.nom, email:sess.email, area_revisora:sess.area, id_enfocament:id, is_new:false, validat:d.validat, sug_titol_enfocament:'', sug_enfocament:'', sug_desplegament:d.sug_desplegament||'', sug_avaluacio:d.sug_avaluacio||'', sug_evidencies:d.sug_evidencies||'', comentari_general:d.comentari_general, timestamp:new Date().toISOString() };
   await doSave(payload,id,btn,orig,false, isDone);
 }
 
 async function saveNew(tid,btn){
-  setSync('syncing');
-  if(!sess) return; const card=document.querySelector('.card[data-id="'+tid+'"]'); if(!card) return;
+  if(!sess) return; 
+  const card=document.querySelector('.card[data-id="'+tid+'"]'); if(!card) return;
   
   let faltan = false;
   const requiredKeys = ['sug_titol_enfocament', 'sug_enfocament', 'sug_desplegament', 'sug_avaluacio', 'sug_evidencies'];
@@ -1414,10 +1420,10 @@ async function saveNew(tid,btn){
   
   if (faltan) {
       toast('⚠️ Avís: Falten camps obligatoris per omplir.', 'terr');
-      setSync('err');
       return;
   }
 
+  setSync('syncing');
   const orig=btn.textContent; btn.textContent='Enviant…'; btn.disabled=true; const d=cardData(tid);
   const payload={ action: 'save', nom:sess.nom, email:sess.email, area_revisora:sess.area, id_enfocament:tid, is_new:true, validat:true, sug_titol_enfocament:d.sug_titol_enfocament||'', sug_enfocament:d.sug_enfocament||'', sug_desplegament:d.sug_desplegament||'', sug_avaluacio:d.sug_avaluacio||'', sug_evidencies:d.sug_evidencies||'', comentari_general:d.comentari_general, criteri:card.dataset.crit||'', subcriteri:card.dataset.sub||'', timestamp:new Date().toISOString() };
   await doSave(payload,tid,btn,orig,true, true);
