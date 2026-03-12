@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Revisió Memòria EFQM - DipTa</title>
+<title>Revisió Memòria EFQM - La DipTa</title>
 <style>
 /* ══ CONFIGURACIÓ DE COLORS CORPORATIUS La DipTa ══ */
 :root{
@@ -72,7 +72,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 
 /* PESTANYA ADMIN */
 .ctab-admin { color: var(--violet); }
-.ctab-admin:hover { color: #5b21b6; }
 .ctab-admin.active { border-bottom-color: var(--violet); color: var(--violet); background: var(--vp); }
 
 .main{flex:1;overflow:hidden;display:flex;flex-direction:column}
@@ -95,7 +94,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .sub-title{font-size:.86rem;font-weight:800;color:var(--navy);flex:1; display:flex; align-items:center; gap:.5rem;}
 
 /* Comptador de targetes per subcriteri */
-.sub-prog { font-size: .7rem; background: var(--g100); color: var(--g700); padding: .15rem .45rem; border-radius: 99px; font-weight: 700; letter-spacing: .02em; transition: all var(--tr);}
+.sub-prog { font-size: .7rem; background: var(--g100); color: var(--g700); padding: .15rem .45rem; border-radius: 99px; font-weight: 700; transition: all var(--tr);}
 .sub-prog.done { background: #dcfce7; color: #166534; }
 
 .efqm-btn{background:transparent;border:1.5px solid var(--g100);border-radius:6px;padding:.26rem .62rem;cursor:pointer;font-size:.73rem;font-weight:600;transition:background var(--tr);white-space:nowrap;flex-shrink:0}
@@ -119,7 +118,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 
 /* ── CARD ── */
 .card{background:var(--white);border-radius:var(--r);box-shadow:var(--sh);margin-bottom:.5rem;border:2px solid transparent;transition:border-color var(--tr)}
-/* ELIMINAT EL BORD VERD PER EVITAR SOROLL VISUAL */
 .card.saved{border-color:transparent;}
 
 /* new card normal i descartada */
@@ -237,7 +235,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 /* MODAL ADMIN */
 .modal-overlay { position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.6); z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 1rem; opacity: 0; pointer-events: none; transition: opacity var(--tr); }
 .modal-overlay.open { opacity: 1; pointer-events: all; }
-.modal { background: white; border-radius: 12px; width: 100%; max-width: 600px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 20px 40px rgba(0,0,0,0.2); transform: translateY(20px); transition: transform var(--tr); }
+.modal { background: white; border-radius: 12px; width: 100%; max-width: 800px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 20px 40px rgba(0,0,0,0.2); transform: translateY(20px); transition: transform var(--tr); }
 .modal-overlay.open .modal { transform: translateY(0); }
 .modal-header { padding: 1rem 1.5rem; border-bottom: 1px solid var(--g100); display: flex; justify-content: space-between; align-items: center; }
 .modal-header h2 { font-size: 1.1rem; color: var(--navy); }
@@ -250,6 +248,13 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .admin-item-box strong { color: var(--navy); display: block; margin-bottom: 0.2rem; font-size: 0.75rem; text-transform: uppercase; }
 .admin-item-box p { font-size: 0.9rem; margin-bottom: 0.8rem; white-space: pre-wrap; }
 .admin-item-box p:last-child { margin-bottom: 0; }
+
+/* Vista Side-by-Side pel modal */
+.side-by-side { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+.sb-col { background: var(--white); border: 1px solid var(--g100); border-radius: 8px; overflow: hidden;}
+.sb-hdr { background: var(--g50); padding: 0.5rem 0.8rem; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; border-bottom: 1px solid var(--g100); color: var(--g500);}
+.sb-body { padding: 1rem; font-size: 0.85rem; line-height: 1.5; white-space: pre-wrap; max-height: 300px; overflow-y: auto;}
+.sb-diff { background: #fffbeb; color: #92400e; font-style: italic; border-left: 3px solid #f59e0b;}
 
 /* ══ VISTA D'IMPRESSIÓ (PDF) ══ */
 #print-area { display: none; background: white; padding: 20px; color: black; }
@@ -272,12 +277,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .toast{background:var(--black-dipta);color:#fff;padding:.58rem .82rem;border-radius:9px;font-size:.79rem;font-weight:500;animation:fu .2s ease;box-shadow:var(--sh2)}
 .tok{background:#166534}.terr{background:#991b1b}.tinfo{background:var(--navy)}.tvio{background:var(--violet)}
 @keyframes fu{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
-
-@media(max-width:600px){
-  .topbar{flex-wrap:wrap}.prog-wrap{display:none}
-  .az{flex-direction:column}
-  .ctab{font-size:.74rem;padding:.52rem .68rem}
-}
 </style>
 </head>
 <body>
@@ -336,7 +335,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
     </div>
     
     <div class="scroll-area" id="sarea"></div>
-    
     <div class="scroll-area hidden" id="admin-view" style="background: var(--bg);"></div>
   </div>
 </div>
@@ -344,23 +342,25 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 <div class="modal-overlay" id="admin-modal">
   <div class="modal">
     <div class="modal-header">
-      <h2>Revisió d'Enfocament</h2>
+      <h2 id="modal-title">Revisió</h2>
       <button class="close-btn" onclick="closeModal()">✕</button>
     </div>
     <div class="modal-body" id="modal-content"></div>
-    <div style="padding: 0 1.5rem 1rem;">
+    
+    <div id="admin-feedback-section" style="padding: 0 1.5rem 1rem;">
       <label style="margin-top:0;">Comentari de retorn a l'usuari (Obligatori si es descarta)</label>
-      <textarea id="admin-comment" rows="2" placeholder="Explica el motiu del descart..."></textarea>
+      <textarea id="admin-comment" rows="2" placeholder="Explica el motiu del descart o la gestió..."></textarea>
     </div>
-    <div class="modal-footer">
-      <button class="btn btn-danger" id="btn-ko" onclick="submitAdminDecision('Descartat')">❌ Descartar i retornar</button>
-      <button class="btn btn-primary" id="btn-ok" style="background:#16a34a;" onclick="submitAdminDecision('Aprovat')">✅ Aprovar enfocament</button>
+
+    <div class="modal-footer" id="modal-footer">
+      <button class="btn btn-danger" id="btn-ko" onclick="submitAdminDecision('Descartat')">❌ Descartar</button>
+      <button class="btn btn-primary" id="btn-ok" style="background:#16a34a;" onclick="submitAdminDecision('Aprovat')">✅ Aprovar</button>
+      <button class="btn btn-primary" id="btn-handled" style="background:var(--navy);" onclick="submitAdminDecision('Gestionat')">🏁 Marcar com gestionat</button>
     </div>
   </div>
 </div>
 
 <div id="print-area"></div>
-
 <div id="toasts"></div>
 
 <script>
@@ -372,6 +372,7 @@ let mem=[], resp=[], usuaris=[], sess=null;
 let cData={}, curC=null, curF='all';
 let cards={}, nc=0;
 let currentAdminCardId = null;
+let isAdminMode = false;
 
 /* ══ INIT ══ */
 window.addEventListener('DOMContentLoaded', async ()=>{
@@ -421,207 +422,106 @@ async function loadBackendData(){
 function doLogin(){
   const email = $('fe').value.trim().toLowerCase();
   const err = $('ferr');
-  
   if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ showErr(err,'Introdueix un correu electrònic vàlid.'); return; }
-  if(usuaris.length === 0){ showErr(err,'Encara s\'està carregant la base de dades, espera un segon...'); return; }
-
+  if(usuaris.length === 0){ showErr(err,'Encara s\'està carregant la base de dades...'); return; }
   const user = usuaris.find(u => String(u.email_autoritzat || '').toLowerCase() === email);
-  if(!user){ showErr(err, 'Accés denegat. Aquest correu no està a la llista d\'usuaris autoritzats.'); return; }
-
+  if(!user){ showErr(err, 'Accés denegat. Correu no autoritzat.'); return; }
   err.classList.add('hidden');
   sess={ nom: user.nom_usuari || 'Usuari', email: email, area: user.area_assignada || '' };
   localStorage.setItem('efqm_v4',JSON.stringify(sess));
   goS2();
 }
+function clearSess(){ localStorage.removeItem('efqm_v4'); sess=null; $('wblock').classList.add('hidden'); $('lform').classList.remove('hidden'); $('fe').value = ''; }
+function doLogout(){ if(document.querySelectorAll('.card.pending').length>0 && !confirm('Tens canvis pendents. Continuar?')) return; clearSess(); $('s2').style.display='none'; $('s1').style.display='flex'; }
 
-function clearSess(){
-  localStorage.removeItem('efqm_v4'); sess=null;
-  $('wblock').classList.add('hidden'); $('lform').classList.remove('hidden'); $('fe').value = '';
-}
-
-function doLogout(){
-  if(document.querySelectorAll('.card.pending').length>0 && !confirm('Tens canvis pendents. Si tanques la sessió es perdran. Continuar?')) return;
-  clearSess(); $('s2').style.display='none'; $('s1').style.display='flex';
-}
-
-/* ══ SCREEN 2 ══ */
-async function goS2(){
-  $('s1').style.display='none'; $('s2').style.display='flex';
-  $('tb-user').textContent=sess.nom+' · '+sess.area;
-  await loadData();
-}
+async function goS2(){ $('s1').style.display='none'; $('s2').style.display='flex'; $('tb-user').textContent=sess.nom+' · '+sess.area; await loadData(); }
 
 async function loadData(){
   try {
     $('sarea').innerHTML='<p style="color:var(--g300);padding:2rem;text-align:center">Processant dades…</p>';
     if(mem.length === 0 && APPS_SCRIPT_URL) await loadBackendData();
     mem.sort((a,b) => String(a.id || '').localeCompare(String(b.id || '')));
-    
     buildData(); buildTabs();
-    
-    if(isGlobal()) showAdminView();
-    else {
-        const first=Object.keys(cData).sort()[0];
-        if(first) selCrit(first);
-    }
-  } catch(err) {
-    $('sarea').innerHTML='<p style="color:var(--red);padding:2rem;text-align:center"><strong>❌ Error crític al processar les dades de l\'Excel:</strong><br>' + err.message + '</p>';
-  }
+    if(isGlobal()) showAdminView(); else { const first=Object.keys(cData).sort()[0]; if(first) selCrit(first); }
+  } catch(err) { $('sarea').innerHTML='<p style="color:var(--red);padding:2rem">Error: ' + err.message + '</p>'; }
 }
 
-function isGlobal() {
-    return String(sess.area || '').toLowerCase().includes('global') || String(sess.area || '').toLowerCase().includes('totes');
-}
+function isGlobal() { return String(sess.area || '').toLowerCase().includes('global') || String(sess.area || '').toLowerCase().includes('totes'); }
 
-/* ══ BUILD DATA ══ */
 function buildData(){
   cData={}; cards={};
-  const areaUsuari = String(sess.area || '').toLowerCase();
+  const areaUs = String(sess.area || '').toLowerCase();
   const esGlob = isGlobal();
-  const llistaAreasUsuari = areaUsuari.split(',').map(a => a.trim());
+  const llistaAreasUs = areaUs.split(',').map(a => a.trim());
 
   mem.forEach(row=>{
     if(!row.criteri || !row.subcriteri) return; 
     const llistaAreasFila = String(row.area||'').toLowerCase().split(',').map(a=>a.trim());
-    const teAcces = esGlob || llistaAreasUsuari.some(areaUs => llistaAreasFila.includes(areaUs));
+    const teAcces = esGlob || llistaAreasUs.some(area => llistaAreasFila.includes(area));
     if(!teAcces) return;
-
     const c=String(row.criteri), s=String(row.subcriteri);
     if(!cData[c]) cData[c]={titol:row.titol_criteri||'',subs:{}};
-    if(!cData[c].titol&&row.titol_criteri) cData[c].titol=row.titol_criteri;
-    
-    // CORRECCIÓ: Mapegem context del subcriteri (buscant a qualsevol fila on estigui informat)
-    if(!cData[c].subs[s]) cData[c].subs[s]={
-        titol:row.titol_subcriteri||'',
-        que_diu:'',
-        preg_avaluadors:'',
-        informe_ant:'',
-        rows:[]
-    };
+    if(!cData[c].subs[s]) cData[c].subs[s]={titol:row.titol_subcriteri||'',que_diu:'',preg_avaluadors:'',informe_ant:'',rows:[]};
     const target = cData[c].subs[s];
-    if(row.que_diu_el_model && row.que_diu_el_model.trim() !== '') target.que_diu = row.que_diu_el_model;
-    if(row.preg_avaluadors && row.preg_avaluadors.trim() !== '') target.preg_avaluadors = row.preg_avaluadors;
-    if(row.informe_ant && row.informe_ant.trim() !== '') target.informe_ant = row.informe_ant;
-    
+    if(row.que_diu_el_model?.trim()) target.que_diu = row.que_diu_el_model;
+    if(row.preg_avaluadors?.trim()) target.preg_avaluadors = row.preg_avaluadors;
+    if(row.informe_ant?.trim()) target.informe_ant = row.informe_ant;
     cData[c].subs[s].rows.push(row);
   });
 }
 
-/* ══ TABS ══ */
 function buildTabs(){
   const nav=$('ctabs'); nav.innerHTML='';
-  
-  if(isGlobal()) {
-      const ba=el('button','ctab ctab-admin','👑 Administració');
-      ba.onclick=()=>showAdminView(); nav.appendChild(ba);
-  }
-
+  if(isGlobal()) { const ba=el('button','ctab ctab-admin','👑 Administració'); ba.onclick=()=>showAdminView(); nav.appendChild(ba); }
   Object.keys(cData).sort().forEach(c=>{
-    const b=document.createElement('button'); b.className='ctab normal-tab'; b.dataset.c=c;
+    const b=el('button','ctab normal-tab', ''); b.dataset.c=c;
     b.innerHTML=escH(c+(cData[c].titol?' — '+cData[c].titol:''))+' <span class="tab-dot"></span>';
     b.onclick=()=>selCrit(c); nav.appendChild(b);
   });
 }
 
-function updTabPending(){
-  document.querySelectorAll('.normal-tab').forEach(t=>{
-    t.classList.toggle('has-pending',(cards[t.dataset.c]||[]).some(x=>!x.el.classList.contains('saved')));
-  });
-}
+function updTabPending(){ document.querySelectorAll('.normal-tab').forEach(t=>{ t.classList.toggle('has-pending',(cards[t.dataset.c]||[]).some(x=>!x.el.classList.contains('saved'))); }); }
 
-/* ══ CONTROLS DE VISTA ══ */
 function selCrit(c){
-  curC=c;
-  $('admin-view').classList.add('hidden');
-  $('sarea').classList.remove('hidden');
-  $('main-toolbar').style.display='flex';
-  $('top-prog').style.display='flex';
-
+  curC=c; isAdminMode=false; $('admin-view').classList.add('hidden'); $('sarea').classList.remove('hidden'); $('main-toolbar').style.display='flex'; $('top-prog').style.display='flex';
   document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('active'));
   document.querySelector('.ctab[data-c="'+c+'"]').classList.add('active');
-  
-  $('srch').value=''; curF='all';
-  document.querySelectorAll('.tog-btn').forEach((b,i)=>b.classList.toggle('active',i===0));
+  $('srch').value=''; curF='all'; document.querySelectorAll('.tog-btn').forEach((b,i)=>b.classList.toggle('active',i===0));
   renderCrit(c);
 }
 
 function showAdminView(){
-  curC='admin';
-  $('sarea').classList.add('hidden');
-  $('admin-view').classList.remove('hidden');
-  $('main-toolbar').style.display='none';
-  $('top-prog').style.display='none';
-
+  curC='admin'; isAdminMode=true; $('sarea').classList.add('hidden'); $('admin-view').classList.remove('hidden'); $('main-toolbar').style.display='none'; $('top-prog').style.display='none';
   document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('active'));
   document.querySelector('.ctab-admin').classList.add('active');
-  
   renderAdminDashboard();
 }
 
-/* ══ RENDER CRITERI NORMAL ══ */
 function renderCrit(c){
-  const area=$('sarea'); area.innerHTML='';
-  if(!cData[c]) return;
+  const area=$('sarea'); area.innerHTML=''; if(!cData[c]) return;
   const exNew=(cards[c]||[]).filter(x=>x.isNew);
   cards[c]=[];
-
   Object.keys(cData[c].subs).sort().forEach(s=>{
     const sub=cData[c].subs[s];
     const blk=el('div','sb'); blk.dataset.s=s;
-
     const sticky=el('div','sub-sticky');
     const tr=el('div','sub-title-row');
-    
-    // Títol del subcriteri + Comptador progress
     tr.appendChild(el('span','sub-num',s));
-    const titleWrap = el('div','sub-title');
-    titleWrap.appendChild(document.createTextNode(sub.titol||s));
+    const titleWrap = el('div','sub-title', (sub.titol||s));
     const subProg = el('span', 'sub-prog', '0 / 0');
     titleWrap.appendChild(subProg);
     tr.appendChild(titleWrap);
-    
     const actions = el('div'); actions.style.display = 'flex'; actions.style.gap = '.5rem'; actions.style.flexWrap = 'wrap';
-    let ep = null, evp = null, ip = null;
-
-    if(sub.que_diu && sub.que_diu !== ''){
-      const eb=el('button','efqm-btn model-btn','📖 Què diu el model?');
-      ep=el('div','efqm-panel'); ep.textContent=sub.que_diu; 
-      eb.onclick=()=>{ ep.classList.toggle('open'); eb.textContent=(ep.classList.contains('open')?'▲ ':'📖 ')+'Què diu el model?'; };
-      actions.appendChild(eb);
-    }
-    
-    if(sub.preg_avaluadors && sub.preg_avaluadors !== ''){
-      const evb=el('button','efqm-btn eval-btn','❓ Preguntes avaluadors');
-      evp=el('div','eval-panel'); evp.textContent=sub.preg_avaluadors; 
-      evb.onclick=()=>{ evp.classList.toggle('open'); evb.textContent=(evp.classList.contains('open')?'▲ ':'❓ ')+'Preguntes avaluadors'; };
-      actions.appendChild(evb);
-    }
-
-    if(sub.informe_ant && sub.informe_ant !== ''){
-      const ib=el('button','efqm-btn prev-btn','💡 Informe anterior');
-      ip=el('div','prev-panel'); ip.textContent=sub.informe_ant; 
-      ib.onclick=()=>{ ip.classList.toggle('open'); ib.textContent=(ip.classList.contains('open')?'▲ ':'💡 ')+'Informe anterior'; };
-      actions.appendChild(ib);
-    }
-
+    if(sub.que_diu){ const eb=el('button','efqm-btn model-btn','📖 Què diu el model?'); const ep=el('div','efqm-panel',sub.que_diu); eb.onclick=()=>{ ep.classList.toggle('open'); eb.textContent=(ep.classList.contains('open')?'▲ ':'📖 ')+'Què diu el model?'; }; actions.appendChild(eb); sticky.appendChild(ep); }
+    if(sub.preg_avaluadors){ const evb=el('button','efqm-btn eval-btn','❓ Preguntes avaluadors'); const evp=el('div','eval-panel',sub.preg_avaluadors); evb.onclick=()=>{ evp.classList.toggle('open'); evb.textContent=(evp.classList.contains('open')?'▲ ':'❓ ')+'Preguntes avaluadors'; }; actions.appendChild(evb); sticky.appendChild(evp); }
+    if(sub.informe_ant){ const ib=el('button','efqm-btn prev-btn','💡 Informe anterior'); const ip=el('div','prev-panel',sub.informe_ant); ib.onclick=()=>{ ip.classList.toggle('open'); ib.textContent=(ip.classList.contains('open')?'▲ ':'💡 ')+'Informe anterior'; }; actions.appendChild(ib); sticky.appendChild(ip); }
     if(actions.childNodes.length > 0) tr.appendChild(actions);
-    sticky.appendChild(tr); if(ep) sticky.appendChild(ep); if(evp) sticky.appendChild(evp); if(ip) sticky.appendChild(ip);
-    blk.appendChild(sticky);
-
+    sticky.insertBefore(tr, sticky.firstChild); blk.appendChild(sticky);
     sub.rows.forEach(row=>{ const card=buildCard(row,c); blk.appendChild(card.el); cards[c].push(card); });
     exNew.filter(x=>x.sub===s).forEach(x=>{ blk.appendChild(x.el); cards[c].push(x); });
-
     const strSearch = 'NEW-' + c + '-' + s + '-';
-    resp.filter(r => r.email === sess.email && r.id_enfocament && String(r.id_enfocament).startsWith(strSearch)).forEach(r => {
-      if (!exNew.find(x => x.id === r.id_enfocament)) {
-        const card = buildNewCard(r.id_enfocament, c, s, sub.titol, r);
-        blk.appendChild(card.el); cards[c].push(card);
-      }
-    });
-
-    const ab=el('button','btn-add'); ab.innerHTML='➕ Proposar un nou enfocament per a <strong style="margin-left:.25rem">'+escH(s)+'</strong>';
-    ab.addEventListener('click',()=>insertNew(c,s,sub.titol,blk,ab));
-    blk.appendChild(ab); area.appendChild(blk);
+    resp.filter(r => r.email === sess.email && r.id_enfocament && String(r.id_enfocament).startsWith(strSearch)).forEach(r => { if (!exNew.find(x => x.id === r.id_enfocament)) { const card = buildNewCard(r.id_enfocament, c, s, sub.titol, r); blk.appendChild(card.el); cards[c].push(card); } });
+    const ab=el('button','btn-add'); ab.innerHTML='➕ Proposar un nou enfocament per a <strong style="margin-left:.25rem">'+escH(s)+'</strong>'; ab.addEventListener('click',()=>insertNew(c,s,sub.titol,blk,ab)); blk.appendChild(ab); area.appendChild(blk);
   });
   updProgress(); updTabPending(); 
 }
@@ -630,57 +530,33 @@ function buildCard(row,crit){
   const id=row.id||'';
   const prev=resp.find(r=>r.email===sess.email&&r.id_enfocament===id);
   const card=document.createElement('div');
-  
-  const isAdminRejected = prev && prev.estat_admin === 'Descartat';
-  const isAdminApproved = prev && prev.estat_admin === 'Aprovat';
   const isChecked = prev&&(prev.validat===true||prev.validat==='TRUE'||prev.validat==='1'||prev.validat===1||prev.validat==='true');
-  
   card.className='card'+(isChecked?' saved':' pending');
   card.dataset.id=id; card.dataset.isNew='0';
   card.dataset.st=[row.titol_enfocament,row.enfocament,row.desplegament,row.avaluacio,row.evidencies,row.titol_subcriteri].join(' ').toLowerCase();
-
   const sum=el('div','card-sum');
   sum.appendChild(el('span','cs-title',row.titol_enfocament||'(sense títol)'));
-  
-  let bcls = isChecked ? 'bs' : 'bp'; let btxt = isChecked ? 'Revisat ✅' : '● Pendent';
-  if(isAdminRejected) { bcls = 'bdismiss'; btxt = '❌ Descartat'; }
-  const sbadge = el('span','cs-badge '+bcls, btxt);
+  const sbadge = el('span','cs-badge '+(isChecked?'bs':'bp'), (isChecked?'Revisat ✅':'● Pendent'));
   sum.appendChild(sbadge); sum.appendChild(el('span','cs-chev','▼'));
   sum.addEventListener('click',()=>card.classList.toggle('expanded'));
   card.appendChild(sum);
-
   const body=el('div','card-body');
-  
-  if(isAdminRejected) {
-      const alert = el('div','admin-alert'); alert.innerHTML = '<strong>❌ Descartat per Estratègia Corporativa:</strong><br>' + escH(prev.comentari_admin || 'Sense comentaris');
-      body.appendChild(alert);
-  } else if(isAdminApproved) {
-      const alert = el('div','admin-alert-ok','✅ Aprovat per Direcció'); body.appendChild(alert);
-  }
-
-  const BLOCKS=[
-    {lbl:'Enfocament',         acls:'le', roCls:'ro-e', text:row.enfocament,   taKey:null},
-    {lbl:'Desplegament',       acls:'ld', roCls:'ro-d', text:row.desplegament, taKey:'sug_desplegament',  taVal:prev?.sug_desplegament},
-    {lbl:'Avaluació i Revisió',acls:'la', roCls:'ro-a', text:row.avaluacio,    taKey:'sug_avaluacio',     taVal:prev?.sug_avaluacio},
-    {lbl:'Evidències',         acls:'lev',roCls:'ro-ev',text:row.evidencies,   taKey:'sug_evidencies',    taVal:prev?.sug_evidencies},
-  ];
+  const BLOCKS=[ {lbl:'Enfocament', acls:'le', text:row.enfocament, taKey:null}, {lbl:'Desplegament', acls:'ld', text:row.desplegament, taKey:'sug_desplegament', taVal:prev?.sug_desplegament}, {lbl:'Avaluació i Revisió',acls:'la', text:row.avaluacio, taKey:'sug_avaluacio', taVal:prev?.sug_avaluacio}, {lbl:'Evidències', acls:'lev', text:row.evidencies, taKey:'sug_evidencies', taVal:prev?.sug_evidencies} ];
   BLOCKS.forEach(b=>{
     const acc=el('div','acc'); if(b.taKey&&(b.taVal||'').trim()) acc.classList.add('has-content');
     const hdr=el('div','acc-hdr'); hdr.innerHTML='<span class="acc-arr">▼</span><span class="acc-lbl '+b.acls+'">'+escH(b.lbl)+'</span><span class="acc-dot"></span>';
     hdr.addEventListener('click',()=>acc.classList.toggle('open'));
     const abody=el('div','acc-body');
-    const ro=document.createElement('div'); ro.className=(b.text&&b.text !== ''?'ro '+b.roCls:'ro empty');
-    if(b.text&&b.text !== '') ro.textContent=b.text; else ro.textContent='— Sense contingut —';
+    const ro=el('div',(b.text?'ro':'ro empty'), (b.text?b.text:'— Sense contingut —'));
     abody.appendChild(ro);
     if(b.taKey){
-      const pl=el('span','prop-lbl','Proposta de millora');
+      abody.appendChild(el('span','prop-lbl','Proposta de millora'));
       const ta=document.createElement('textarea'); ta.className='prop-ta'; ta.dataset.key=b.taKey; ta.rows=2; ta.value=b.taVal||'';
       ta.addEventListener('input',()=>{ markPending(id); acc.classList.toggle('has-content',ta.value.trim()!==''); });
-      abody.appendChild(pl); abody.appendChild(ta);
+      abody.appendChild(ta);
     }
     acc.appendChild(hdr); acc.appendChild(abody); body.appendChild(acc);
   });
-
   body.appendChild(makeAZ(id,prev,false)); card.appendChild(body); return {el:card, id, isNew:false};
 }
 
@@ -696,472 +572,225 @@ function makeAZ(id,prev,isNew){
     cl.appendChild(chk); cl.appendChild(el('span','','✅ Revisió finalitzada')); az.appendChild(cl);
   }
   const cw=el('div','cmt-w');
-  const cta=document.createElement('textarea'); cta.className='ta-cmt'; cta.dataset.card=id;
-  cta.rows=2; cta.placeholder='Comentari (opcional)'; cta.value=prev?.comentari_general||'';
+  const cta=document.createElement('textarea'); cta.className='ta-cmt'; cta.dataset.card=id; cta.rows=2; cta.placeholder='Comentari (opcional)'; cta.value=prev?.comentari_general||'';
   cta.addEventListener('input',()=>markPending(id)); cw.appendChild(cta); az.appendChild(cw);
-  const sb=document.createElement('button');
-  if(isNew){ sb.className='btn-sn btn-sc'; sb.textContent= prev ? 'Actualitzar proposta' : 'Desar proposta'; sb.addEventListener('click',()=>saveNew(id,sb)); } 
-  else { sb.className='btn btn-primary btn-sc'; sb.textContent='Desar'; sb.addEventListener('click',()=>saveExisting(id,sb)); }
+  const sb=el('button','btn btn-primary btn-sc','Desar');
+  if(isNew){ sb.className='btn-sn btn-sc'; sb.textContent= prev ? 'Actualitzar proposta' : 'Desar proposta'; sb.onclick=()=>saveNew(id,sb); } 
+  else { sb.onclick=()=>saveExisting(id,sb); }
   az.appendChild(sb); return az;
 }
 
 function insertNew(crit,sub,subTitol,blk,addBtn){
   const tid='NEW-'+crit+'-'+sub+'-'+Date.now();
   const card=buildNewCard(tid,crit,sub,subTitol);
-  blk.insertBefore(card.el,addBtn); cards[crit]=cards[crit]||[]; cards[crit].push(card);
-  updProgress(); updTabPending();
+  blk.insertBefore(card.el,addBtn); cards[crit]=cards[crit]||[]; cards[crit].push(card); updProgress(); updTabPending();
   setTimeout(()=>card.el.scrollIntoView({behavior:'smooth',block:'nearest'}),60);
 }
 
 function buildNewCard(tid,crit,sub,subTitol,prev=null){
   const card=document.createElement('div');
-  const isAdminRejected = prev && prev.estat_admin === 'Descartat';
-  const isAdminApproved = prev && prev.estat_admin === 'Aprovat';
-
-  card.className='card cnew ' + (prev ? 'saved' : 'pending expanded') + (isAdminRejected ? ' rejected' : '');
-  card.dataset.id=tid; card.dataset.isNew='1'; card.dataset.crit=crit; card.dataset.sub=sub; card.dataset.st='';
-
+  const rejected = prev && prev.estat_admin === 'Descartat';
+  const approved = prev && prev.estat_admin === 'Aprovat';
+  card.className='card cnew ' + (prev ? 'saved' : 'pending expanded') + (rejected ? ' rejected' : '');
+  card.dataset.id=tid; card.dataset.isNew='1'; card.dataset.crit=crit; card.dataset.sub=sub;
   const ban=el('div','new-banner'); ban.style.cursor='pointer'; ban.addEventListener('click',()=>card.classList.toggle('expanded'));
-  
-  const nl=el('div','new-label'); 
-  const pillClass = isAdminRejected ? 'new-pill rejected-pill' : 'new-pill';
-  const pillText = isAdminRejected ? 'DESCARTAT' : 'NOU';
-  nl.innerHTML=`<span class="${pillClass}">${pillText}</span>`;
-  
+  const nl=el('div','new-label'); nl.innerHTML=`<span class="new-pill ${rejected?'rejected-pill':''}">${rejected?'DESCARTAT':'NOU'}</span>`;
   const titleSpan = el('span', 'new-title-text', prev ? (prev.sug_titol_enfocament || 'Nou Enfocament') : 'Escriu el títol...');
   nl.appendChild(titleSpan);
-
-  const rm=el('button','btn-rm'); rm.innerHTML='🗑️ Eliminar'; 
-  rm.addEventListener('click', async (e)=>{
-    e.stopPropagation(); 
-    if(!card.classList.contains('saved')){ card.remove(); cards[crit]=(cards[crit]||[]).filter(x=>x.id!==tid); updProgress(); updTabPending(); } 
-    else {
-      if(confirm('Segur que vols eliminar-lo definitivament?')){
-        const origBtn = rm.innerHTML; rm.textContent = '⏳';
-        try {
-          const r = await api('POST', { email: sess.email, id_enfocament: tid, esborrar: true });
-          if(!r.success) throw new Error(r.error);
-          card.remove(); cards[crit]=(cards[crit]||[]).filter(x=>x.id!==tid); resp = resp.filter(r => r.id_enfocament !== tid);
-          updProgress(); updTabPending(); toast('Eliminat.', 'tinfo');
-        } catch(err) { rm.innerHTML = origBtn; toast('Error: ' + err.message, 'terr'); }
-      }
-    }
-  });
-  
+  const rm=el('button','btn-rm','🗑️ Eliminar'); 
+  rm.onclick=async(e)=>{ e.stopPropagation(); if(!card.classList.contains('saved')){ card.remove(); cards[crit]=(cards[crit]||[]).filter(x=>x.id!==tid); updProgress(); updTabPending(); } else { if(confirm('Segur?')){ rm.textContent='⏳'; try{ const r=await api('POST',{email:sess.email,id_enfocament:tid,esborrar:true}); if(!r.success)throw new Error(r.error); card.remove(); cards[crit]=(cards[crit]||[]).filter(x=>x.id!==tid); resp=resp.filter(r=>r.id_enfocament!==tid); updProgress(); updTabPending(); toast('Eliminat.','tinfo'); }catch(err){ rm.textContent='🗑️ Eliminar'; toast('Error','terr'); } } } };
   ban.appendChild(nl); ban.appendChild(el('span','cs-chev','▼')); ban.appendChild(rm); card.appendChild(ban);
-
   const body=el('div','card-body new-body');
-  
-  if(isAdminRejected) {
-      body.appendChild(el('div','admin-alert')).innerHTML = '<strong>❌ Descartat per Estratègia Corporativa:</strong><br>' + escH(prev.comentari_admin || 'Sense motiu especificat');
-  } else if(isAdminApproved) {
-      body.appendChild(el('div','admin-alert-ok')).textContent = '✅ Aprovat per Direcció';
-  }
-
-  const NFIELDS=[
-    {key:'sug_titol_enfocament', cls:'nfl-t', color:'var(--violet)', lbl:'Títol', ph:'Resum...', cls2:'nta-t', req:true},
-    {key:'sug_enfocament',       cls:'nfl-e', color:'var(--navy)',   lbl:'Enfocament', ph:'Descripció...', cls2:'nta-b', req:true},
-    {key:'sug_desplegament',     cls:'nfl-d', color:'var(--navy2)',  lbl:'Desplegament', ph:'Com es desplega?', cls2:'nta-b', req:true},
-    {key:'sug_avaluacio',        cls:'nfl-a', color:'#0369a1',       lbl:'Avaluació', ph:'Com s\'avalua?', cls2:'nta-b', req:true},
-    {key:'sug_evidencies',       cls:'nfl-ev',color:'#0f766e',       lbl:'Evidències', ph:'Quines?', cls2:'nta-b', req:true},
-  ];
-  
+  if(rejected) { body.appendChild(el('div','admin-alert')).innerHTML = '<strong>❌ Descartat per Estratègia Corporativa:</strong><br>'+escH(prev.comentari_admin); }
+  else if(approved) { body.appendChild(el('div','admin-alert-ok','✅ Aprovat per Direcció')); }
+  const NFIELDS=[ {key:'sug_titol_enfocament', cls:'nfl-t', lbl:'Títol', req:true}, {key:'sug_enfocament', cls:'nfl-e', lbl:'Enfocament', req:true}, {key:'sug_desplegament', cls:'nfl-d', lbl:'Desplegament', req:true}, {key:'sug_avaluacio', cls:'nfl-a', lbl:'Avaluació', req:true}, {key:'sug_evidencies', cls:'nfl-ev', lbl:'Evidències', req:true} ];
   NFIELDS.forEach(f=>{
-    const wrap=el('div','nf'); const lbl=el('div','nf-lbl '+f.cls); lbl.innerHTML='<span class="nf-dot" style="background:'+f.color+'"></span>'+escH(f.lbl)+(f.req?'<span class="req">*</span>':'');
-    const ta=document.createElement('textarea'); ta.className='nta '+f.cls2; ta.dataset.key=f.key; ta.rows=2; ta.placeholder=f.ph;
-    ta.value = prev ? (prev[f.key] || '') : '';
-    if(prev) card.dataset.st += ' ' + ta.value.toLowerCase();
-    ta.addEventListener('input',(e)=>{
-      ta.style.borderColor = ''; ta.style.backgroundColor = ''; 
-      if(f.key === 'sug_titol_enfocament') titleSpan.textContent = e.target.value.trim() || 'Escriu el títol...';
-      markPending(tid); card.dataset.st=[...card.querySelectorAll('textarea[data-key]')].map(t=>t.value).join(' ').toLowerCase();
-    });
-    wrap.appendChild(lbl); wrap.appendChild(ta); body.appendChild(wrap);
+    const wrap=el('div','nf'); wrap.appendChild(el('div','nf-lbl '+f.cls, escH(f.lbl)+(f.req?'*':'')));
+    const ta=document.createElement('textarea'); ta.className='nta'; ta.dataset.key=f.key; ta.rows=2; ta.value=prev?(prev[f.key]||''):'';
+    ta.oninput=()=>{ ta.style.borderColor=''; ta.style.backgroundColor=''; if(f.key==='sug_titol_enfocament') titleSpan.textContent=ta.value.trim()||'Escriu el títol...'; markPending(tid); };
+    wrap.appendChild(ta); body.appendChild(wrap);
   });
-  
   body.appendChild(makeAZ(tid,prev,true)); card.appendChild(body); return {el:card, id:tid, isNew:true, sub};
 }
 
-/* ══ FILTRE TAULES ADMIN ══ */
-window.filterAdminViews = function(val) {
-    document.querySelectorAll('#admin-view tr[data-area]').forEach(tr => {
-        if(val === 'all' || tr.dataset.area.toLowerCase().includes(val.toLowerCase())) tr.style.display = '';
-        else tr.style.display = 'none';
-    });
-};
+/* ══ DASHBOARD ADMIN ══ */
+window.filterAdminViews = function(v){ document.querySelectorAll('#admin-view tr[data-area]').forEach(tr => { tr.style.display=(v==='all'||tr.dataset.area.includes(v))?'':'none'; }); };
 
-/* ══ RENDER DASHBOARD ADMIN ══ */
 function renderAdminDashboard(){
     const area=$('admin-view'); area.innerHTML='';
-    
-    const novesPropostes = resp.filter(r => String(r.id_enfocament).startsWith('NEW-'));
-    const millores = resp.filter(r => !String(r.id_enfocament).startsWith('NEW-') && 
-        (r.sug_desplegament || r.sug_avaluacio || r.sug_evidencies || r.sug_titol_enfocament || r.sug_enfocament || r.comentari_general));
-    
-    const pendentsAdmin = novesPropostes.filter(r => !r.estat_admin || r.estat_admin === '' || r.estat_admin === 'Pendent');
+    const noves = resp.filter(r => String(r.id_enfocament).startsWith('NEW-'));
+    const millores = resp.filter(r => !String(r.id_enfocament).startsWith('NEW-') && (r.sug_desplegament||r.sug_avaluacio||r.sug_evidencies||r.comentari_general) && r.estat_admin !== 'Gestionat');
+    const pendentsVal = noves.filter(r => !r.estat_admin || r.estat_admin === '' || r.estat_admin === 'Pendent');
 
-    const grid = el('div', 'kpi-grid');
-    grid.innerHTML = `
-        <div class="kpi-card"><div class="kpi-num">${novesPropostes.length}</div><div class="kpi-lbl">Nous Enfocaments Totals</div></div>
-        <div class="kpi-card" style="border-left-color:var(--orange)"><div class="kpi-num" style="color:var(--orange)">${pendentsAdmin.length}</div><div class="kpi-lbl">Pendent de Validar (Nous)</div></div>
-        <div class="kpi-card" style="border-left-color:var(--green)"><div class="kpi-num" style="color:var(--green)">${millores.length}</div><div class="kpi-lbl">Millores en Existents</div></div>
-    `;
-    area.appendChild(grid);
-
-    const actionRow = el('div'); actionRow.style.marginBottom = '2rem'; actionRow.style.display = 'flex'; actionRow.style.justifyContent = 'space-between'; actionRow.style.alignItems = 'center'; actionRow.style.flexWrap = 'wrap'; actionRow.style.gap = '1rem';
-    
-    const uniqueAreas = Array.from(new Set(usuaris.flatMap(u => (u.area_assignada||'').split(',').map(a => a.trim())))).filter(a => a && a.toLowerCase() !== 'global' && a.toLowerCase() !== 'totes');
-    const filterHtml = `
-        <div style="display:flex; align-items:center; gap:.5rem;">
-            <label style="margin:0; font-weight:bold; font-size:.85rem; color:var(--g700);">Filtrar llistes per Àrea:</label>
-            <select onchange="filterAdminViews(this.value)" style="max-width:250px; padding:.3rem .6rem; border-radius:6px; border:1px solid var(--g200);">
-                <option value="all">Totes les àrees</option>
-                ${uniqueAreas.sort().map(a => `<option value="${escH(a)}">${escH(a)}</option>`).join('')}
-            </select>
+    area.innerHTML = `
+        <div class="kpi-grid">
+            <div class="kpi-card"><div class="kpi-num">${noves.length}</div><div class="kpi-lbl">Nous Enfocaments</div></div>
+            <div class="kpi-card" style="border-left-color:var(--orange)"><div class="kpi-num" style="color:var(--orange)">${pendentsVal.length}</div><div class="kpi-lbl">Pendents Validar</div></div>
+            <div class="kpi-card" style="border-left-color:var(--green)"><div class="kpi-num" style="color:var(--green)">${millores.length}</div><div class="kpi-lbl">Millores Pendents</div></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:2rem;">
+            <div style="display:flex; align-items:center; gap:.5rem;">
+                <label style="margin:0; font-weight:700; font-size:.8rem;">Filtrar per Àrea:</label>
+                <select onchange="filterAdminViews(this.value)" style="padding:.3rem; border-radius:6px; border:1px solid var(--g200);">
+                    <option value="all">Totes</option>
+                    ${Array.from(new Set(usuaris.flatMap(u=>(u.area_assignada||'').split(',').map(a=>a.trim())))).filter(a=>a&&a.toLowerCase()!=='global').sort().map(a=>`<option value="${escH(a)}">${escH(a)}</option>`).join('')}
+                </select>
+            </div>
+            <button class="btn btn-primary" onclick="if(confirm('Hi ha ${pendentsVal.length} pendents. Continuar?')) generatePDF()">📄 Generar Informe Final PDF</button>
         </div>
     `;
-    const filterContainer = el('div'); filterContainer.innerHTML = filterHtml;
-    actionRow.appendChild(filterContainer);
 
-    const btnPdf = el('button', 'btn btn-primary', '📄 Generar Informe Final (Impressió/PDF)');
-    btnPdf.onclick = () => {
-        if(pendentsAdmin.length > 0) {
-            if(!confirm(`⚠️ ATENCIÓ:\n\nHi ha ${pendentsAdmin.length} enfocaments nous pendents de validar que NO sortiran a l'informe.\n\nVols generar l'informe de totes maneres?`)) return;
-        }
-        generatePDF();
-    };
-    actionRow.appendChild(btnPdf); 
-    area.appendChild(actionRow);
-
-    const sec0 = el('div', 'admin-section');
-    sec0.innerHTML = `<div class="admin-title">📊 Control de Participació</div>`;
-    const t0 = document.createElement('table'); t0.className = 'admin-table';
-    t0.innerHTML = `<thead><tr><th>Usuari</th><th>Àrea assignada</th><th>Progrés (Targetes Existents)</th></tr></thead><tbody></tbody>`;
-    const tb0 = t0.querySelector('tbody');
-
+    // Taula Participació
+    const secP = el('div','admin-section'); secP.innerHTML='<div class="admin-title">📊 Control de Participació</div>';
+    const tP = el('table','admin-table'); tP.innerHTML='<thead><tr><th>Usuari</th><th>Àrea</th><th>Progrés</th></tr></thead><tbody></tbody>';
     usuaris.forEach(u => {
-        const uEmail = String(u.email_autoritzat||'').toLowerCase().trim();
-        const uAreas = String(u.area_assignada||'').toLowerCase().split(',').map(a=>a.trim());
-        const isGlob = uAreas.some(a => a.includes('global') || a.includes('totes'));
-        
-        if(isGlob) return;
-
-        let totalCards = 0;
-        mem.forEach(m => {
-            if(!m.criteri || !m.subcriteri) return;
-            const rowAreas = String(m.area||'').toLowerCase().split(',').map(a=>a.trim());
-            if(uAreas.some(ua => rowAreas.includes(ua))) totalCards++;
-        });
-
-        const userResp = resp.filter(r => r.email.toLowerCase().trim() === uEmail && !String(r.id_enfocament).startsWith('NEW-'));
-        let doneCards = 0;
-        userResp.forEach(r => {
-            const isDone = (r.validat===true||r.validat==='TRUE'||r.validat==='1'||r.validat===1||r.validat==='true') || 
-                           (r.sug_desplegament || r.sug_avaluacio || r.sug_evidencies || r.comentari_general);
-            if(isDone) doneCards++;
-        });
-
-        let pct = totalCards > 0 ? Math.round((doneCards/totalCards)*100) : 0;
-        let barColor = pct === 100 ? 'var(--green)' : (pct > 0 ? 'var(--orange)' : 'var(--red)');
-
-        const tr = document.createElement('tr');
-        tr.dataset.area = escH(u.area_assignada);
-        tr.innerHTML = `
-            <td><strong>${escH(u.nom_usuari)}</strong><br><small style="color:var(--g300)">${escH(u.email_autoritzat)}</small></td>
-            <td>${escH(u.area_assignada)}</td>
-            <td>
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <span style="font-weight:bold; min-width:45px;">${doneCards} / ${totalCards}</span>
-                    <div style="flex:1; height:8px; background:var(--g100); border-radius:10px; overflow:hidden;">
-                        <div style="width:${pct}%; height:100%; background:${barColor};"></div>
-                    </div>
-                    <span style="font-size:.7rem; color:var(--g500); min-width:35px; text-align:right;">${pct}%</span>
-                </div>
-            </td>
-        `;
-        tb0.appendChild(tr);
+        if(String(u.area_assignada).toLowerCase().includes('global')) return;
+        let t=0, d=0; const uAreas=(u.area_assignada||'').toLowerCase().split(',').map(a=>a.trim());
+        mem.forEach(m => { if(uAreas.some(ua=>m.area.toLowerCase().includes(ua))) t++; });
+        resp.filter(r=>r.email===u.email_autoritzat && !r.id_enfocament.startsWith('NEW-')).forEach(r=>{ if(r.validat==='true'||r.validat===true||r.sug_desplegament||r.comentari_general) d++; });
+        let p=t?Math.round(d/t*100):0; let c=p===100?'var(--green)':(p>0?'var(--orange)':'var(--red)');
+        const tr=el('tr'); tr.dataset.area=u.area_assignada;
+        tr.innerHTML=`<td><strong>${escH(u.nom_usuari)}</strong><br><small>${u.email_autoritzat}</small></td><td>${u.area_assignada}</td><td><div style="display:flex;align-items:center;gap:8px;"><b>${d}/${t}</b><div style="flex:1;height:6px;background:var(--g100);border-radius:10px;overflow:hidden;"><div style="width:${p}%;height:100%;background:${c};"></div></div><small>${p}%</small></div></td>`;
+        tP.querySelector('tbody').appendChild(tr);
     });
-    sec0.appendChild(t0); area.appendChild(sec0);
+    secP.appendChild(tP); area.appendChild(secP);
 
-    const sec1 = el('div', 'admin-section');
-    sec1.innerHTML = `<div class="admin-title">📋 Nous Enfocaments Creats</div>`;
-    const t1 = document.createElement('table'); t1.className = 'admin-table';
-    t1.innerHTML = `<thead><tr><th>Subcriteri</th><th>Títol</th><th>Usuari / Àrea</th><th>Estat</th><th>Acció</th></tr></thead><tbody></tbody>`;
-    const tb1 = t1.querySelector('tbody');
-    
-    if(novesPropostes.length === 0) tb1.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--g300)">No hi ha nous enfocaments encara.</td></tr>';
-    
-    novesPropostes.sort((a,b) => String(a.id_enfocament).localeCompare(String(b.id_enfocament))).forEach(r => {
-        const tr = document.createElement('tr');
-        tr.dataset.area = escH(r.area_revisora);
-        
-        const match = r.id_enfocament.match(/NEW-\d+-([\d.]+)-/);
-        const subc = match ? match[1] : '?';
-        let bcls = 'badge-pend', btxt = 'Pendent';
-        if(r.estat_admin === 'Aprovat') { bcls = 'badge-ok'; btxt = 'Aprovat'; }
-        if(r.estat_admin === 'Descartat') { bcls = 'badge-ko'; btxt = 'Descartat'; }
-
-        tr.innerHTML = `
-            <td><strong>${subc}</strong></td>
-            <td>${escH(r.sug_titol_enfocament || 'Sense títol')}</td>
-            <td>${escH(r.nom_visible)}<br><small style="color:var(--g300)">${escH(r.area_revisora)}</small></td>
-            <td><span class="${bcls}">${btxt}</span></td>
-            <td><button class="btn-sm btn-sm-vio" onclick="openAdminModal('${r.id_enfocament}')">Revisar</button></td>
-        `;
-        tb1.appendChild(tr);
+    // Taula Nous
+    const secN = el('div','admin-section'); secN.innerHTML='<div class="admin-title">📋 Nous Enfocaments Creats</div>';
+    const tN = el('table','admin-table'); tN.innerHTML='<thead><tr><th>Ref</th><th>Títol</th><th>Usuari</th><th>Estat</th><th>Acció</th></tr></thead><tbody></tbody>';
+    noves.forEach(r => {
+        let b = r.estat_admin==='Aprovat'?'badge-ok':(r.estat_admin==='Descartat'?'badge-ko':'badge-pend');
+        const tr=el('tr'); tr.dataset.area=r.area_revisora;
+        tr.innerHTML=`<td>${r.id_enfocament.split('-')[2]}</td><td>${escH(r.sug_titol_enfocament)}</td><td>${escH(r.nom_visible)}</td><td><span class="${b}">${r.estat_admin||'Pendent'}</span></td><td><button class="btn-sm btn-sm-vio" onclick="openAdminModal('${r.id_enfocament}', true)">Revisar</button></td>`;
+        tN.querySelector('tbody').appendChild(tr);
     });
-    sec1.appendChild(t1); area.appendChild(sec1);
+    secN.appendChild(tN); area.appendChild(secN);
 
-    const sec2 = el('div', 'admin-section');
-    sec2.innerHTML = `<div class="admin-title">✍️ Millores en Enfocaments Existents</div>`;
-    const t2 = document.createElement('table'); t2.className = 'admin-table';
-    t2.innerHTML = `<thead><tr><th>Enfocament Original</th><th>Usuari / Àrea</th><th>Què s'ha tocat?</th></tr></thead><tbody></tbody>`;
-    const tb2 = t2.querySelector('tbody');
-
-    if(millores.length === 0) tb2.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--g300)">No hi ha millores registrades.</td></tr>';
-
+    // Taula Millores
+    const secM = el('div','admin-section'); secM.innerHTML='<div class="admin-title">✍️ Millores en Existents</div>';
+    const tM = el('table','admin-table'); tM.innerHTML='<thead><tr><th>Enfocament Original</th><th>Usuari</th><th>Tocat</th><th>Acció</th></tr></thead><tbody></tbody>';
     millores.forEach(r => {
-        const tr = document.createElement('tr');
-        tr.dataset.area = escH(r.area_revisora);
-        
-        let tocat = [];
-        if(r.sug_desplegament) tocat.push('Desplegament');
-        if(r.sug_avaluacio) tocat.push('Avaluació');
-        if(r.sug_evidencies) tocat.push('Evidències');
-        if(r.comentari_general) tocat.push('Comentari');
-        
-        const orig = mem.find(m => String(m.id) === String(r.id_enfocament));
-        const titolOriginal = orig ? orig.titol_enfocament : 'Enfocament existent';
-        
-        tr.innerHTML = `
-            <td>
-              <div style="font-size:.85rem; font-weight:700; color:var(--navy); margin-bottom:.3rem;">${escH(titolOriginal)}</div>
-              <span style="font-family:monospace; font-size:.7rem; background:var(--g100); padding:2px 4px; border-radius:4px; color:var(--g700);">${r.id_enfocament}</span>
-            </td>
-            <td>${escH(r.nom_visible)} <small style="color:var(--g300)">(${escH(r.area_revisora)})</small></td>
-            <td style="color:var(--navy)">${tocat.join(', ')}</td>
-        `;
-        tb2.appendChild(tr);
+        const orig = mem.find(m => m.id === r.id_enfocament);
+        let t = []; if(r.sug_desplegament)t.push('D'); if(r.sug_avaluacio)t.push('A'); if(r.sug_evidencies)t.push('E'); if(r.comentari_general)t.push('C');
+        const tr=el('tr'); tr.dataset.area=r.area_revisora;
+        tr.innerHTML=`<td><b>${escH(orig?.titol_enfocament||'Existent')}</b><br><small>${r.id_enfocament}</small></td><td>${escH(r.nom_visible)}</td><td>${t.join(', ')}</td><td><button class="btn-sm btn-sm-vio" onclick="openAdminModal('${r.id_enfocament}', false)">Veure Millora</button></td>`;
+        tM.querySelector('tbody').appendChild(tr);
     });
-    sec2.appendChild(t2); area.appendChild(sec2);
+    secM.appendChild(tM); area.appendChild(secM);
 }
 
-/* ══ MODAL ADMIN FUNCTIONS ══ */
-function openAdminModal(id){
-    const r = resp.find(x => x.id_enfocament === id);
-    if(!r) return;
-    currentAdminCardId = r; 
-
+/* ══ MODAL ADMIN ══ */
+function openAdminModal(id, isNew){
+    const r = resp.find(x => x.id_enfocament === id); if(!r) return;
+    currentAdminCardId = r;
     const content = $('modal-content');
-    content.innerHTML = `
-        <div class="admin-item-box"><strong>Títol</strong><p>${escH(r.sug_titol_enfocament)}</p></div>
-        <div class="admin-item-box"><strong>Enfocament</strong><p>${escH(r.sug_enfocament)}</p></div>
-        <div class="admin-item-box"><strong>Desplegament</strong><p>${escH(r.sug_desplegament)}</p></div>
-        <div class="admin-item-box"><strong>Avaluació</strong><p>${escH(r.sug_avaluacio)}</p></div>
-        <div class="admin-item-box"><strong>Evidències</strong><p>${escH(r.sug_evidencies)}</p></div>
-        ${r.comentari_general ? `<div class="admin-item-box"><strong>Comentari Usuari</strong><p>${escH(r.comentari_general)}</p></div>` : ''}
-    `;
+    $('modal-title').textContent = isNew ? 'Revisió de Nou Enfocament' : 'Revisió de Millora Proposada';
     
+    if(isNew){
+        content.innerHTML = `<div class="admin-item-box"><strong>Títol</strong><p>${escH(r.sug_titol_enfocament)}</p></div><div class="admin-item-box"><strong>Enfocament</strong><p>${escH(r.sug_enfocament)}</p></div><div class="admin-item-box"><strong>Desplegament</strong><p>${escH(r.sug_desplegament)}</p></div><div class="admin-item-box"><strong>Avaluació</strong><p>${escH(r.sug_avaluacio)}</p></div><div class="admin-item-box"><strong>Evidències</strong><p>${escH(r.sug_evidencies)}</p></div>`;
+        $('btn-ok').style.display = ''; $('btn-ko').style.display = ''; $('btn-handled').style.display = 'none';
+    } else {
+        const o = mem.find(m => m.id === r.id_enfocament);
+        let h = '';
+        const fields = [{l:'Desplegament', k:'desplegament', sk:'sug_desplegament'}, {l:'Avaluació', k:'avaluacio', sk:'sug_avaluacio'}, {l:'Evidències', k:'evidencies', sk:'sug_evidencies'}];
+        fields.forEach(f => {
+            if(r[f.sk]){
+                h += `<strong>${f.l}</strong><div class="side-by-side"><div class="sb-col"><div class="sb-hdr">Original</div><div class="sb-body">${escH(o[f.k])}</div></div><div class="sb-col"><div class="sb-hdr">Proposta</div><div class="sb-body sb-diff">${escH(r[f.sk])}</div></div></div>`;
+            }
+        });
+        if(r.comentari_general) h += `<div class="admin-item-box"><strong>Comentari de l'usuari</strong><p>${escH(r.comentari_general)}</p></div>`;
+        content.innerHTML = h;
+        $('btn-ok').style.display = 'none'; $('btn-ko').style.display = 'none'; $('btn-handled').style.display = '';
+    }
     $('admin-comment').value = r.comentari_admin || '';
     $('admin-modal').classList.add('open');
 }
-
-function closeModal(){
-    $('admin-modal').classList.remove('open');
-    currentAdminCardId = null;
-}
+function closeModal(){ $('admin-modal').classList.remove('open'); currentAdminCardId = null; }
 
 async function submitAdminDecision(estat){
-    if(!currentAdminCardId) return;
     const comment = $('admin-comment').value.trim();
-    if(estat === 'Descartat' && comment === ''){
-        toast('Has de posar un motiu si ho descartes.','terr');
-        $('admin-comment').focus(); return;
-    }
-
-    const origR = currentAdminCardId;
-    const payload = {
-        email: origR.email, 
-        id_enfocament: origR.id_enfocament,
-        estat_admin: estat,
-        comentari_admin: comment
-    };
-
-    $('btn-ok').disabled = true; $('btn-ko').disabled = true;
+    if(estat==='Descartat' && !comment){ toast('Posa un motiu.','terr'); return; }
+    const r = currentAdminCardId;
+    const payload = { email: r.email, id_enfocament: r.id_enfocament, estat_admin: estat, comentari_admin: comment };
     try{
-        if(APPS_SCRIPT_URL) {
-            const r = await api('POST', payload);
-            if(!r.success) throw new Error(r.error);
-        }
-        origR.estat_admin = estat; origR.comentari_admin = comment;
-        toast('Estat guardat correctament!','tok');
-        closeModal(); renderAdminDashboard();
-    } catch(err) {
-        toast('Error guardant: ' + err.message, 'terr');
-    }
-    $('btn-ok').disabled = false; $('btn-ko').disabled = false;
+        if(APPS_SCRIPT_URL) { const res = await api('POST', payload); if(!res.success) throw new Error(); }
+        r.estat_admin = estat; r.comentari_admin = comment; toast('Fet!','tok'); closeModal(); renderAdminDashboard();
+    } catch(e){ toast('Error','terr'); }
 }
 
-/* ══ GENERADOR INFORME PDF ══ */
+/* ══ PDF ══ */
 function generatePDF() {
-    const pa = $('print-area');
-    pa.innerHTML = '<h1 style="text-align:center; font-size:32px; color:#0083A9; margin-bottom:40px;">Informe Final - Memòria EFQM</h1>';
-
+    const pa = $('print-area'); pa.innerHTML = '<h1 style="text-align:center; color:#0083A9;">Informe Final - Memòria EFQM</h1>';
     Object.keys(cData).sort().forEach(c => {
         pa.innerHTML += `<div class="p-crit">Criteri ${c} - ${escH(cData[c].titol)}</div>`;
-        
         Object.keys(cData[c].subs).sort().forEach(s => {
-            const sub = cData[c].subs[s];
-            pa.innerHTML += `<div class="p-sub">${s} ${escH(sub.titol)}</div>`;
-            
+            const sub = cData[c].subs[s]; pa.innerHTML += `<div class="p-sub">${s} ${escH(sub.titol)}</div>`;
             sub.rows.forEach(row => {
-                const rPrev = resp.filter(x => x.id_enfocament === row.id); 
-                let html = `<div class="p-card"><div class="p-title">${escH(row.titol_enfocament || 'Sense títol')}</div>`;
-                
-                ['enfocament', 'desplegament', 'avaluacio', 'evidencies'].forEach(key => {
-                    if(row[key] && row[key].trim() !== '') {
-                        html += `<div class="p-sec"><span class="p-sec-lbl">${key.toUpperCase()}</span>${escH(row[key])}</div>`;
-                        rPrev.forEach(prev => {
-                            const sugKey = 'sug_' + key;
-                            if(prev[sugKey] && prev[sugKey].trim() !== '') {
-                                html += `<div class="p-sug"><strong>💡 Proposta de millora (${escH(prev.nom_visible)}):</strong><br>${escH(prev[sugKey])}</div>`;
-                            }
-                        });
+                const rList = resp.filter(x => x.id_enfocament === row.id);
+                let h = `<div class="p-card"><div class="p-title">${escH(row.titol_enfocament)}</div>`;
+                ['enfocament', 'desplegament', 'avaluacio', 'evidencies'].forEach(k => {
+                    if(row[k]) {
+                        h += `<div class="p-sec"><span class="p-sec-lbl">${k.toUpperCase()}</span>${escH(row[k])}</div>`;
+                        rList.forEach(p => { if(p['sug_'+k]) h += `<div class="p-sug"><b>Millora (${p.nom_visible}):</b> ${escH(p['sug_'+k])}</div>`; });
                     }
                 });
-                rPrev.forEach(prev => {
-                    if(prev.comentari_general && prev.comentari_general.trim() !== '') {
-                         html += `<div class="p-sug" style="background:#f1f5f9; border-left-color:#94a3b8;"><strong>💬 Comentari (${escH(prev.nom_visible)}):</strong><br>${escH(prev.comentari_general)}</div>`;
-                    }
-                });
-                html += `</div>`;
-                pa.innerHTML += html;
+                rList.forEach(p => { if(p.comentari_general) h += `<div class="p-sug" style="background:#f1f5f9;"><b>Nota (${p.nom_visible}):</b> ${p.comentari_general}</div>`; });
+                pa.innerHTML += h + '</div>';
             });
-
-            const strSearch = 'NEW-' + c + '-' + s + '-';
-            const nousAprovats = resp.filter(r => String(r.id_enfocament).startsWith(strSearch) && r.estat_admin === 'Aprovat');
-            
-            nousAprovats.forEach(r => {
-                let html = `<div class="p-card p-new">
-                    <span class="p-new-badge">NOU ENFOCAMENT APROVAT</span>
-                    <div class="p-title">${escH(r.sug_titol_enfocament)}</div>
-                    <div style="font-size:10px; color:#6b7280; margin-bottom:10px;">Proposat per: ${escH(r.nom_visible)}</div>`;
-                
-                if(r.sug_enfocament) html += `<div class="p-sec"><span class="p-sec-lbl">ENFOCAMENT</span>${escH(r.sug_enfocament)}</div>`;
-                if(r.sug_desplegament) html += `<div class="p-sec"><span class="p-sec-lbl">DESPLEGAMENT</span>${escH(r.sug_desplegament)}</div>`;
-                if(r.sug_avaluacio) html += `<div class="p-sec"><span class="p-sec-lbl">AVALUACIÓ</span>${escH(r.sug_avaluacio)}</div>`;
-                if(r.sug_evidencies) html += `<div class="p-sec"><span class="p-sec-lbl">EVIDÈNCIES</span>${escH(r.sug_evidencies)}</div>`;
-                html += `</div>`;
-                pa.innerHTML += html;
+            resp.filter(r => String(r.id_enfocament).startsWith('NEW-'+c+'-'+s+'-') && r.estat_admin === 'Aprovat').forEach(r => {
+                let h = `<div class="p-card p-new"><span class="p-new-badge">NOU ENFOCAMENT APROVAT</span><div class="p-title">${escH(r.sug_titol_enfocament)}</div><small>Per: ${r.nom_visible}</small>`;
+                if(r.sug_enfocament) h += `<div class="p-sec"><span class="p-sec-lbl">ENFOCAMENT</span>${escH(r.sug_enfocament)}</div>`;
+                if(r.sug_desplegament) h += `<div class="p-sec"><span class="p-sec-lbl">DESPLEGAMENT</span>${escH(r.sug_desplegament)}</div>`;
+                if(r.sug_avaluacio) h += `<div class="p-sec"><span class="p-sec-lbl">AVALUACIÓ</span>${escH(r.sug_avaluacio)}</div>`;
+                if(r.sug_evidencies) h += `<div class="p-sec"><span class="p-sec-lbl">EVIDÈNCIES</span>${escH(r.sug_evidencies)}</div>`;
+                pa.innerHTML += h + '</div>';
             });
         });
     });
-
     setTimeout(() => { window.print(); }, 500);
 }
 
-/* ══ UTILS DE DESAT I CARD STATE ══ */
+/* ══ UTILS ══ */
 function markPending(id){ const c=document.querySelector('.card[data-id="'+id+'"]'); if(c){ c.classList.remove('saved'); c.classList.add('pending'); const b=c.querySelector('.cs-badge'); if(b){ b.className='cs-badge bp'; b.textContent='● Pendent';} updTabPending(); updProgress(); } }
 function markSaved(id){ const c=document.querySelector('.card[data-id="'+id+'"]'); if(c){ c.classList.remove('pending'); c.classList.add('saved'); if(c.classList.contains('cnew') && !c.classList.contains('rejected')) c.style.borderStyle='solid'; const b=c.querySelector('.cs-badge'); if(b){ b.className='cs-badge bs'; b.textContent='Revisat ✅';} updProgress(); updTabPending(); } }
-
 function updProgress(){ 
-  let tot=0,sav=0; 
-  // Total global top bar
-  Object.values(cards).forEach(arr=>{ tot+=arr.length; arr.forEach(({el:e})=>{ if(e.classList.contains('saved')) sav++; }); }); 
+  let tot=0,sav=0; Object.values(cards).forEach(arr=>{ tot+=arr.length; arr.forEach(({el:e})=>{ if(e.classList.contains('saved')) sav++; }); }); 
   $('pfill').style.width=(tot?Math.round(sav/tot*100):0)+'%'; $('plbl').textContent=sav+' / '+tot; 
-  
-  // Progress per subcriteri (CORRECCIÓ: Ignorem els nous del comptador X/Y)
   document.querySelectorAll('.sb').forEach(blk => {
-      const cList = blk.querySelectorAll('.card[data-is-new="0"]'); 
-      if(cList.length === 0) return;
-      let sTot = cList.length;
-      let sSav = 0;
-      cList.forEach(c => { if(c.classList.contains('saved')) sSav++; });
-      const sp = blk.querySelector('.sub-prog');
-      if(sp) {
-          sp.textContent = sSav + ' / ' + sTot;
-          if(sSav === sTot) sp.classList.add('done');
-          else sp.classList.remove('done');
-      }
+      const cList = blk.querySelectorAll('.card[data-is-new="0"]'); if(cList.length === 0) return;
+      let sTot = cList.length, sSav = 0; cList.forEach(c => { if(c.classList.contains('saved')) sSav++; });
+      const sp = blk.querySelector('.sub-prog'); if(sp) { sp.textContent = sSav + ' / ' + sTot; sp.classList.toggle('done', sSav===sTot); }
   });
 }
-
 function setF(f,btn){ curF=f; document.querySelectorAll('.tog-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); applyF(); }
 function applyF(){
   const kw=$('srch').value.toLowerCase().trim();
   (cards[curC]||[]).forEach(({el:e})=>{
-    let show=true;
-    if(curF==='pending') show = !e.classList.contains('saved');
-    else if(curF==='validated') show = e.classList.contains('saved');
-    else if(curF==='new') show = e.dataset.isNew==='1';
-    if(show&&kw) show=(e.dataset.st||'').includes(kw);
-    e.style.display=show?'':'none';
+    let show=true; if(curF==='pending') show = !e.classList.contains('saved'); else if(curF==='validated') show = e.classList.contains('saved'); else if(curF==='new') show = e.dataset.isNew==='1';
+    if(show&&kw) show=(e.dataset.st||'').includes(kw); e.style.display=show?'':'none';
   });
   document.querySelectorAll('.sb').forEach(b=>{ b.style.display=[...b.querySelectorAll('.card')].some(c=>c.style.display!=='none')?'':'none'; });
 }
-
-function cardData(id){
-  const c=document.querySelector('.card[data-id="'+id+'"]'); if(!c) return {};
-  const d={};
-  c.querySelectorAll('textarea[data-key]').forEach(ta=>{ d[ta.dataset.key]=ta.value; });
-  d.validat=c.querySelector('.chk-v')?.checked||false; d.comentari_general=c.querySelector('.ta-cmt')?.value||'';
-  return d;
-}
-
-async function saveExisting(id,btn){
-  if(!sess) return; const orig=btn.textContent; btn.textContent='Enviant…'; btn.disabled=true; const d=cardData(id);
-  const isDone = d.validat; 
-  const payload={ nom:sess.nom, email:sess.email, area_revisora:sess.area, id_enfocament:id, is_new:false, validat:d.validat, sug_titol_enfocament:'', sug_enfocament:'', sug_desplegament:d.sug_desplegament||'', sug_avaluacio:d.sug_avaluacio||'', sug_evidencies:d.sug_evidencies||'', comentari_general:d.comentari_general, timestamp:new Date().toISOString() };
-  await doSave(payload,id,btn,orig,false, isDone);
-}
-
+function cardData(id){ const c=document.querySelector('.card[data-id="'+id+'"]'); if(!c) return {}; const d={}; c.querySelectorAll('textarea[data-key]').forEach(ta=>{ d[ta.dataset.key]=ta.value; }); d.validat=c.querySelector('.chk-v')?.checked||false; d.comentari_general=c.querySelector('.ta-cmt')?.value||''; return d; }
+async function saveExisting(id,btn){ if(!sess) return; const o=btn.textContent; btn.textContent='Enviant…'; btn.disabled=true; const d=cardData(id); await doSave({ nom:sess.nom, email:sess.email, area_revisora:sess.area, id_enfocament:id, is_new:false, validat:d.validat, sug_titol_enfocament:'', sug_enfocament:'', sug_desplegament:d.sug_desplegament||'', sug_avaluacio:d.sug_avaluacio||'', sug_evidencies:d.sug_evidencies||'', comentari_general:d.comentari_general, timestamp:new Date().toISOString() }, id, btn, o, false, d.validat); }
 async function saveNew(tid,btn){
   if(!sess) return; const card=document.querySelector('.card[data-id="'+tid+'"]'); if(!card) return;
-  
-  let faltan = false;
-  const requiredKeys = ['sug_titol_enfocament', 'sug_enfocament', 'sug_desplegament', 'sug_avaluacio', 'sug_evidencies'];
-  for (let key of requiredKeys) {
-    const ta = card.querySelector(`textarea[data-key="${key}"]`);
-    if (!ta || ta.value.trim() === '') {
-        ta.style.borderColor = 'var(--red)';
-        ta.style.backgroundColor = '#fef2f2';
-        faltan = true;
-    } else {
-        ta.style.borderColor = '';
-        ta.style.backgroundColor = '';
-    }
-  }
-  
-  if (faltan) {
-      toast('⚠️ Avís: Falten camps obligatoris per omplir.', 'terr');
-      return;
-  }
-
-  const orig=btn.textContent; btn.textContent='Enviant…'; btn.disabled=true; const d=cardData(tid);
-  const payload={ nom:sess.nom, email:sess.email, area_revisora:sess.area, id_enfocament:tid, is_new:true, validat:true, sug_titol_enfocament:d.sug_titol_enfocament||'', sug_enfocament:d.sug_enfocament||'', sug_desplegament:d.sug_desplegament||'', sug_avaluacio:d.sug_avaluacio||'', sug_evidencies:d.sug_evidencies||'', comentari_general:d.comentari_general, criteri:card.dataset.crit||'', subcriteri:card.dataset.sub||'', timestamp:new Date().toISOString() };
-  await doSave(payload,tid,btn,orig,true, true);
+  let err=false; const req=['sug_titol_enfocament','sug_enfocament','sug_desplegament','sug_avaluacio','sug_evidencies'];
+  req.forEach(k=>{ const ta=card.querySelector(`textarea[data-key="${k}"]`); if(!ta.value.trim()){ ta.style.borderColor='var(--red)'; ta.style.backgroundColor='#fef2f2'; err=true; } });
+  if(err){ toast('⚠️ Omple els camps obligatoris','terr'); return; }
+  const o=btn.textContent; btn.textContent='Enviant…'; btn.disabled=true; const d=cardData(tid);
+  await doSave({ nom:sess.nom, email:sess.email, area_revisora:sess.area, id_enfocament:tid, is_new:true, validat:true, sug_titol_enfocament:d.sug_titol_enfocament, sug_enfocament:d.sug_enfocament, sug_desplegament:d.sug_desplegament, sug_avaluacio:d.sug_avaluacio, sug_evidencies:d.sug_evidencies, comentari_general:d.comentari_general, criteri:card.dataset.crit, subcriteri:card.dataset.sub, timestamp:new Date().toISOString() }, tid, btn, o, true, true);
 }
-
-async function doSave(payload,id,btn,orig,isNew, isDone){
-  try{
-    if(!APPS_SCRIPT_URL) await wait(500); else{ const r=await api('POST',payload); if(!r.success) throw new Error(r.error||'Error servidor'); }
-    updResp(payload); 
-    if(isDone) { markSaved(id); btn.textContent='Revisat ✅'; toast(isNew?'Nova proposta desada! ✨':'Revisió finalitzada i desada.','tok'); } 
-    else { markPending(id); btn.textContent='Desat (Esborrany)'; toast('Esborrany desat. Encara pendent de finalitzar.','tinfo'); }
-    const c=document.querySelector('.card[data-id="'+id+'"]');
-    if(c){ if(isNew && isDone) c.classList.remove('expanded'); const chk = c.querySelector('.chk-v'); if(chk && chk.checked){ chk.disabled = true; chk.parentElement.style.opacity = '0.6'; chk.parentElement.style.cursor = 'not-allowed'; } }
-  } catch(e){ btn.textContent='Error ❌'; toast('Error: '+e.message,'terr'); }
-  setTimeout(()=>{ btn.textContent=orig; btn.disabled=false; },3000);
+async function doSave(p,id,btn,o,isNew,isDone){
+  try{ if(!APPS_SCRIPT_URL) await wait(500); else{ const r=await api('POST',p); if(!r.success)throw new Error(); } updResp(p); if(isDone){ markSaved(id); btn.textContent='Revisat ✅'; toast('Desat i Finalitzat','tok'); } else { markPending(id); btn.textContent='Desat (Esborrany)'; toast('Esborrany desat','tinfo'); } const c=document.querySelector('.card[data-id="'+id+'"]'); if(c && isNew && isDone) c.classList.remove('expanded'); } catch(e){ btn.textContent='Error ❌'; toast('Error','terr'); }
+  setTimeout(()=>{ btn.textContent=o; btn.disabled=false; },2000);
 }
-
 function updResp(p){ const i=resp.findIndex(r=>r.email===p.email&&r.id_enfocament===p.id_enfocament); if(i>=0) Object.assign(resp[i],p); else resp.push(p); }
-
-/* ══ UTILS ══ */
 const $=id=>document.getElementById(id);
-const el=(tag,cls,txt)=>{ const e=document.createElement(tag); if(cls) e.className=cls; if(txt!==undefined) e.textContent=txt; return e; };
+const el=(t,c,h)=>{ const e=document.createElement(t); if(c)e.className=c; if(h!==undefined)e.textContent=h; return e; };
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 const escH=t=>String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-function toast(msg,cls){ const c=$('toasts'); const t=el('div','toast '+(cls||'')); t.textContent=msg; c.appendChild(t); setTimeout(()=>t.remove(),3400); }
+function toast(m,c){ const t=el('div','toast '+(c||''),m); $('toasts').appendChild(t); setTimeout(()=>t.remove(),3000); }
 function showErr(e,m){ e.textContent=m; e.classList.remove('hidden'); }
 </script>
 </body>
