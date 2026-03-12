@@ -40,7 +40,6 @@ input,select,textarea{width:100%;border:1.5px solid var(--g100);border-radius:8p
 input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;border:none;border-radius:8px;padding:.6rem 1.1rem;font-size:.84rem;font-weight:600;cursor:pointer;transition:all var(--tr)}
 .btn-primary{background:var(--navy);color:#fff}.btn-primary:hover{background:var(--navy2)}
-.btn-primary:disabled{opacity:.5;cursor:not-allowed}
 .btn-ghost{background:transparent;border:1.5px solid var(--g100);color:var(--gray-dipta)}.btn-ghost:hover{border-color:var(--navy);color:var(--navy)}
 .btn-danger{background:#fee2e2;color:var(--red);border:none}.btn-danger:hover{background:#fecaca}
 .btn-full{width:100%;margin-top:1.2rem}
@@ -73,6 +72,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .ctab-admin { color: var(--violet); }
 .ctab-admin.active { border-bottom-color: var(--violet); color: var(--violet); background: var(--vp); }
 
+/* Pestanya Usuari */
 .ctab-user { margin-left: auto; color: var(--navy); border-left: 1px solid var(--g100); padding-left: 1.2rem; }
 .ctab-user.active { background: var(--navy-pale); border-bottom-color: var(--navy); }
 
@@ -86,6 +86,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .sw input{padding:.32rem .62rem .32rem 1.82rem;font-size:.79rem;height:29px}
 .s-ico{position:absolute;left:.5rem;top:50%;transform:translateY(-50%);color:var(--g300);font-size:.8rem;pointer-events:none}
 
+/* Botons Collapse Toolbar */
 .toolbar-actions { display:flex; gap:0.5rem; margin-left:auto; }
 
 .scroll-area{flex:1;overflow-y:auto;padding:.9rem 1.2rem 3rem}
@@ -97,15 +98,35 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .sub-title-row:hover{background:var(--g50);}
 .sub-num{font-size:.68rem;font-weight:700;background:var(--navy);color:#fff;padding:.08rem .42rem;border-radius:5px;flex-shrink:0}
 .sub-title{font-size:.86rem;font-weight:800;color:var(--navy);flex:1; display:flex; align-items:center; gap:.5rem;}
+
+/* Comptador i Chevron de Subcriteri */
 .sub-prog { font-size: .7rem; background: var(--g100); color: var(--g700); padding: .15rem .45rem; border-radius: 99px; font-weight: 700; transition: all var(--tr);}
 .sub-prog.done { background: #dcfce7; color: #166534; }
 .sub-chev { font-size: 0.8rem; color: var(--navy); transition: transform var(--tr); margin-right: 2px; }
 
+/* Amagar contingut si està col·lapsat */
 .sb.collapsed .sb-content { display: none; }
 .sb.collapsed .sub-chev { transform: rotate(-90deg); }
 .sb-content { padding-top: 0.5rem; }
 
 .efqm-btn{background:transparent;border:1.5px solid var(--g100);border-radius:6px;padding:.26rem .62rem;cursor:pointer;font-size:.73rem;font-weight:600;transition:background var(--tr);white-space:nowrap;flex-shrink:0}
+
+/* Botons de context */
+.model-btn { color: var(--navy); }
+.model-btn:hover { background: var(--navy-pale); }
+.efqm-panel { display:none; padding:.58rem .82rem .68rem; background:var(--navy-pale); border-top:1px solid #bfdbfe; font-size:.8rem; color:var(--navy2); white-space:pre-wrap; line-height:1.6; border-left:4px solid var(--navy); }
+.efqm-panel.open { display:block; }
+
+.eval-btn { color: var(--orange); border-color: #fed7aa; }
+.eval-btn:hover { background: #fff7ed; }
+.eval-panel { display:none; padding:.58rem .82rem .68rem; background:#fff7ed; border-top:1px solid #fed7aa; font-size:.8rem; color:#9a3412; white-space:pre-wrap; line-height:1.6; border-left:4px solid var(--orange); }
+.eval-panel.open { display:block; }
+
+.prev-btn { color: #0f766e; border-color: #99f6e4; }
+.prev-btn:hover { background: #f0fdfa; }
+.prev-panel { display:none; padding:.58rem .82rem .68rem; background:#f0fdfa; border-top:1px solid #99f6e4; font-size:.8rem; color:#115e59; white-space:pre-wrap; border-left:4px solid #0f766e; }
+.prev-panel.open { display:block; }
+
 
 /* ── CARD ── */
 .card{background:var(--white);border-radius:var(--r);box-shadow:var(--sh);margin-bottom:.5rem;border:2px solid transparent;transition:border-color var(--tr)}
@@ -135,7 +156,18 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .admin-alert { background: #fef2f2; border: 1px solid #fca5a5; padding: .6rem; border-radius: 6px; margin: .5rem .72rem; color: #991b1b; font-size: .8rem; }
 .admin-alert-ok { background: #f0fdf4; border: 1px solid #bbf7d0; padding: .6rem; border-radius: 6px; margin: .5rem .72rem; color: #166534; font-size: .8rem; font-weight: bold;}
 
+.new-banner{display:flex;align-items:center;gap:.48rem;padding:.48rem .72rem;background:linear-gradient(135deg,var(--vp),#ede9fe);border-bottom:1px dashed var(--vb);transition:background var(--tr)}
+.new-banner:hover{background:#ede9fe}
+.new-label{display:flex;align-items:center;gap:.38rem;font-size:.74rem;font-weight:800;color:var(--violet);text-transform:uppercase;letter-spacing:.05em;flex:1;overflow:hidden;}
+.new-pill{background:var(--violet);color:#fff;font-size:.61rem;padding:.07rem .38rem;border-radius:99px;font-weight:700;flex-shrink:0;}
+.new-pill.rejected-pill { background: var(--red) !important; }
+.new-title-text{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--violet);font-weight:700;text-transform:none;}
+
+.btn-rm{background:transparent;border:1px solid transparent;color:var(--gray-dipta);cursor:pointer;font-size:.75rem;font-weight:600;padding:.2rem .5rem;border-radius:6px;transition:all var(--tr);flex-shrink:0;display:flex;align-items:center;gap:.25rem;}
+.btn-rm:hover{color:var(--red);background:#fee2e2;border-color:#fecaca;}
+
 .acc{border-bottom:1px solid var(--g100)}
+.acc:last-of-type{border-bottom:none}
 .acc-hdr{display:flex;align-items:center;gap:.42rem;padding:.4rem .72rem;cursor:pointer;user-select:none;transition:background var(--tr)}
 .acc-hdr:hover{background:var(--g50)}
 .acc-arr{font-size:.6rem;color:var(--gray-dipta);transition:transform var(--tr);flex-shrink:0;width:10px;text-align:center}
@@ -244,17 +276,23 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .rev-check { display: flex; align-items: center; gap: 6px; font-weight: 800; font-size: 0.7rem; color: var(--navy); cursor: pointer; text-transform:none; margin:0;}
 .rev-check input { width: 14px; height: 14px; accent-color: var(--green); margin:0;}
 
+/* ══ VISTA D'IMPRESSIÓ (PDF) ══ */
+#print-area { display: none; background: white; padding: 20px; color: black; }
+@media print {
+  body { background: white; }
+  #s1, #s2, .topbar, .crit-tabs, .toolbar, #admin-view, #user-view, #toasts, .modal-overlay { display: none !important; }
+  #print-area { display: block !important; }
+}
+
 #toasts{position:fixed;bottom:1rem;right:1rem;z-index:9999;display:flex;flex-direction:column;gap:.38rem;max-width:280px}
 .toast{background:var(--black-dipta);color:#fff;padding:.58rem .82rem;border-radius:9px;font-size:.79rem;font-weight:500;animation:fu .2s ease;box-shadow:var(--sh2)}
 .tok{background:#166534}.terr{background:#991b1b}.tinfo{background:var(--navy)}.tvio{background:var(--violet)}
 @keyframes fu{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 
+/* Indicador de Sync a la TopBar */
 #sync-status { display: inline-flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.2); border-radius: 20px; padding: 2px 8px; font-size: 0.75rem; margin-left: 10px; }
 .syncing { color: #fde047; animation: pulse 1s infinite alternate; }
 @keyframes pulse { from { opacity: 0.5; } to { opacity: 1; } }
-
-/* VISTA WORD (AMAGADA) */
-#print-area { display: none; }
 </style>
 </head>
 <body>
@@ -334,7 +372,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
     
     <div id="admin-feedback-section" style="padding: 0 1.5rem 1rem;">
       <label style="margin-top:0;">Comentari intern / a l'usuari (Obligatori si es descarta)</label>
-      <textarea id="admin-comment" rows="2" style="width:100%; border:1px solid var(--g200); border-radius:6px; padding:0.5rem" placeholder="Anota el motiu..."></textarea>
+      <textarea id="admin-comment" rows="2" placeholder="Anota el motiu..."></textarea>
     </div>
 
     <div class="modal-footer" id="modal-footer">
@@ -345,6 +383,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 </div>
 
 <div id="print-area"></div>
+
 <div id="toasts"></div>
 
 <script>
@@ -357,37 +396,15 @@ let cData={}, curC=null, curF='all';
 let cards={}, nc=0;
 let currentAdminCardId = null;
 let lastSyncTime = null;
-let collapsedStateBeforeSearch = []; 
-
-/* ══ UTILS ══ */
-const $ = id => document.getElementById(id);
-const el = (tag,cls,txt) => { const e=document.createElement(tag); if(cls) e.className=cls; if(txt!==undefined) e.textContent=txt; return e; };
-const wait = ms => new Promise(r=>setTimeout(r,ms));
-const escH = t => String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-const escJS = t => String(t||'').replace(/'/g, "\\'").replace(/"/g, "&quot;");
-
-function toast(msg,cls){ const c=$('toasts'); const t=el('div','toast '+(cls||'')); t.textContent=msg; c.appendChild(t); setTimeout(()=>t.remove(),3400); }
-function showErr(e,m){ e.textContent=m; e.classList.remove('hidden'); }
+let collapsedStateBeforeSearch = []; // Per restaurar el col·lapse
 
 /* ══ SYNC UI ══ */
 function setSync(state) {
-    const s = $('sync-status');
+    const s = document.getElementById('sync-status');
     if(state === 'syncing') { s.innerHTML = '🔄 Guardant...'; s.className = 'syncing'; }
     else if(state === 'ok') { s.innerHTML = '✅ Guardat'; s.className = ''; setTimeout(()=>setSync('idle'), 3000); }
     else if(state === 'err') { s.innerHTML = '❌ Error'; s.className = ''; }
     else { s.innerHTML = '☁️ Connectat'; s.className = ''; }
-}
-
-/* ══ API (FIXED: GET/POST HANDLER) ══ */
-async function api(method, body){
-  const o = { redirect: 'follow' };
-  if(method === 'POST'){
-    o.method = 'POST';
-    o.headers = { 'Content-Type': 'text/plain;charset=utf-8' };
-    o.body = JSON.stringify(body);
-  }
-  const r = await fetch(APPS_SCRIPT_URL, o);
-  return r.json();
 }
 
 /* ══ INIT ══ */
@@ -395,38 +412,62 @@ window.addEventListener('DOMContentLoaded', async ()=>{
   const st=localStorage.getItem('efqm_v4');
   if(st){
     sess=JSON.parse(st);
-    $('wname').textContent='Benvinguda/t de nou, '+sess.nom;
-    $('wsub').textContent=sess.email+' · '+sess.area;
-    $('wblock').classList.remove('hidden');
-    $('lform').classList.add('hidden');
+    document.getElementById('wname').textContent='Benvinguda/t de nou, '+sess.nom;
+    document.getElementById('wsub').textContent=sess.email+' · '+sess.area;
+    document.getElementById('wblock').classList.remove('hidden');
+    document.getElementById('lform').classList.add('hidden');
   }
   await loadBackendData();
 });
 
+async function api(method, body){
+  const o = { redirect: 'follow' };
+  if(method === 'POST'){ 
+    o.method = 'POST'; 
+    o.headers = { 'Content-Type': 'text/plain;charset=utf-8' }; 
+    o.body = JSON.stringify(body); 
+  }
+  const r = await fetch(APPS_SCRIPT_URL, o);
+  return r.json();
+}
+
 async function loadBackendData(){
   if(!APPS_SCRIPT_URL) return;
   try{
-    const btn = $('btn-login');
+    const btn = document.getElementById('btn-login');
     if(btn) { btn.textContent = 'Carregant base de dades...'; btn.disabled = true; }
     
-    // Ara fem servir la funció api centralitzada per fer el GET
-    const d = await api('GET');
+    const r = await fetch(APPS_SCRIPT_URL);
+    const d = await r.json();
     
-    mem=d.memoria||[]; resp=d.respostes||[]; usuaris=d.usuaris||[]; 
+    mem=d.memoria||[]; 
+    resp=d.respostes||[];
+    usuaris=d.usuaris||[]; 
+    
     lastSyncTime = new Date();
+    
     const sanitize = arr => arr.forEach(r => Object.keys(r).forEach(k => r[k] = r[k] != null ? String(r[k]).trim() : ''));
     sanitize(mem); sanitize(resp); sanitize(usuaris);
+    
     if(btn) { btn.textContent = 'Accedir a la revisió'; btn.disabled = false; }
-  } catch(e){ showErr($('ferr'), 'Error connectant amb el servidor.'); }
+  } catch(e){ 
+    showErr(document.getElementById('ferr'), 'Error connectant amb el servidor.');
+  }
 }
 
+/* ══ LOGIN ══ */
 function doLogin(){
   const email = $('fe').value.trim().toLowerCase();
-  if(!email){ showErr($('ferr'),'Introdueix email.'); return; }
-  if(usuaris.length === 0){ showErr($('ferr'),'Espera, carregant dades...'); return; }
+  const err = $('ferr');
+  
+  if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ showErr(err,'Introdueix un correu electrònic vàlid.'); return; }
+  if(usuaris.length === 0){ showErr(err,'Encara s\'està carregant la base de dades...'); return; }
+
   const user = usuaris.find(u => String(u.email_autoritzat || '').toLowerCase() === email);
-  if(!user){ showErr($('ferr'), 'Accés denegat.'); return; }
-  sess={ nom: user.nom_usuari, email: email, area: user.area_assignada };
+  if(!user){ showErr(err, 'Accés denegat. Aquest correu no està a la llista d\'usuaris autoritzats.'); return; }
+
+  err.classList.add('hidden');
+  sess={ nom: user.nom_usuari || 'Usuari', email: email, area: user.area_assignada || '' };
   localStorage.setItem('efqm_v4',JSON.stringify(sess));
   goS2();
 }
@@ -434,6 +475,7 @@ function doLogin(){
 function clearSess(){ localStorage.removeItem('efqm_v4'); location.reload(); }
 function doLogout(){ if(document.querySelectorAll('.card.pending').length>0 && !confirm('Tens canvis pendents. Tancar sessió?')) return; clearSess(); }
 
+/* ══ SCREEN 2 ══ */
 async function goS2(){
   $('s1').style.display='none'; $('s2').style.display='flex';
   $('tb-user').textContent=sess.nom+' · '+sess.area;
@@ -442,24 +484,41 @@ async function goS2(){
 
 async function loadData(){
   try {
+    $('sarea').innerHTML='<p style="color:var(--g300);padding:2rem;text-align:center">Processant dades…</p>';
+    if(mem.length === 0 && APPS_SCRIPT_URL) await loadBackendData();
+    mem.sort((a,b) => String(a.id || '').localeCompare(String(b.id || '')));
+    
     buildData(); buildTabs();
-    if(isGlobal()) showAdminView(); else { const first=Object.keys(cData).sort()[0]; if(first) selCrit(first); }
-  } catch(err) { $('sarea').innerHTML='<p style="color:var(--red);padding:2rem;">❌ Error dades.</p>'; }
+    
+    if(isGlobal()) showAdminView();
+    else {
+        const first=Object.keys(cData).sort()[0];
+        if(first) selCrit(first);
+    }
+  } catch(err) {
+    $('sarea').innerHTML='<p style="color:var(--red);padding:2rem;text-align:center">❌ Error dades.</p>';
+  }
 }
 
 function isGlobal() { return String(sess.area || '').toLowerCase().includes('global') || String(sess.area || '').toLowerCase().includes('totes'); }
 
+/* ══ BUILD DATA ══ */
 function buildData(){
   cData={}; cards={};
-  const areaUs = String(sess.area || '').toLowerCase();
+  const areaUsuari = String(sess.area || '').toLowerCase();
   const esGlob = isGlobal();
-  const llistaAreasUs = areaUs.split(',').map(a => a.trim());
+  const llistaAreasUsuari = areaUsuari.split(',').map(a => a.trim());
+
   mem.forEach(row=>{
     if(!row.criteri || !row.subcriteri) return; 
     const llistaAreasFila = String(row.area||'').toLowerCase().split(',').map(a=>a.trim());
-    if(!esGlob && !llistaAreasUs.some(area => llistaAreasFila.includes(area))) return;
+    const teAcces = esGlob || llistaAreasUsuari.some(areaUs => llistaAreasFila.includes(areaUs));
+    if(!teAcces) return;
+
     const c=String(row.criteri), s=String(row.subcriteri);
     if(!cData[c]) cData[c]={titol:row.titol_criteri||'',subs:{}};
+    if(!cData[c].titol&&row.titol_criteri) cData[c].titol=row.titol_criteri;
+    
     if(!cData[c].subs[s]) cData[c].subs[s]={ titol:row.titol_subcriteri||'', que_diu:'', preg_avaluadors:'', informe_ant:'', rows:[] };
     const target = cData[c].subs[s];
     if(row.que_diu_el_model && row.que_diu_el_model.trim() !== '') target.que_diu = row.que_diu_el_model;
@@ -469,6 +528,7 @@ function buildData(){
   });
 }
 
+/* ══ TABS ══ */
 function buildTabs(){
   const nav=$('ctabs'); nav.innerHTML='';
   if(isGlobal()) {
@@ -476,99 +536,200 @@ function buildTabs(){
       ba.onclick=()=>showAdminView(); nav.appendChild(ba);
   }
   Object.keys(cData).sort().forEach(c=>{
-    const b=el('button','ctab normal-tab'); b.dataset.c=c;
+    const b=document.createElement('button'); b.className='ctab normal-tab'; b.dataset.c=c;
     b.innerHTML=escH(c+(cData[c].titol?' — '+cData[c].titol:''))+' <span class="tab-dot"></span>';
     b.onclick=()=>selCrit(c); nav.appendChild(b);
   });
-  const bu = el('button', 'ctab ctab-user', '📊 Les meves aportacions');
+
+  const bu = document.createElement('button');
+  bu.className = 'ctab ctab-user';
   bu.dataset.c = 'user_summary';
+  bu.innerHTML = '📊 Les meves aportacions';
   bu.onclick = (e) => showUserSummary(e.currentTarget);
   nav.appendChild(bu);
 }
 
-function updTabPending(){ document.querySelectorAll('.normal-tab').forEach(t=>{ t.classList.toggle('has-pending',(cards[t.dataset.c]||[]).some(x=>!x.el.classList.contains('saved'))); }); }
+function updTabPending(){
+  document.querySelectorAll('.normal-tab').forEach(t=>{
+    t.classList.toggle('has-pending',(cards[t.dataset.c]||[]).some(x=>!x.el.classList.contains('saved')));
+  });
+}
 
+/* ══ CONTROLS DE VISTA ══ */
 function selCrit(c){
-  curC=c; $('admin-view').classList.add('hidden'); $('user-view').classList.add('hidden'); $('sarea').classList.remove('hidden'); $('main-toolbar').style.display='flex'; $('top-prog').style.display='flex';
+  curC=c;
+  $('admin-view').classList.add('hidden');
+  $('user-view').classList.add('hidden');
+  $('sarea').classList.remove('hidden');
+  $('main-toolbar').style.display='flex';
+  $('top-prog').style.display='flex'; 
+  
   document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('active'));
-  document.querySelector(`.ctab[data-c="${c}"]`).classList.add('active');
-  $('srch').value=''; curF='all'; document.querySelectorAll('.tog-btn').forEach((b,i)=>b.classList.toggle('active',i===0));
+  document.querySelector('.ctab[data-c="'+c+'"]').classList.add('active');
+  
+  $('srch').value=''; curF='all';
+  document.querySelectorAll('.tog-btn').forEach((b,i)=>b.classList.toggle('active',i===0));
   renderCrit(c);
 }
 
 function showAdminView(){
-  curC='admin'; $('sarea').classList.add('hidden'); $('user-view').classList.add('hidden'); $('admin-view').classList.remove('hidden'); $('main-toolbar').style.display='none'; $('top-prog').style.display='none';
+  curC='admin';
+  $('sarea').classList.add('hidden');
+  $('user-view').classList.add('hidden');
+  $('admin-view').classList.remove('hidden');
+  $('main-toolbar').style.display='none';
+  $('top-prog').style.display='none'; 
+
   document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('active'));
   document.querySelector('.ctab-admin').classList.add('active');
   renderAdminDashboard();
 }
 
 function showUserSummary(btnElement){
-  curC='user'; $('sarea').classList.add('hidden'); $('admin-view').classList.add('hidden'); $('user-view').classList.remove('hidden'); $('main-toolbar').style.display='none'; $('top-prog').style.display='none';
+  curC='user';
+  $('sarea').classList.add('hidden');
+  $('admin-view').classList.add('hidden');
+  $('user-view').classList.remove('hidden');
+  $('main-toolbar').style.display='none';
+  $('top-prog').style.display='none'; 
+
   document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('active'));
   btnElement.classList.add('active');
   renderUserDashboard();
 }
 
-window.expandAllSub = () => document.querySelectorAll('.sb').forEach(sb => sb.classList.remove('collapsed'));
-window.collapseAllSub = () => document.querySelectorAll('.sb').forEach(sb => sb.classList.add('collapsed'));
+/* ══ COLLAPSE/EXPAND ALL ══ */
+window.expandAllSub = function() {
+    document.querySelectorAll('.sb').forEach(sb => sb.classList.remove('collapsed'));
+};
+window.collapseAllSub = function() {
+    document.querySelectorAll('.sb').forEach(sb => sb.classList.add('collapsed'));
+};
 
+/* ══ RENDER CRITERI NORMAL ══ */
 function renderCrit(c){
-  const area=$('sarea'); area.innerHTML=''; if(!cData[c]) return;
+  const area=$('sarea'); area.innerHTML='';
+  if(!cData[c]) return;
   const exNew=(cards[c]||[]).filter(x=>x.isNew);
   cards[c]=[];
+
   let idx = 0;
   Object.keys(cData[c].subs).sort().forEach(s=>{
-    const sub=cData[c].subs[s]; const blk=el('div','sb'); blk.dataset.s=s;
-    if (idx !== 0) blk.classList.add('collapsed'); idx++;
-    const sticky=el('div','sub-sticky'); const tr=el('div','sub-title-row');
-    tr.onclick = (e) => { if(e.target.closest('button')) return; blk.classList.toggle('collapsed'); };
-    tr.appendChild(el('span', 'sub-chev', '▼')); tr.appendChild(el('span','sub-num',s));
-    const tw = el('div','sub-title'); tw.appendChild(document.createTextNode(sub.titol||s));
-    const sp = el('span', 'sub-prog', '0 / 0'); tw.appendChild(sp); tr.appendChild(tw);
-    const acts = el('div'); acts.style.display = 'flex'; acts.style.gap = '.3rem';
-    let p1,p2,p3;
-    if(sub.que_diu){ const b=el('button','efqm-btn model-btn','📖 Model'); p1=el('div','efqm-panel',sub.que_diu); b.onclick=(e)=>{ e.stopPropagation(); p1.classList.toggle('open'); }; acts.appendChild(b); }
-    if(sub.preg_avaluadors){ const b=el('button','efqm-btn eval-btn','❓ Preguntes'); p2=el('div','eval-panel',sub.preg_avaluadors); b.onclick=(e)=>{ e.stopPropagation(); p2.classList.toggle('open'); }; acts.appendChild(b); }
-    if(sub.informe_ant){ const b=el('button','efqm-btn prev-btn','💡 Informe ant.'); p3=el('div','prev-panel',sub.informe_ant); b.onclick=(e)=>{ e.stopPropagation(); p3.classList.toggle('open'); }; acts.appendChild(b); }
-    if(acts.childNodes.length > 0) tr.appendChild(acts);
-    sticky.appendChild(tr); if(p1) sticky.appendChild(p1); if(p2) sticky.appendChild(p2); if(p3) sticky.appendChild(p3);
+    const sub=cData[c].subs[s];
+    const blk=el('div','sb'); blk.dataset.s=s;
+    if (idx !== 0) blk.classList.add('collapsed');
+    idx++;
+
+    const sticky=el('div','sub-sticky');
+    const tr=el('div','sub-title-row');
+    tr.onclick = (e) => {
+        if(e.target.closest('button')) return;
+        blk.classList.toggle('collapsed');
+    };
+    
+    // Fletxa a l'esquerra del tot
+    tr.appendChild(el('span', 'sub-chev', '▼'));
+    tr.appendChild(el('span','sub-num',s));
+    const titleWrap = el('div','sub-title');
+    titleWrap.appendChild(document.createTextNode(sub.titol||s));
+    const subProg = el('span', 'sub-prog', '0 / 0');
+    titleWrap.appendChild(subProg);
+    tr.appendChild(titleWrap);
+    
+    const actions = el('div'); actions.style.display = 'flex'; actions.style.gap = '.3rem';
+    let ep = null, evp = null, ip = null;
+
+    if(sub.que_diu && sub.que_diu !== ''){
+      const eb=el('button','efqm-btn model-btn','📖 Model');
+      ep=el('div','efqm-panel'); ep.textContent=sub.que_diu; 
+      eb.onclick=(e)=>{ e.stopPropagation(); ep.classList.toggle('open'); };
+      actions.appendChild(eb);
+    }
+    if(sub.preg_avaluadors && sub.preg_avaluadors !== ''){
+      const evb=el('button','efqm-btn eval-btn','❓ Preguntes');
+      evp=el('div','eval-panel'); evp.textContent=sub.preg_avaluadors; 
+      evb.onclick=(e)=>{ e.stopPropagation(); evp.classList.toggle('open'); };
+      actions.appendChild(evb);
+    }
+    if(sub.informe_ant && sub.informe_ant !== ''){
+      const ib=el('button','efqm-btn prev-btn','💡 Informe ant.');
+      ip=el('div','prev-panel'); ip.textContent=sub.informe_ant; 
+      ib.onclick=(e)=>{ e.stopPropagation(); ip.classList.toggle('open'); };
+      actions.appendChild(ib);
+    }
+    if(actions.childNodes.length > 0) tr.appendChild(actions);
+    
+    sticky.appendChild(tr); if(ep) sticky.appendChild(ep); if(evp) sticky.appendChild(evp); if(ip) sticky.appendChild(ip);
     blk.appendChild(sticky);
-    const cw = el('div', 'sb-content');
-    sub.rows.forEach(row=>{ const card=buildCard(row,c); cw.appendChild(card.el); cards[c].push(card); });
-    exNew.filter(x=>x.sub===s).forEach(x=>{ cw.appendChild(x.el); cards[c].push(x); });
-    resp.filter(r => r.email === sess.email && r.id_enfocament.startsWith(`NEW-${c}-${s}-`)).forEach(r => {
-      if (!exNew.find(x => x.id === r.id_enfocament)) { const card = buildNewCard(r.id_enfocament, c, s, sub.titol, r); cw.appendChild(card.el); cards[c].push(card); }
+
+    const contentWrap = el('div', 'sb-content');
+    sub.rows.forEach(row=>{ const card=buildCard(row,c); contentWrap.appendChild(card.el); cards[c].push(card); });
+    exNew.filter(x=>x.sub===s).forEach(x=>{ contentWrap.appendChild(x.el); cards[c].push(x); });
+
+    const strSearch = 'NEW-' + c + '-' + s + '-';
+    resp.filter(r => r.email === sess.email && r.id_enfocament && String(r.id_enfocament).startsWith(strSearch)).forEach(r => {
+      if (!exNew.find(x => x.id === r.id_enfocament)) {
+        const card = buildNewCard(r.id_enfocament, c, s, sub.titol, r);
+        contentWrap.appendChild(card.el); cards[c].push(card);
+      }
     });
+
     const ab=el('button','btn-add'); ab.innerHTML='➕ Proposar nou enfocament';
-    ab.onclick=()=>{ insertNew(c,s,sub.titol,cw,ab); blk.classList.remove('collapsed'); };
-    cw.appendChild(ab); blk.appendChild(cw); area.appendChild(blk);
+    ab.addEventListener('click',()=>{ insertNew(c,s,sub.titol,contentWrap,ab); blk.classList.remove('collapsed'); });
+    contentWrap.appendChild(ab); 
+    
+    blk.appendChild(contentWrap);
+    area.appendChild(blk);
   });
   updProgress(); updTabPending(); 
 }
 
 function buildCard(row,crit){
-  const id=row.id||''; const prev=resp.find(r=>r.email===sess.email&&r.id_enfocament===id);
-  const card=el('div','card'); const isChecked = prev?.validat === true || prev?.validat === 'true' || prev?.validat === 'TRUE';
-  const rejected = prev?.estat_admin === 'Descartat'; const approved = prev?.estat_admin === 'Aprovat';
-  card.className='card'+(isChecked?' saved':' pending'); card.dataset.id=id; card.dataset.isNew='0';
+  const id=row.id||'';
+  const prev=resp.find(r=>r.email===sess.email&&r.id_enfocament===id);
+  const card=document.createElement('div');
+  const isChecked = prev&&(prev.validat===true||prev.validat==='TRUE'||prev.validat==='true'||prev.validat==='1'||prev.validat===1);
+  const isAdminRejected = prev && prev.estat_admin === 'Descartat';
+  const isAdminApproved = prev && prev.estat_admin === 'Aprovat';
+  
+  card.className='card'+(isChecked?' saved':' pending');
+  card.dataset.id=id; card.dataset.isNew='0';
   updateCardDataset(card, row, prev);
-  const sum=el('div','card-sum'); sum.onclick=()=>card.classList.toggle('expanded');
-  sum.innerHTML = `<span class="cs-title">${escH(row.titol_enfocament)}</span><span class="cs-badge ${isChecked?'bs':'bp'}">${isChecked?'Revisat ✅':'● Pendent'}</span><span class="cs-chev">▼</span>`;
-  if(rejected) sum.querySelector('.cs-badge').className='cs-badge bdismiss', sum.querySelector('.cs-badge').textContent='❌ Descartat';
+
+  const sum=el('div','card-sum');
+  sum.appendChild(el('span','cs-title',row.titol_enfocament||'(sense títol)'));
+  let bcls = isChecked ? 'bs' : 'bp'; let btxt = isChecked ? 'Revisat ✅' : '● Pendent';
+  if(isAdminRejected) { bcls = 'bdismiss'; btxt = '❌ Descartat'; }
+  const sbadge = el('span','cs-badge '+bcls, btxt);
+  sum.appendChild(sbadge); sum.appendChild(el('span','cs-chev','▼'));
+  sum.addEventListener('click',()=>card.classList.toggle('expanded'));
   card.appendChild(sum);
+
   const body=el('div','card-body');
-  if(rejected) body.innerHTML += `<div class="admin-alert"><strong>❌ Descartat per Estratègia Corporativa:</strong><br>${escH(prev.comentari_admin)}</div>`;
-  else if(approved) body.innerHTML += `<div class="admin-alert-ok">✅ Validat per Estratègia Corporativa</div>`;
-  const BLOCKS=[ {l:'Enfocament', a:'le', t:row.enfocament}, {l:'Desplegament', a:'ld', t:row.desplegament, k:'sug_desplegament', v:prev?.sug_desplegament}, {l:'Avaluació', a:'la', t:row.avaluacio, k:'sug_avaluacio', v:prev?.sug_avaluacio}, {l:'Evidències', a:'lev', t:row.evidencies, k:'sug_evidencies', v:prev?.sug_evidencies} ];
+  if(isAdminRejected) body.innerHTML += `<div class="admin-alert"><strong>❌ Descartat per Estratègia Corporativa:</strong><br>${escH(prev.comentari_admin)}</div>`;
+  else if(isAdminApproved) body.innerHTML += `<div class="admin-alert-ok">✅ Validat per Estratègia Corporativa</div>`;
+
+  const BLOCKS=[
+    {lbl:'Enfocament', acls:'le', text:row.enfocament},
+    {lbl:'Desplegament', acls:'ld', text:row.desplegament, taKey:'sug_desplegament', val:prev?.sug_desplegament},
+    {lbl:'Avaluació', acls:'la', text:row.avaluacio, taKey:'sug_avaluacio', val:prev?.sug_avaluacio},
+    {lbl:'Evidències', acls:'lev', text:row.evidencies, taKey:'sug_evidencies', val:prev?.sug_evidencies},
+  ];
   BLOCKS.forEach(b=>{
-    const acc=el('div','acc'); if(b.v) acc.classList.add('has-content');
-    const hdr=el('div','acc-hdr'); hdr.innerHTML=`<span class="acc-lbl ${b.a}">${b.l}</span><span class="acc-dot"></span>`;
-    hdr.onclick=()=>acc.classList.toggle('open');
-    const ab=el('div','acc-body'); ab.innerHTML = `<div class="ro ${b.t?'':'empty'}">${b.t?escH(b.t):'— Buit —'}</div>`;
-    if(b.k){ ab.appendChild(el('span','prop-lbl','Proposta de millora')); const ta=el('textarea','prop-ta'); ta.dataset.key=b.k; ta.value=b.v||''; ta.oninput=()=>{ markPending(id); acc.classList.toggle('has-content',ta.value.trim()!==''); updateCardDataset(card, row, cardData(id)); }; ab.appendChild(ta); }
-    acc.appendChild(hdr); acc.appendChild(ab); body.appendChild(acc);
+    const acc=el('div','acc'); if(b.val) acc.classList.add('has-content');
+    const hdr=el('div','acc-hdr'); hdr.innerHTML=`<span class="acc-lbl ${b.acls}">${b.lbl}</span><span class="acc-dot"></span>`;
+    hdr.addEventListener('click',()=>acc.classList.toggle('open'));
+    const abody=el('div','acc-body');
+    abody.innerHTML = `<div class="ro ${b.text?'':'empty'}">${b.text?escH(b.text):'— Buit —'}</div>`;
+    if(b.taKey){
+      abody.appendChild(el('span','prop-lbl','Proposta de millora'));
+      const ta=document.createElement('textarea'); ta.className='prop-ta'; ta.dataset.key=b.taKey; ta.rows=2; ta.value=b.val||'';
+      ta.addEventListener('input',()=>{ markPending(id); acc.classList.toggle('has-content',ta.value.trim()!==''); updateCardDataset(card, row, cardData(id)); });
+      abody.appendChild(ta);
+    }
+    acc.appendChild(hdr); acc.appendChild(abody); body.appendChild(acc);
   });
+
   body.appendChild(makeAZ(id,prev,false)); card.appendChild(body); return {el:card, id, isNew:false};
 }
 
@@ -579,63 +740,59 @@ function updateCardDataset(card, row, prev) {
 function makeAZ(id,prev,isNew){
   const az=el('div','az');
   if(!isNew){
-    const cl=el('label','chk-wrap'); const chk=el('input','chk-v'); chk.type='checkbox'; chk.dataset.card=id;
-    const isChecked = prev?.validat === true || prev?.validat === 'true' || prev?.validat === 'TRUE';
-    chk.checked = isChecked; if(isChecked) chk.disabled = true, cl.style.opacity = '0.6'; else chk.onchange=()=>markPending(id);
+    const cl=el('label','chk-wrap');
+    const chk=document.createElement('input'); chk.type='checkbox'; chk.dataset.card=id; chk.className='chk-v';
+    const isChecked = prev&&(prev.validat===true||prev.validat==='TRUE'||prev.validat==='true'||prev.validat==='1'||prev.validat===1);
+    chk.checked = isChecked;
+    if(isChecked) { chk.disabled = true; cl.style.opacity = '0.6'; } else { chk.addEventListener('change',()=>markPending(id)); }
     cl.appendChild(chk); cl.appendChild(el('span','','✅ Revisió finalitzada')); az.appendChild(cl);
   }
-  const cw=el('div','cmt-w'); const cta=el('textarea','ta-cmt'); cta.dataset.card=id; cta.placeholder='Comentari...'; cta.value=prev?.comentari_general||'';
-  cta.oninput=()=>{ markPending(id); updateCardDataset(document.querySelector(`.card[data-id="${id}"]`), {}, cardData(id)); };
+  const cw=el('div','cmt-w');
+  const cta=document.createElement('textarea'); cta.className='ta-cmt'; cta.dataset.card=id; cta.rows=2; cta.placeholder='Comentari (opcional)'; cta.value=prev?.comentari_general||'';
+  cta.addEventListener('input',(e)=>{ markPending(id); updateCardDataset(document.querySelector(`.card[data-id="${id}"]`), {}, cardData(id)); });
   cw.appendChild(cta); az.appendChild(cw);
-  const sb=el('button','btn btn-primary btn-sc','Desar'); sb.onclick=()=>isNew?saveNew(id,sb):saveExisting(id,sb);
+  const sb=document.createElement('button'); sb.className='btn btn-primary btn-sc'; sb.textContent='Desar';
+  sb.onclick=()=>isNew?saveNew(id,sb):saveExisting(id,sb);
   az.appendChild(sb); return az;
 }
 
 function buildNewCard(tid,crit,sub,subTitol,prev=null){
-  const card=el('div','card cnew ' + (prev ? 'saved' : 'pending expanded')); 
-  const rejected = prev?.estat_admin === 'Descartat'; const approved = prev?.estat_admin === 'Aprovat';
-  if(rejected) card.classList.add('rejected');
-  card.dataset.id=tid; card.dataset.isNew='1'; card.dataset.crit=crit; card.dataset.sub=sub;
-  updateCardDataset(card, {}, prev);
+  const card=document.createElement('div');
+  const rejected = prev?.estat_admin === 'Descartat';
+  const approved = prev?.estat_admin === 'Aprovat';
+  card.className='card cnew ' + (prev ? 'saved' : 'pending expanded') + (rejected ? ' rejected' : '');
+  card.dataset.id=tid; card.dataset.isNew='1';
   const ban=el('div','new-banner'); ban.onclick=()=>card.classList.toggle('expanded');
   ban.innerHTML=`<div class="new-label"><span class="new-pill ${rejected?'rejected-pill':''}">${rejected?'DESCARTAT':'NOU'}</span><span class="new-title-text">${escH(prev?.sug_titol_enfocament||'Nou Enfocament...')}</span></div><span class="cs-chev">▼</span>`;
   const rm=el('button','btn-rm','🗑️ Eliminar'); 
-  rm.onclick=async(e)=>{ 
-    e.stopPropagation(); if(!confirm('Segur?')) return;
-    if(!card.classList.contains('saved')){ 
-        card.remove(); cards[crit]=(cards[crit]||[]).filter(x=>x.id!==tid); updProgress(); updTabPending();
-    } else {
-        rm.textContent='⏳'; try{ const r=await api('POST',{action:'delete', email:sess.email, id_enfocament:tid, esborrar:true}); if(!r.success) throw new Error(); card.remove(); cards[crit]=(cards[crit]||[]).filter(x=>x.id!==tid); updProgress(); updTabPending(); toast('Eliminat','tinfo'); }catch(e){ rm.textContent='🗑️'; toast('Error','terr'); }
-    }
-  };
+  rm.onclick=async(e)=>{ e.stopPropagation(); if(confirm('Eliminar?')){ try{ await api('POST',{action:'delete', email:sess.email, id_enfocament:tid, esborrar:true}); card.remove(); loadData(); }catch(e){}} };
   ban.appendChild(rm); card.appendChild(ban);
   const body=el('div','card-body new-body');
-  if(rejected) body.innerHTML += `<div class="admin-alert"><strong>❌ Descartat:</strong><br>${escH(prev.comentari_admin)}</div>`;
+  if(rejected) body.innerHTML += `<div class="admin-alert"><strong>❌ Descartat per Estratègia Corporativa:</strong><br>${escH(prev.comentari_admin)}</div>`;
   else if(approved) body.innerHTML += `<div class="admin-alert-ok">✅ Validat per Estratègia Corporativa</div>`;
   [{k:'sug_titol_enfocament', l:'Títol'}, {k:'sug_enfocament', l:'Enfocament'}, {k:'sug_desplegament', l:'Desplegament'}, {k:'sug_avaluacio', l:'Avaluació'}, {k:'sug_evidencies', l:'Evidències'}].forEach(f=>{
       body.innerHTML += `<div class="nf-lbl">${f.l}*</div>`;
       const ta=el('textarea','nta'); ta.dataset.key=f.k; ta.value=prev?.[f.k]||'';
-      ta.oninput=()=>{ markPending(tid); if(f.key==='sug_titol_enfocament') ban.querySelector('.new-title-text').textContent=ta.value; };
+      ta.oninput=()=>{ markPending(tid); if(f.k==='sug_titol_enfocament') ban.querySelector('.new-title-text').textContent=ta.value; };
       body.appendChild(ta);
   });
-  body.appendChild(makeAZ(tid,prev,true)); 
-  return {el:card, id:tid, isNew:true, sub:sub};
+  body.appendChild(makeAZ(tid,prev,true)); card.appendChild(body); return {el:card, id:tid, isNew:true};
 }
 
-function insertNew(crit,sub,subTitol,cw,addBtn){
-  const tid='NEW-'+crit+'-'+sub+'-'+Date.now();
-  const c=buildNewCard(tid,crit,sub,subTitol); cw.insertBefore(c.el,addBtn); cards[crit].push(c); updProgress();
-}
+/* ══ ADMIN DASHBOARD ══ */
+window.filterAdminViews = function(v){ document.querySelectorAll('#admin-view tr[data-area]').forEach(tr => { tr.style.display=(v==='all'||tr.dataset.area.toLowerCase().includes(v.toLowerCase()))?'':'none'; }); };
 
 function renderAdminDashboard(){
     const area=$('admin-view'); area.innerHTML='';
-    const noves = resp.filter(r => r.id_enfocament.startsWith('NEW-'));
-    const millores = resp.filter(r => !r.id_enfocament.startsWith('NEW-') && (r.sug_desplegament||r.sug_avaluacio||r.sug_evidencies||r.comentari_general));
+    const noves = resp.filter(r => String(r.id_enfocament).startsWith('NEW-'));
+    const millores = resp.filter(r => !String(r.id_enfocament).startsWith('NEW-') && (r.sug_desplegament||r.sug_avaluacio||r.sug_evidencies||r.comentari_general));
+    const pendentsVal = noves.filter(r => !r.estat_admin || r.estat_admin === '' || r.estat_admin === 'Pendent');
+
     area.innerHTML = `
         <div class="kpi-grid">
             <div class="kpi-card"><div class="kpi-num">${noves.length}</div><div class="kpi-lbl">Nous Enfocaments</div></div>
-            <div class="kpi-card" style="border-left-color:var(--orange)"><div class="kpi-num">${noves.filter(r=>!r.estat_admin).length}</div><div class="kpi-lbl">Nous per Validar</div></div>
-            <div class="kpi-card" style="border-left-color:var(--green)"><div class="kpi-num">${millores.length}</div><div class="kpi-lbl">Millores en Existents</div></div>
+            <div class="kpi-card" style="border-left-color:var(--orange)"><div class="kpi-num" style="color:var(--orange)">${pendentsVal.length}</div><div class="kpi-lbl">Pendents Validar</div></div>
+            <div class="kpi-card" style="border-left-color:var(--green)"><div class="kpi-num" style="color:var(--green)">${millores.length}</div><div class="kpi-lbl">Millores Pendents</div></div>
         </div>
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; gap:1rem;">
             <select onchange="filterAdminViews(this.value)" style="padding:.4rem; border-radius:6px; border:1px solid var(--g200); max-width:250px;">
@@ -647,6 +804,7 @@ function renderAdminDashboard(){
         <div class="admin-section"><div class="admin-title">📊 Control de Participació i Retorn</div><div style="font-size:0.75rem; color:var(--g500); margin-bottom:1rem;">Dades actualitzades: ${lastSyncTime.toLocaleString()}</div><table class="admin-table"><thead><tr><th>Usuari</th><th>Àrea</th><th>Progrés</th><th>Acció</th></tr></thead><tbody id="tb0"></tbody></table></div>
         <div class="admin-section"><div class="admin-title">📋 Llista de Propostes (Nous i Millores)</div><table class="admin-table"><thead><tr><th>Ref</th><th>Nom</th><th>Usuari</th><th>Canvis</th><th>Estat</th><th>Acció</th></tr></thead><tbody id="tbM"></tbody></table></div>
     `;
+
     const tb0 = $('tb0');
     usuaris.forEach(u => {
         if(String(u.area_assignada).toLowerCase().includes('global')) return;
@@ -659,23 +817,39 @@ function renderAdminDashboard(){
         tr.innerHTML = `<td><b>${escH(u.nom_usuari)}</b><br><small>${em}</small></td><td>${u.area_assignada}</td><td><b>${don}/${tot}</b> (${pct}%)</td><td><button class="btn btn-ghost btn-sm" onclick="downloadAdminUserSummary('${escJS(em)}', '${escJS(u.nom_usuari)}')">⬇️ Resum (.doc)</button></td>`;
         tb0.appendChild(tr);
     });
+
     const tbM = $('tbM');
     noves.concat(millores).forEach(r => {
-        const isN = r.id_enfocament.startsWith('NEW-'); const o = mem.find(m => m.id === r.id_enfocament); const tr = el('tr'); tr.dataset.area=r.area_revisora;
-        let ind = ''; if(!isN){ if(r.sug_desplegament) ind+='<span class="ind ind-d">D</span> '; if(r.sug_avaluacio) ind+='<span class="ind ind-a">A</span> '; if(r.sug_evidencies) ind+='<span class="ind ind-e">E</span> '; if(r.comentari_general) ind+='<span class="ind ind-c">C</span> '; }
+        const isNew = r.id_enfocament.startsWith('NEW-');
+        const o = mem.find(m => m.id === r.id_enfocament);
+        const tr = el('tr'); tr.dataset.area=r.area_revisora;
+        let ind = ''; if(!isNew){ if(r.sug_desplegament) ind+='<span class="ind ind-d">D</span> '; if(r.sug_avaluacio) ind+='<span class="ind ind-a">A</span> '; if(r.sug_evidencies) ind+='<span class="ind ind-e">E</span> '; if(r.comentari_general) ind+='<span class="ind ind-c">C</span> '; }
         let bst = r.estat_admin==='Aprovat'?'badge-ok':(r.estat_admin==='Descartat'?'badge-ko':'badge-pend');
-        tr.innerHTML = `<td><span class="badge">${isN?'NOU':r.id_enfocament}</span></td><td><b>${isN?escH(r.sug_titol_enfocament):escH(o?.titol_enfocament)}</b></td><td>${r.nom_visible}</td><td>${ind}</td><td><span class="${bst}">${r.estat_admin||'Pendent'}</span></td><td><button class="btn-sm btn-sm-vio" onclick="openAdminModal('${escJS(r.id_enfocament)}', '${escJS(r.email)}')">Revisar</button></td>`;
+        tr.innerHTML = `<td><span class="badge">${isNew?'NOU':r.id_enfocament}</span></td><td><b>${isNew?escH(r.sug_titol_enfocament):escH(o?.titol_enfocament)}</b></td><td>${r.nom_visible}</td><td>${ind}</td><td><span class="${bst}">${r.estat_admin||'Pendent'}</span></td><td><button class="btn-sm btn-sm-vio" onclick="openAdminModal('${escJS(r.id_enfocament)}', '${escJS(r.email)}')">Revisar</button></td>`;
         tbM.appendChild(tr);
     });
 }
 
 function openAdminModal(id, email){
     const r = resp.find(x => x.id_enfocament === id && x.email === email); if(!r) return;
-    currentAdminCardId = r; const isN = id.startsWith('NEW-');
-    const content = $('modal-content'); $('modal-title').textContent = isN ? 'Revisió Nou Enfocament' : 'Gestió de Millora';
-    if(isN){ content.innerHTML = `<div class="admin-item-box"><strong>Títol</strong><p>${escH(r.sug_titol_enfocament)}</p><strong>Enfocament</strong><p>${escH(r.sug_enfocament)}</p><strong>Desplegament</strong><p>${escH(r.sug_desplegament)}</p><strong>Avaluació</strong><p>${escH(r.sug_avaluacio)}</p><strong>Evidències</strong><p>${escH(r.sug_evidencies)}</p></div>`; }
-    else { const o = mem.find(m => m.id === id); let h = ''; [{k:'desplegament', sk:'sug_desplegament', ak:'aprovat_desplegament', l:'Desplegament'},{k:'avaluacio', sk:'sug_avaluacio', ak:'aprovat_avaluacio', l:'Avaluació'},{k:'evidencies', sk:'sug_evidencies', ak:'aprovat_evidencies', l:'Evidències'}].forEach(f => { if(r[f.sk]){ const chk = r[f.ak]==='true'||r[f.ak]===true?'checked':''; h += `<div class="sb-hdr"><span>${f.l}</span><label class="rev-check"><input type="checkbox" id="chk-${f.k}" ${chk}> Aprovar</label></div><div class="side-by-side"><div class="sb-col"><div class="sb-body">${escH(o[f.k])}</div></div><div class="sb-col"><div class="sb-body sb-diff">${escH(r[f.sk])}</div></div></div>`; } }); if(r.comentari_general) h += `<div class="admin-item-box"><strong>Comentari Usuari:</strong><p>${escH(r.comentari_general)}</p></div>`; content.innerHTML = h; }
-    $('admin-comment').value = r.comentari_admin || ''; $('admin-modal').classList.add('open');
+    currentAdminCardId = r; const isNew = id.startsWith('NEW-');
+    const content = $('modal-content');
+    $('modal-title').textContent = isNew ? 'Revisió de Nou Enfocament' : 'Gestió de Millora Proposada';
+    if(isNew){
+        content.innerHTML = `<div class="admin-item-box"><strong>Títol</strong><p>${escH(r.sug_titol_enfocament)}</p><strong>Enfocament</strong><p>${escH(r.sug_enfocament)}</p><strong>Desplegament</strong><p>${escH(r.sug_desplegament)}</p><strong>Avaluació</strong><p>${escH(r.sug_avaluacio)}</p><strong>Evidències</strong><p>${escH(r.sug_evidencies)}</p></div>`;
+    } else {
+        const o = mem.find(m => m.id === id); let h = '';
+        [{k:'desplegament', sk:'sug_desplegament', ak:'aprovat_desplegament', l:'Desplegament'},{k:'avaluacio', sk:'sug_avaluacio', ak:'aprovat_avaluacio', l:'Avaluació'},{k:'evidencies', sk:'sug_evidencies', ak:'aprovat_evidencies', l:'Evidències'}].forEach(f => {
+            if(r[f.sk]){
+                const chk = r[f.ak]==='true'||r[f.ak]===true?'checked':'';
+                h += `<div class="sb-hdr"><span>${f.l}</span><label class="rev-check"><input type="checkbox" id="chk-${f.k}" ${chk}> Aprovar part</label></div><div class="side-by-side"><div class="sb-col"><div class="sb-body">${escH(o[f.k])}</div></div><div class="sb-col"><div class="sb-body sb-diff">${escH(r[f.sk])}</div></div></div>`;
+            }
+        });
+        if(r.comentari_general) h += `<div class="admin-item-box"><strong>Comentari Usuari:</strong><p>${escH(r.comentari_general)}</p></div>`;
+        content.innerHTML = h;
+    }
+    $('admin-comment').value = r.comentari_admin || '';
+    $('admin-modal').classList.add('open');
 }
 
 async function submitAdminDecision(estat){
@@ -683,9 +857,17 @@ async function submitAdminDecision(estat){
     if(estat === 'Descartat' && !comment){ toast('Posa un motiu','terr'); return; }
     setSync('syncing');
     const r = currentAdminCardId;
-    const p = { action:'save', email:r.email, id_enfocament:r.id_enfocament, estat_admin:estat, comentari_admin:comment };
-    if(!r.id_enfocament.startsWith('NEW-')){ p.aprovat_desplegament = $('chk-desplegament')?.checked || false; p.aprovat_avaluacio = $('chk-avaluacio')?.checked || false; p.aprovat_evidencies = $('chk-evidencies')?.checked || false; }
-    try{ const res = await api('POST', p); if(!res.success) throw new Error(); setSync('ok'); closeModal(); await loadBackendData(); if(curC==='admin') renderAdminDashboard(); else if(curC==='user') renderUserDashboard(); } catch(e){ setSync('err'); }
+    const payload = { action:'save', email:r.email, id_enfocament:r.id_enfocament, estat_admin:estat, comentari_admin:comment };
+    if(!String(r.id_enfocament).startsWith('NEW-')){
+        payload.aprovat_desplegament = $('chk-desplegament')?.checked || false;
+        payload.aprovat_avaluacio = $('chk-avaluacio')?.checked || false;
+        payload.aprovat_evidencies = $('chk-evidencies')?.checked || false;
+    }
+    try{
+        const res = await api('POST', payload); if(!res.success) throw new Error();
+        setSync('ok'); closeModal(); await loadBackendData(); 
+        if(curC==='admin') renderAdminDashboard(); else if(curC==='user') renderUserDashboard();
+    } catch(e){ setSync('err'); }
 }
 
 function renderUserDashboard() {
@@ -693,23 +875,29 @@ function renderUserDashboard() {
     const myResp = resp.filter(r => r.email === sess.email && (r.id_enfocament.startsWith('NEW-') || r.sug_desplegament || r.sug_avaluacio || r.sug_evidencies || r.comentari_general || r.validat === true || r.validat === 'true' || r.validat === 'TRUE'));
     let html = `<div class="admin-section"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem; flex-wrap:wrap; gap:1rem;"><div class="admin-title" style="margin:0;">📊 Resum de les meves aportacions</div><button class="btn btn-primary" onclick="downloadUserSummary()">⬇️ Descarregar resum (.doc)</button></div><div style="font-size:0.75rem; color:var(--g500); margin-bottom:1.5rem;">Dades actualitzades: ${lastSyncTime.toLocaleString()}</div>`;
     if(myResp.length === 0) { html += `<p style="padding:2rem;text-align:center">Sense aportacions.</p></div>`; area.innerHTML=html; return; }
-    html += `<table class="admin-table"><thead><tr><th>Tipus</th><th>Enfocament</th><th>Estat EC</th><th>Retorn</th></tr></thead><tbody>`;
+    html += `<table class="admin-table"><thead><tr><th>Tipus</th><th>Enfocament</th><th>Estat Direcció</th><th>Retorn</th></tr></thead><tbody>`;
     myResp.forEach(r => {
-        const isN = r.id_enfocament.startsWith('NEW-'); const hasI = r.sug_desplegament || r.sug_avaluacio || r.sug_evidencies || r.comentari_general; const isJustV = !isN && !hasI && (r.validat === true || r.validat === 'true' || r.validat === 'TRUE');
-        const o = mem.find(m => m.id === r.id_enfocament); const title = isN ? r.sug_titol_enfocament : (o ? o.titol_enfocament : r.id_enfocament);
-        let bcls = 'badge-pend', btxt = 'Pendent'; if(r.estat_admin === 'Aprovat') bcls = 'badge-ok', btxt = 'Validat'; else if(r.estat_admin === 'Descartat') bcls = 'badge-ko', btxt = 'Descartat'; else if(isJustV) bcls = 'badge-neutral', btxt = 'Revisió finalitzada';
-        let tCls = isN ? 'badge-ok' : (isJustV ? 'badge-neutral' : 'badge-pend');
-        html += `<tr><td><span class="${tCls}">${isN?'NOU':(isJustV?'VALIDAT':'MILLORA')}</span></td><td><b>${escH(title)}</b></td><td><span class="${bcls}">${btxt}</span></td><td style="font-size:0.8rem">${isJustV?'---':escH(r.comentari_admin||'---')}</td></tr>`;
+        const isNew = r.id_enfocament.startsWith('NEW-'); const hasImps = r.sug_desplegament || r.sug_avaluacio || r.sug_evidencies || r.comentari_general;
+        const isJustVal = !isNew && !hasImps && (r.validat === true || r.validat === 'true' || r.validat === 'TRUE');
+        const o = mem.find(m => String(m.id) === String(r.id_enfocament));
+        const title = isNew ? r.sug_titol_enfocament : (o ? o.titol_enfocament : r.id_enfocament);
+        let bcls = 'badge-pend', btxt = 'Pendent de revisió';
+        if(r.estat_admin === 'Aprovat') { bcls = 'badge-ok'; btxt = 'Aprovat'; }
+        else if(r.estat_admin === 'Descartat') { bcls = 'badge-ko'; btxt = 'Descartat'; }
+        else if(isJustVal) { bcls = 'badge-neutral'; btxt = 'Revisió finalitzada'; }
+        let typeCls = isNew ? 'badge-ok' : (isJustVal ? 'badge-neutral' : 'badge-pend');
+        html += `<tr><td><span class="${typeCls}">${isNew?'NOU':(isJustVal?'VALIDAT':'MILLORA')}</span></td><td><b>${escH(title)}</b></td><td><span class="${bcls}">${btxt}</span></td><td style="font-size:0.8rem">${isJustVal?'---':escH(r.comentari_admin||'---')}</td></tr>`;
     });
     area.innerHTML = html + `</tbody></table></div>`;
 }
 
 function downloadUserSummary() { _downloadSummary(sess.email, sess.nom); }
 function downloadAdminUserSummary(e, n) { _downloadSummary(e, n); }
+
 function _downloadSummary(email, nomUsuari) {
     const uResp = resp.filter(r => r.email === email && (r.estat_admin === 'Aprovat' || r.estat_admin === 'Descartat'));
-    if(uResp.length === 0) { toast("Sense decisions."); return; }
-    let h = `<div style="font-family:sans-serif; color:#333;"><h2>Resum de decisions - Memòria EFQM</h2>`;
+    if(uResp.length === 0) { toast("Sense decisions encara."); return; }
+    let h = `<div style="font-family:sans-serif; color:#333;"><h2>Resum de decisions - Memòria EFQM</h2><p>Retorn d'Estratègia Corporativa:</p>`;
     const pInc = uResp.filter(r => r.estat_admin==='Aprovat' && !r.id_enfocament.startsWith('NEW-'));
     const eInc = uResp.filter(r => r.estat_admin==='Aprovat' && r.id_enfocament.startsWith('NEW-'));
     const pDes = uResp.filter(r => r.estat_admin==='Descartat' && !r.id_enfocament.startsWith('NEW-'));
@@ -734,10 +922,11 @@ function exportToWord() {
                 ['enfocament','desplegament','avaluacio', 'evidencies'].forEach(k => {
                     if(row[k]){ pa += `<b>${k.toUpperCase()}</b><p>${escH(row[k])}</p>`; appR.forEach(app => { const ak = 'aprovat_'+k; if(app[ak]==='true'||app[ak]===true){ pa += `<div style="background:#f0fdf4; border:1px dashed #16a34a; padding:5px;"><b>[MILLORA VALIDADA] (${escH(app.nom_visible)}):</b><br>${escH(app['sug_'+k])}</div>`; } }); }
                 });
+                appR.forEach(app => { if(app.comentari_general) pa += `<p style="background:#f1f5f9; padding:5px;"><b>[COMENTARI GENERAL]:</b> ${escH(app.comentari_general)}</p>`; });
                 pa += `</div>`;
             });
-            resp.filter(r => r.id_enfocament.startsWith(`NEW-${c}-${s}-`) && r.estat_admin === 'Aprovat').forEach(r => {
-                pa += `<div style="border:2px dashed #7c3aed; padding:10px; background:#faf5ff"><h4>[NOU VALIDAT] ${escH(r.sug_titol_enfocament)}</h4><b>ENFOCAMENT:</b><p>${r.sug_enfocament}</p></div>`;
+            resp.filter(r => r.id_enfocament.startsWith('NEW-'+c+'-'+s) && r.estat_admin === 'Aprovat').forEach(r => {
+                pa += `<div style="border:2px dashed #7c3aed; padding:10px; background:#faf5ff"><h4>[NOU ENFOCAMENT VALIDAT] ${escH(r.sug_titol_enfocament)}</h4><b>ENFOCAMENT:</b><p>${r.sug_enfocament}</p></div>`;
             });
         });
     });
@@ -761,21 +950,38 @@ function updProgress(){
 function setF(f,btn){ curF=f; document.querySelectorAll('.tog-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); applyF(); }
 function applyF(){
   const kw=$('srch').value.toLowerCase().trim();
-  if (kw && collapsedStateBeforeSearch.length === 0) { document.querySelectorAll('.sb.collapsed').forEach(b => collapsedStateBeforeSearch.push(b.dataset.s)); }
+  
+  // Guardem l'estat si és el primer cop que busquem
+  if (kw && collapsedStateBeforeSearch.length === 0) {
+      document.querySelectorAll('.sb.collapsed').forEach(b => collapsedStateBeforeSearch.push(b.dataset.s));
+  }
+
   (cards[curC]||[]).forEach(({el:e})=>{
-    let show=true; if(curF==='pending') show = !e.classList.contains('saved'); else if(curF==='validated') show = e.classList.contains('saved'); else if(curF==='new') show = e.dataset.isNew==='1';
-    if(show&&kw) show=(e.dataset.st||'').includes(kw); e.style.display=show?'':'none';
+    let show=true;
+    if(curF==='pending') show = !e.classList.contains('saved');
+    else if(curF==='validated') show = e.classList.contains('saved');
+    else if(curF==='new') show = e.dataset.isNew==='1';
+    if(show&&kw) show=(e.dataset.st||'').includes(kw);
+    e.style.display=show?'':'none';
   });
+  
   document.querySelectorAll('.sb').forEach(b=>{ 
-      const hasVis = [...b.querySelectorAll('.card')].some(c=>c.style.display!=='none'); b.style.display = hasVis ? '' : 'none'; 
+      const hasVis = [...b.querySelectorAll('.card')].some(c=>c.style.display!=='none');
+      b.style.display = hasVis ? '' : 'none'; 
       if (kw && hasVis) b.classList.remove('collapsed');
-      if (!kw) { if (collapsedStateBeforeSearch.includes(b.dataset.s)) b.classList.add('collapsed'); else b.classList.remove('collapsed'); }
+      
+      // Restaurar si s'esborra la cerca
+      if (!kw) {
+          if (collapsedStateBeforeSearch.includes(b.dataset.s)) b.classList.add('collapsed');
+          else b.classList.remove('collapsed');
+      }
   });
+  
   if (!kw) collapsedStateBeforeSearch = [];
 }
 
 async function saveExisting(id,btn){
-  if(!sess) return;
+  if(!sess) return; 
   setSync('syncing');
   const d=cardData(id); const payload={ action:'save', email:sess.email, nom:sess.nom, area_revisora:sess.area, id_enfocament:id, is_new:false, validat:d.validat, sug_desplegament:d.sug_desplegament, sug_avaluacio:d.sug_avaluacio, sug_evidencies:d.sug_evidencies, comentari_general:d.comentari_general, timestamp:new Date().toISOString() };
   try{ const r=await api('POST', payload); if(!r.success) throw new Error(); updResp(payload); setSync('ok'); if(d.validat) markSaved(id); } catch(e){ setSync('err'); }
@@ -792,7 +998,13 @@ async function saveNew(tid,btn){
 
 function updResp(p){ const i=resp.findIndex(r=>r.email===p.email&&r.id_enfocament===p.id_enfocament); if(i>=0) Object.assign(resp[i],p); else resp.push(p); }
 function cardData(id){ const c=document.querySelector(`.card[data-id="${id}"]`); const d={}; c.querySelectorAll('textarea[data-key]').forEach(ta=>d[ta.dataset.key]=ta.value); d.validat=c.querySelector('.chk-v')?.checked; d.comentari_general=c.querySelector('.ta-cmt')?.value; return d; }
-function closeModal(){ $('admin-modal').classList.remove('open'); }
+const $=id=>document.getElementById(id);
+const el=(t,cl,txt)=>{ const e=document.createElement(t); if(cl) e.className=cl; if(txt) e.textContent=txt; return e; };
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const escH=t=>String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function toast(m,c){ const t=el('div','toast '+(c||''),m); $('toasts').appendChild(t); setTimeout(()=>t.remove(),3000); }
+function showErr(e,m){ e.textContent=m; e.classList.remove('hidden'); }
+closeModal=()=>$('admin-modal').classList.remove('open');
 </script>
 </body>
 </html>
