@@ -92,7 +92,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .sub-num{font-size:.68rem;font-weight:700;background:var(--navy);color:#fff;padding:.08rem .42rem;border-radius:5px;flex-shrink:0}
 .sub-title{font-size:.86rem;font-weight:800;color:var(--navy);flex:1; display:flex; align-items:center; gap:.5rem;}
 
-.sub-prog { font-size: .7rem; background: var(--g100); color: var(--g700); padding: .15rem .45rem; border-radius: 99px; font-weight: 700; letter-spacing: .02em; transition: all var(--tr);}
+.sub-prog { font-size: .7rem; background: var(--g100); color: var(--g700); padding: .15rem .45rem; border-radius: 99px; font-weight: 700; transition: all var(--tr);}
 .sub-prog.done { background: #dcfce7; color: #166534; }
 
 .efqm-btn{background:transparent;border:1.5px solid var(--g100);border-radius:6px;padding:.26rem .62rem;cursor:pointer;font-size:.73rem;font-weight:600;transition:background var(--tr);white-space:nowrap;flex-shrink:0}
@@ -155,6 +155,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .btn-rm:hover{color:var(--red);background:#fee2e2;border-color:#fecaca;}
 
 .acc{border-bottom:1px solid var(--g100)}
+.acc:last-of-type{border-bottom:none}
 .acc-hdr{display:flex;align-items:center;gap:.42rem;padding:.4rem .72rem;cursor:pointer;user-select:none;transition:background var(--tr)}
 .acc-hdr:hover{background:var(--g50)}
 .acc-arr{font-size:.6rem;color:var(--gray-dipta);transition:transform var(--tr);flex-shrink:0;width:10px;text-align:center}
@@ -184,6 +185,16 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .nta:focus{border-color:var(--violet);outline:none}
 .nta.nta-t{min-height:44px;font-weight:600;border-color:var(--violet)}
 .nta.nta-b{min-height:54px}
+.req{color:var(--red);margin-left:.13rem}
+
+.ctx{margin:.38rem .72rem;border-radius:7px;overflow:hidden;border:1px solid var(--g100)}
+.ctx-btn{width:100%;text-align:left;background:var(--g50);border:none;padding:.36rem .65rem;font-size:.72rem;font-weight:600;color:var(--gray-dipta);cursor:pointer;display:flex;align-items:center;gap:.28rem;transition:background var(--tr)}
+.ctx-btn:hover{background:var(--g100)}
+.ctx-body{display:none}.ctx-body.open{display:block}
+.ctx-sec{padding:.48rem .65rem;font-size:.78rem;white-space:pre-wrap;line-height:1.5}
+.ctx-sec+.ctx-sec{border-top:1px solid var(--g100)}
+.ctx-qa{background:#fafeff;color:var(--navy2)}.ctx-prev{color:var(--gray-dipta)}
+.ctx-st{font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;opacity:.8;margin-bottom:.16rem}
 
 .az{display:flex;align-items:flex-start;gap:.58rem;flex-wrap:wrap;padding:.52rem .72rem;background:var(--g50);border-top:1.5px solid var(--g100);border-radius:0 0 calc(var(--r) - 2px) calc(var(--r) - 2px)}
 .card.cnew .az{background:#f3f0ff;border-top-color:var(--vb)}
@@ -268,7 +279,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
   .p-new { border: 2px dashed var(--violet); background: #faf5ff; }
   .p-new-badge { display: inline-block; background: var(--violet); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; margin-bottom: 10px; }
   
-  /* P-CHANGED actualitzat per veure el text afegit a sota */
   .p-changed { background: #f0fdf4; padding: 8px; border-radius: 4px; border: 1px dashed var(--green); margin-top: 8px; }
   .p-badge-ch { display: inline-block; font-size: 8px; background: var(--green); color: white; padding: 2px 6px; border-radius: 3px; margin-bottom: 4px; font-weight:bold;}
 }
@@ -277,6 +287,11 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .toast{background:var(--black-dipta);color:#fff;padding:.58rem .82rem;border-radius:9px;font-size:.79rem;font-weight:500;animation:fu .2s ease;box-shadow:var(--sh2)}
 .tok{background:#166534}.terr{background:#991b1b}.tinfo{background:var(--navy)}.tvio{background:var(--violet)}
 @keyframes fu{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+/* Indicador de Sync a la TopBar */
+#sync-status { display: inline-flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.2); border-radius: 20px; padding: 2px 8px; font-size: 0.75rem; margin-left: 10px; }
+.syncing { color: #fde047; animation: pulse 1s infinite alternate; }
+@keyframes pulse { from { opacity: 0.5; } to { opacity: 1; } }
 </style>
 </head>
 <body>
@@ -310,11 +325,12 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
     </div>
     <div class="tb-r">
       <div class="tb-sub" id="tb-user" style="margin-right: 1rem;"></div>
-      <div class="prog-wrap" id="top-prog">
+      <div id="sync-status">☁️ Connectat</div>
+      <div class="prog-wrap" id="top-prog" style="margin-left: 10px;">
         <div class="prog-track"><div class="prog-fill" id="pfill" style="width:0%"></div></div>
         <span class="prog-lbl" id="plbl">0 / 0</span>
       </div>
-      <button class="btn btn-danger" style="font-size:.72rem;padding:.3rem .62rem" onclick="doLogout()">Tancar sessió</button>
+      <button class="btn btn-danger" style="font-size:.72rem;padding:.3rem .62rem; margin-left: 15px;" onclick="doLogout()">Tancar sessió</button>
     </div>
   </div>
 
@@ -326,7 +342,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
         <button class="tog-btn active" onclick="setF('all',this)">Tots</button>
         <button class="tog-btn" onclick="setF('pending',this)">Pendents</button>
         <button class="tog-btn" onclick="setF('validated',this)">Revisats</button>
-        <button class="tog-btn" onclick="setF('new',this)">Nous proposats</button>
+        <button class="tog-btn" onclick="setF('new',this)">Tots els Nous</button>
       </div>
       <div class="sw">
         <span class="s-ico">🔍</span>
@@ -372,6 +388,15 @@ let mem=[], resp=[], usuaris=[], sess=null;
 let cData={}, curC=null, curF='all';
 let cards={}, nc=0;
 let currentAdminCardId = null;
+
+/* ══ SYNC UI ══ */
+function setSync(state) {
+    const s = document.getElementById('sync-status');
+    if(state === 'syncing') { s.innerHTML = '🔄 Guardant...'; s.className = 'syncing'; }
+    else if(state === 'ok') { s.innerHTML = '✅ Guardat'; s.className = ''; setTimeout(()=>setSync('idle'), 3000); }
+    else if(state === 'err') { s.innerHTML = '❌ Error'; s.className = ''; }
+    else { s.innerHTML = '☁️ Connectat'; s.className = ''; }
+}
 
 /* ══ INIT ══ */
 window.addEventListener('DOMContentLoaded', async ()=>{
@@ -635,7 +660,13 @@ function buildCard(row,crit){
   
   card.className='card'+(isChecked?' saved':' pending');
   card.dataset.id=id; card.dataset.isNew='0';
-  card.dataset.st=[row.titol_enfocament,row.enfocament,row.desplegament,row.avaluacio,row.evidencies,row.titol_subcriteri].join(' ').toLowerCase();
+  
+  // SOLUCIÓ BUG: Generem un diccionari amb les dades actuals perquè el cercador ho trobi
+  const searchString = [
+      row.titol_enfocament, row.enfocament, row.desplegament, row.avaluacio, row.evidencies, row.titol_subcriteri,
+      prev?.sug_desplegament, prev?.sug_avaluacio, prev?.sug_evidencies, prev?.comentari_general
+  ].join(' ').toLowerCase();
+  card.dataset.st = searchString;
 
   const sum=el('div','card-sum');
   sum.appendChild(el('span','cs-title',row.titol_enfocament||'(sense títol)'));
@@ -673,7 +704,13 @@ function buildCard(row,crit){
     if(b.taKey){
       const pl=el('span','prop-lbl','Proposta de millora');
       const ta=document.createElement('textarea'); ta.className='prop-ta'; ta.dataset.key=b.taKey; ta.rows=2; ta.value=b.taVal||'';
-      ta.addEventListener('input',()=>{ markPending(id); acc.classList.toggle('has-content',ta.value.trim()!==''); });
+      
+      // SOLUCIÓ BUG: Actualitzar string de cerca al escriure
+      ta.addEventListener('input',()=>{ 
+          markPending(id); 
+          acc.classList.toggle('has-content',ta.value.trim()!==''); 
+          card.dataset.st += ' ' + ta.value.toLowerCase();
+      });
       abody.appendChild(pl); abody.appendChild(ta);
     }
     acc.appendChild(hdr); acc.appendChild(abody); body.appendChild(acc);
@@ -696,7 +733,15 @@ function makeAZ(id,prev,isNew){
   const cw=el('div','cmt-w');
   const cta=document.createElement('textarea'); cta.className='ta-cmt'; cta.dataset.card=id;
   cta.rows=2; cta.placeholder='Comentari (opcional)'; cta.value=prev?.comentari_general||'';
-  cta.addEventListener('input',()=>markPending(id)); cw.appendChild(cta); az.appendChild(cw);
+  
+  // SOLUCIÓ BUG: Cerca en comentaris vells
+  cta.addEventListener('input',(e)=>{ 
+      markPending(id); 
+      const card = document.querySelector(`.card[data-id="${id}"]`);
+      if(card) card.dataset.st += ' ' + e.target.value.toLowerCase();
+  });
+  
+  cw.appendChild(cta); az.appendChild(cw);
   const sb=document.createElement('button');
   if(isNew){ sb.className='btn-sn btn-sc'; sb.textContent= prev ? 'Actualitzar proposta' : 'Desar proposta'; sb.addEventListener('click',()=>saveNew(id,sb)); } 
   else { sb.className='btn btn-primary btn-sc'; sb.textContent='Desar'; sb.addEventListener('click',()=>saveExisting(id,sb)); }
@@ -717,7 +762,8 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
   const isAdminApproved = prev && prev.estat_admin === 'Aprovat';
 
   card.className='card cnew ' + (prev ? 'saved' : 'pending expanded') + (isAdminRejected ? ' rejected' : '');
-  card.dataset.id=tid; card.dataset.isNew='1'; card.dataset.crit=crit; card.dataset.sub=sub; card.dataset.st='';
+  card.dataset.id=tid; card.dataset.isNew='1'; card.dataset.crit=crit; card.dataset.sub=sub; 
+  card.dataset.st = prev ? Object.values(prev).join(' ').toLowerCase() : '';
 
   const ban=el('div','new-banner'); ban.style.cursor='pointer'; ban.addEventListener('click',()=>card.classList.toggle('expanded'));
   
@@ -768,7 +814,6 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
     const wrap=el('div','nf'); const lbl=el('div','nf-lbl '+f.cls); lbl.innerHTML='<span class="nf-dot" style="background:'+f.color+'"></span>'+escH(f.lbl)+(f.req?'<span class="req">*</span>':'');
     const ta=document.createElement('textarea'); ta.className='nta '+f.cls2; ta.dataset.key=f.key; ta.rows=2; ta.placeholder=f.ph;
     ta.value = prev ? (prev[f.key] || '') : '';
-    if(prev) card.dataset.st += ' ' + ta.value.toLowerCase();
     ta.addEventListener('input',(e)=>{
       ta.style.borderColor = ''; ta.style.backgroundColor = ''; 
       if(f.key === 'sug_titol_enfocament') titleSpan.textContent = e.target.value.trim() || 'Escriu el títol...';
@@ -821,20 +866,20 @@ function renderAdminDashboard(){
     const filterContainer = el('div'); filterContainer.innerHTML = filterHtml;
     actionRow.appendChild(filterContainer);
 
-    const btnPdf = el('button', 'btn btn-primary', '📄 Generar Informe Memòria amb Millores (PDF)');
+    const btnPdf = el('button', 'btn btn-primary', '📄 Generar Esborrany Final (Descarregar .doc)');
     btnPdf.onclick = () => {
         if(pendentsAdmin.length > 0) {
             if(!confirm(`⚠️ ATENCIÓ:\n\nHi ha ${pendentsAdmin.length} enfocaments nous pendents de validar que NO sortiran a l'informe.\n\nVols generar l'informe de totes maneres?`)) return;
         }
-        generatePDF();
+        exportToWord();
     };
     actionRow.appendChild(btnPdf); 
     area.appendChild(actionRow);
 
     const sec0 = el('div', 'admin-section');
-    sec0.innerHTML = `<div class="admin-title">📊 Control de Participació</div>`;
+    sec0.innerHTML = `<div class="admin-title">📊 Control de Participació i Retorn a Usuaris</div>`;
     const t0 = document.createElement('table'); t0.className = 'admin-table';
-    t0.innerHTML = `<thead><tr><th>Usuari</th><th>Àrea assignada</th><th>Progrés (Targetes Existents)</th></tr></thead><tbody></tbody>`;
+    t0.innerHTML = `<thead><tr><th>Usuari</th><th>Àrea assignada</th><th>Progrés (Targetes Existents)</th><th>Acció</th></tr></thead><tbody></tbody>`;
     const tb0 = t0.querySelector('tbody');
 
     usuaris.forEach(u => {
@@ -876,6 +921,7 @@ function renderAdminDashboard(){
                     <span style="font-size:.7rem; color:var(--g500); min-width:35px; text-align:right;">${pct}%</span>
                 </div>
             </td>
+            <td><button class="btn btn-ghost btn-sm" onclick="downloadUserSummary('${escH(u.email_autoritzat)}', '${escH(u.nom_usuari)}')">⬇️ Descarregar resum (.doc)</button></td>
         `;
         tb0.appendChild(tr);
     });
@@ -1030,13 +1076,11 @@ async function submitAdminDecision(estat){
         comentari_admin: comment
     };
 
-    // Si estem en una millora existent i aprovem, capturem els checkboxes individuals
     if(!isNew) {
         payload.aprovat_desplegament = $('chk-desplegament') ? $('chk-desplegament').checked : false;
         payload.aprovat_avaluacio = $('chk-avaluacio') ? $('chk-avaluacio').checked : false;
         payload.aprovat_evidencies = $('chk-evidencies') ? $('chk-evidencies').checked : false;
         
-        // Si aprovem però no hem marcat cap checkbox real, avisem
         if(estat === 'Aprovat' && !payload.aprovat_desplegament && !payload.aprovat_avaluacio && !payload.aprovat_evidencies) {
             toast('⚠️ Marca algun element per aprovar (checkbox).','terr');
             return;
@@ -1044,6 +1088,7 @@ async function submitAdminDecision(estat){
     }
 
     $('btn-ok').disabled = true; $('btn-ko').disabled = true;
+    setSync('syncing');
     try{
         if(APPS_SCRIPT_URL) {
             const r = await api('POST', payload);
@@ -1058,31 +1103,77 @@ async function submitAdminDecision(estat){
             origR.aprovat_evidencies = payload.aprovat_evidencies;
         }
         
-        toast('Desat correctament!','tok');
+        setSync('ok');
         closeModal(); renderAdminDashboard();
     } catch(err) {
-        toast('Error guardant: ' + err.message, 'terr');
+        setSync('err');
+        toast('Error guardant.', 'terr');
     }
     $('btn-ok').disabled = false; $('btn-ko').disabled = false;
 }
 
-/* ══ GENERADOR INFORME PDF ORIGINAL + MILLORES ══ */
-function generatePDF() {
-    const pa = $('print-area');
-    pa.innerHTML = '<h1 style="text-align:center; font-size:32px; color:#0083A9; margin-bottom:10px;">Informe Memòria EFQM amb Millores</h1><p style="text-align:center; font-style:italic; font-size:12px; margin-bottom:40px; color:#666;">Aquest document mostra el text original de la memòria. A sota de cada apartat, amb un contorn verd, hi figuren les propostes de millora que han estat aprovades per la direcció per tal de facilitar-ne la integració manual al document oficial.</p>';
+/* ══ EXPORTACIÓ A WORD - RESUM USUARI ══ */
+function downloadUserSummary(email, nomUsuari) {
+    const uResp = resp.filter(r => r.email === email && (r.estat_admin === 'Aprovat' || r.estat_admin === 'Descartat'));
+    if(uResp.length === 0) { toast("Aquest usuari no té decisions preses encara.", "tinfo"); return; }
+
+    const pInc=[], eInc=[], pDes=[], eDes=[];
+    uResp.forEach(r => {
+        const isN = r.id_enfocament.startsWith('NEW-');
+        if(r.estat_admin==='Aprovat') { isN ? eInc.push(r) : pInc.push(r); }
+        else { isN ? eDes.push(r) : pDes.push(r); }
+    });
+
+    let h = `<div style="font-family:sans-serif; color:#333;"><h2>Resum de decisions - Memòria EFQM</h2><p>Aquest és el retorn de la Direcció sobre les teves aportacions:</p>`;
+
+    if(pInc.length>0){
+        h += `<h3 style="color:#16a34a">✅ Propostes incorporades</h3><ul>`;
+        pInc.forEach(r => { const o = mem.find(m=>m.id===r.id_enfocament); h += `<li><b>${escH(o?.titol_enfocament||r.id_enfocament)}</b> (Canvis parcials o totals aprovats)</li>`; });
+        h += `</ul>`;
+    }
+    if(eInc.length>0){
+        h += `<h3 style="color:#16a34a">🌟 Nous enfocs afegits a la memòria</h3><ul>`;
+        eInc.forEach(r => h += `<li><b>${escH(r.sug_titol_enfocament)}</b></li>`);
+        h += `</ul>`;
+    }
+    if(pDes.length>0){
+        h += `<h3 style="color:#dc2626">❌ Propostes desestimades</h3><ul>`;
+        pDes.forEach(r => { const o = mem.find(m=>m.id===r.id_enfocament); h += `<li style="margin-bottom:10px">A l'enfocament <b>${escH(o?.titol_enfocament||r.id_enfocament)}</b><br><i style="color:#666">Motiu: ${escH(r.comentari_admin||'Sense motiu especificat')}</i></li>`; });
+        h += `</ul>`;
+    }
+    if(eDes.length>0){
+        h += `<h3 style="color:#dc2626">❌ Enfocs nous desestimats</h3><ul>`;
+        eDes.forEach(r => h += `<li style="margin-bottom:10px">Enfoc proposat: <b>${escH(r.sug_titol_enfocament)}</b><br><i style="color:#666">Motiu: ${escH(r.comentari_admin||'Sense motiu especificat')}</i></li>`);
+        h += `</ul>`;
+    }
+    h += `</div>`;
+
+    const preHtml = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Resum</title></head><body>";
+    const postHtml = "</body></html>";
+    const html = preHtml + h + postHtml;
+
+    const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
+    const a = document.createElement('a'); a.href = window.URL.createObjectURL(blob);
+    a.download = `Resum_EFQM_${nomUsuari.replace(/\s+/g, '_')}.doc`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    toast("Arxiu descarregat.", "tok");
+}
+
+/* ══ EXPORTACIÓ A WORD - MEMÒRIA GLOBAL ══ */
+function exportToWord() {
+    let pa = '<h1 style="text-align:center; color:#0083A9;">Informe Memòria EFQM amb Millores</h1><p style="text-align:center; font-style:italic; font-size:12px; margin-bottom:40px; color:#666;">Aquest document mostra el text original de la memòria. A sota de cada apartat hi figuren les propostes de millora que han estat aprovades per la direcció per tal de facilitar-ne la integració manual al document oficial.</p><br>';
 
     Object.keys(cData).sort().forEach(c => {
-        pa.innerHTML += `<div class="p-crit">Criteri ${c} - ${escH(cData[c].titol)}</div>`;
+        pa += `<h2 style="color:#0083A9; border-bottom:2px solid #0083A9;">Criteri ${c} - ${escH(cData[c].titol)}</h2>`;
         
         Object.keys(cData[c].subs).sort().forEach(s => {
             const sub = cData[c].subs[s];
-            pa.innerHTML += `<div class="p-sub">${s} ${escH(sub.titol)}</div>`;
+            pa += `<h3 style="color:#006b8a; margin-top:20px;">${s} ${escH(sub.titol)}</h3>`;
             
             sub.rows.forEach(row => {
-                // Busquem TOTES les millores aprovades per a aquest enfocament, sense importar quin usuari les hagi fet
                 const approvedSugs = resp.filter(x => x.id_enfocament === row.id && x.estat_admin === 'Aprovat'); 
                 
-                let html = `<div class="p-card"><div class="p-title">${escH(row.titol_enfocament || 'Sense títol')}</div>`;
+                pa += `<div style="border:1px solid #ccc; padding:15px; margin-bottom:15px;"><h4>${escH(row.titol_enfocament || 'Sense títol')}</h4>`;
                 
                 const keysMap = [
                     {k: 'enfocament', ak: null, sk: null},
@@ -1092,80 +1183,62 @@ function generatePDF() {
                 ];
 
                 keysMap.forEach(f => {
-                    // 1. Mostrar l'original SEMPRE (si existeix)
                     if(row[f.k] && row[f.k].trim() !== '') {
-                        html += `<div class="p-sec">
-                            <span class="p-sec-lbl">${f.k.toUpperCase()}</span>
-                            <div style="margin-bottom: 5px;">${escH(row[f.k])}</div>`;
+                        pa += `<div style="margin-bottom:15px;">
+                            <strong>${f.k.toUpperCase()}</strong>
+                            <p style="margin-top:2px;">${escH(row[f.k])}</p>`;
                         
-                        // 2. Apilar totes les millores aprovades A SOTA de l'original
                         approvedSugs.forEach(appR => {
                             if (f.ak && (appR[f.ak] === true || appR[f.ak] === 'true' || appR[f.ak] === 'TRUE') && appR[f.sk] && appR[f.sk].trim() !== '') {
-                                html += `<div class="p-changed">
-                                    <span class="p-badge-ch">➕ MILLORA APROVADA (${escH(appR.nom_visible)})</span><br>
+                                pa += `<div style="background:#f0fdf4; border:1px dashed #16a34a; padding:8px; margin-top:5px;">
+                                    <strong style="color:#16a34a; font-size:11px;">[+] MILLORA APROVADA APLICADA (${escH(appR.nom_visible)}):</strong><br>
                                     ${escH(appR[f.sk])}
                                 </div>`;
                             }
                         });
-                        html += `</div>`;
-                    } else {
-                        // Si l'original estava buit però algú ha suggerit omplir-ho
-                        let hasImprovements = false;
-                        let impHtml = '';
-                        approvedSugs.forEach(appR => {
-                            if (f.ak && (appR[f.ak] === true || appR[f.ak] === 'true' || appR[f.ak] === 'TRUE') && appR[f.sk] && appR[f.sk].trim() !== '') {
-                                hasImprovements = true;
-                                impHtml += `<div class="p-changed">
-                                    <span class="p-badge-ch">➕ MILLORA APROVADA (${escH(appR.nom_visible)})</span><br>
-                                    ${escH(appR[f.sk])}
-                                </div>`;
-                            }
-                        });
-                        if (hasImprovements) {
-                            html += `<div class="p-sec">
-                                <span class="p-sec-lbl">${f.k.toUpperCase()} (Buit originalment)</span>
-                                ${impHtml}
-                            </div>`;
-                        }
+                        pa += `</div>`;
                     }
                 });
 
-                // Incloure els comentaris generals de l'usuari (Això ajuda a entendre el context del canvi)
                 approvedSugs.forEach(appR => {
                     if (appR.comentari_general && appR.comentari_general.trim() !== '') {
-                        html += `<div class="p-sug" style="background:#f1f5f9; border-left: 4px solid #94a3b8; padding: 8px; margin-top: 5px; font-size: 11px;">
+                        pa += `<div style="background:#f1f5f9; border-left: 4px solid #94a3b8; padding: 8px; margin-top: 5px; font-size: 12px;">
                             <strong>💬 COMENTARI GENERAL (${escH(appR.nom_visible)}):</strong><br>
                             ${escH(appR.comentari_general)}
                         </div>`;
                     }
                 });
 
-                html += `</div>`;
-                pa.innerHTML += html;
+                pa += `</div>`;
             });
 
             const strSearch = 'NEW-' + c + '-' + s + '-';
             const nousAprovats = resp.filter(r => String(r.id_enfocament).startsWith(strSearch) && r.estat_admin === 'Aprovat');
             
             nousAprovats.forEach(r => {
-                let html = `<div class="p-card p-new">
-                    <span class="p-new-badge">NOU ENFOCAMENT APROVAT</span>
-                    <div class="p-title">${escH(r.sug_titol_enfocament)}</div>
-                    <div style="font-size:10px; color:#6b7280; margin-bottom:10px;">Proposat per: ${escH(r.nom_visible)}</div>`;
+                pa += `<div style="border:2px dashed #7c3aed; padding:15px; margin-bottom:15px; background:#faf5ff">
+                    <strong style="color:#7c3aed; font-size:11px;">[NOU ENFOCAMENT APROVAT] Proposat per: ${escH(r.nom_visible)}</strong>
+                    <h4 style="margin-top:5px;">${escH(r.sug_titol_enfocament)}</h4>`;
                 
-                if(r.sug_enfocament) html += `<div class="p-sec"><span class="p-sec-lbl">ENFOCAMENT</span>${escH(r.sug_enfocament)}</div>`;
-                if(r.sug_desplegament) html += `<div class="p-sec"><span class="p-sec-lbl">DESPLEGAMENT</span>${escH(r.sug_desplegament)}</div>`;
-                if(r.sug_avaluacio) html += `<div class="p-sec"><span class="p-sec-lbl">AVALUACIÓ</span>${escH(r.sug_avaluacio)}</div>`;
-                if(r.sug_evidencies) html += `<div class="p-sec"><span class="p-sec-lbl">EVIDÈNCIES</span>${escH(r.sug_evidencies)}</div>`;
-                html += `</div>`;
-                pa.innerHTML += html;
+                if(r.sug_enfocament) pa += `<strong>ENFOCAMENT</strong><p>${escH(r.sug_enfocament)}</p>`;
+                if(r.sug_desplegament) pa += `<strong>DESPLEGAMENT</strong><p>${escH(r.sug_desplegament)}</p>`;
+                if(r.sug_avaluacio) pa += `<strong>AVALUACIÓ</strong><p>${escH(r.sug_avaluacio)}</p>`;
+                if(r.sug_evidencies) pa += `<strong>EVIDÈNCIES</strong><p>${escH(r.sug_evidencies)}</p>`;
+                pa += `</div>`;
             });
         });
     });
 
-    setTimeout(() => { window.print(); }, 500);
-}
+    const preHtml = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Memoria Final</title></head><body>";
+    const postHtml = "</body></html>";
+    const html = preHtml + pa + postHtml;
 
+    const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
+    const a = document.createElement('a'); a.href = window.URL.createObjectURL(blob);
+    a.download = 'Esborrany_Memoria_EFQM.doc';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    toast("Informe descarregat.", "tok");
+}
 
 /* ══ UTILS DE DESAT I CARD STATE ══ */
 function markPending(id){ const c=document.querySelector('.card[data-id="'+id+'"]'); if(c){ c.classList.remove('saved'); c.classList.add('pending'); const b=c.querySelector('.cs-badge'); if(b){ b.className='cs-badge bp'; b.textContent='● Pendent';} updTabPending(); updProgress(); } }
@@ -1196,6 +1269,7 @@ function applyF(){
   const kw=$('srch').value.toLowerCase().trim();
   (cards[curC]||[]).forEach(({el:e})=>{
     let show=true;
+    // Solució al filtre "Nous": ara ignora si està guardat, només mira que sigui nou.
     if(curF==='pending') show = !e.classList.contains('saved');
     else if(curF==='validated') show = e.classList.contains('saved');
     else if(curF==='new') show = e.dataset.isNew==='1';
@@ -1248,14 +1322,20 @@ async function saveNew(tid,btn){
 }
 
 async function doSave(payload,id,btn,orig,isNew, isDone){
+  setSync('syncing');
   try{
     if(!APPS_SCRIPT_URL) await wait(500); else{ const r=await api('POST',payload); if(!r.success) throw new Error(r.error||'Error servidor'); }
     updResp(payload); 
+    setSync('ok');
     if(isDone) { markSaved(id); btn.textContent='Revisat ✅'; toast(isNew?'Nova proposta desada! ✨':'Revisió finalitzada i desada.','tok'); } 
     else { markPending(id); btn.textContent='Desat (Esborrany)'; toast('Esborrany desat. Encara pendent de finalitzar.','tinfo'); }
     const c=document.querySelector('.card[data-id="'+id+'"]');
     if(c){ if(isNew && isDone) c.classList.remove('expanded'); const chk = c.querySelector('.chk-v'); if(chk && chk.checked){ chk.disabled = true; chk.parentElement.style.opacity = '0.6'; chk.parentElement.style.cursor = 'not-allowed'; } }
-  } catch(e){ btn.textContent='Error ❌'; toast('Error: '+e.message,'terr'); }
+  } catch(e){ 
+      btn.textContent='Error ❌'; 
+      toast('Error: '+e.message,'terr'); 
+      setSync('err');
+  }
   setTimeout(()=>{ btn.textContent=orig; btn.disabled=false; },3000);
 }
 
