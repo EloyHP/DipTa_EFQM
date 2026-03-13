@@ -728,7 +728,9 @@ function buildCard(row,crit){
       const alert = el('div','admin-alert'); alert.innerHTML = '<strong>❌ Descartat per Estratègia Corporativa:</strong><br>' + escH(prev.comentari_admin || 'Sense comentaris');
       body.appendChild(alert);
   } else if(isAdminApproved) {
-      const alert = el('div','admin-alert-ok','✅ Aprovat per Direcció'); body.appendChild(alert);
+      const alert = el('div','admin-alert-ok'); alert.innerHTML ='<strong>✅ Aprovat per Direcció:</strong><br><span style="font-weight:normal;">Aquesta proposta ja no admet més modificacions.</span>'; body.appendChild(alert);
+  } else if (hasAdminAction) {
+      const alert = el('div','admin-alert-ok'); alert.innerHTML='🔒 <strong>Proposta Tancada:</strong><br><span style="font-weight:normal;">Aquesta proposta ha estat avaluada per Direcció i ja no admet modificacions.</span>'; body.appendChild(alert);
   }
 
   const BLOCKS=[
@@ -788,12 +790,19 @@ function makeAZ(id,prev,isNew){
   });
   
   cw.appendChild(cta); az.appendChild(cw);
+  
+  const rightWrap = el('div'); rightWrap.style.display = 'flex'; rightWrap.style.flexDirection = 'column'; rightWrap.style.alignItems = 'flex-end'; rightWrap.style.gap = '4px'; rightWrap.style.flexShrink = '0';
+  const saveLabel = el('span', '', ''); saveLabel.style.fontSize = '0.65rem'; saveLabel.style.color = 'var(--g500)'; saveLabel.style.fontWeight = '600'; saveLabel.id = 'lbl-sav-' + id;
+  
   if(!hasAdminAction) {
     const sb=document.createElement('button');
     if(isNew){ sb.className='btn-sn btn-sc'; sb.textContent= prev ? 'Actualitzar proposta' : 'Desar proposta'; sb.addEventListener('click',()=>saveNew(id,sb)); } 
     else { sb.className='btn btn-primary btn-sc'; sb.textContent='Desar'; sb.addEventListener('click',()=>saveExisting(id,sb)); }
-    az.appendChild(sb); 
+    rightWrap.appendChild(sb); 
   }
+  
+  rightWrap.appendChild(saveLabel);
+  az.appendChild(rightWrap);
   return az;
 }
 
@@ -1135,7 +1144,7 @@ function openAdminModal(id, email){
         fields.forEach(f => {
             if(r[f.sk]){
                 const isChecked = r[f.ak] === true || r[f.ak] === 'true' || r[f.ak] === 'TRUE' ? 'checked' : '';
-                const chkHtml = `<label class="rev-check" style="margin:0;"><input type="checkbox" id="chk-${f.k}" ${isChecked}> Aprovar canvi a l'informe</label>`;
+                const chkHtml = `<label class="rev-check" style="margin:0;"><input type="checkbox" id="chk-${f.k}" class="chk-admin-eval" ${isChecked}> Aprovar canvi a l'informe</label>`;
                 h += `
                     <div style="margin-bottom:1rem;">
                         <div class="sb-hdr" style="border-radius:8px 8px 0 0; border:1px solid var(--g100); border-bottom:none;">
@@ -1151,6 +1160,30 @@ function openAdminModal(id, email){
         if(r.comentari_general) h += `<div class="admin-item-box"><strong>Comentari General / Context de l'usuari</strong><p>${escH(r.comentari_general)}</p></div>`;
         content.innerHTML = h;
         $('btn-ok').textContent = '✅ Desar decisions d\'aprovació';
+        
+        // Timeout para asegurar que el DOM ha cargado los checkboxes
+        setTimeout(() => {
+            const chks = document.querySelectorAll('.chk-admin-eval');
+            const evalBtn = $('btn-ok');
+            if(chks.length > 0) {
+                const checkAprovar = () => {
+                    const anyChecked = Array.from(chks).some(c => c.checked);
+                    if(!anyChecked) {
+                        evalBtn.style.background = 'var(--g300)';
+                        evalBtn.style.cursor = 'not-allowed';
+                        evalBtn.title = 'Has de marcar almenys un element per aprovar';
+                    } else {
+                        evalBtn.style.background = '#16a34a';
+                        evalBtn.style.cursor = 'pointer';
+                        evalBtn.title = '';
+                    }
+                };
+                chks.forEach(c => c.addEventListener('change', checkAprovar));
+                checkAprovar(); // check inicial
+            } else {
+                $('btn-ok').style.background = '#16a34a';
+            }
+        }, 50);
     }
     
     $('admin-comment').value = r.comentari_admin || '';
@@ -1476,6 +1509,12 @@ async function doSave(payload,id,btn,orig,isNew, isDone){
     else { markPending(id); btn.textContent='Desat (Esborrany)'; toast('Esborrany desat. Encara pendent de finalitzar.','tinfo'); }
     const c=document.querySelector('.card[data-id="'+id+'"]');
     if(c){ if(isNew && isDone) c.classList.remove('expanded'); const chk = c.querySelector('.chk-v'); if(chk && chk.checked){ chk.disabled = true; chk.parentElement.style.opacity = '0.6'; chk.parentElement.style.cursor = 'not-allowed'; } }
+    const lblSav = document.getElementById('lbl-sav-' + id);
+    if(lblSav) {
+        const ara = new Date();
+        const mins = ara.getMinutes().toString().padStart(2, '0');
+        lblSav.textContent = `Últim desat a les ${ara.getHours()}:${mins}`;
+    }
   } catch(e){ 
       btn.textContent='Error ❌'; 
       toast('Error de xarxa','terr'); 
