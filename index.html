@@ -1420,7 +1420,10 @@ function markSaved(id){ const c=document.querySelector('.card[data-id="'+id+'"]'
 
 function updProgress(){ 
   let tot=0,sav=0; 
-  Object.values(cards).forEach(arr=>{ tot+=arr.length; arr.forEach(({el:e})=>{ if(e.classList.contains('saved')) sav++; }); }); 
+  document.querySelectorAll('.card[data-is-new="0"]').forEach(c => {
+    tot++;
+    if(c.classList.contains('saved')) sav++;
+  });
   $('pfill').style.width=(tot?Math.round(sav/tot*100):0)+'%'; $('plbl').textContent=sav+' / '+tot; 
   
   document.querySelectorAll('.sb').forEach(blk => {
