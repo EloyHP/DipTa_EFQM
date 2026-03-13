@@ -728,9 +728,9 @@ function buildCard(row,crit){
       const alert = el('div','admin-alert'); alert.innerHTML = '<strong>❌ Descartat per Estratègia Corporativa:</strong><br>' + escH(prev.comentari_admin || 'Sense comentaris');
       body.appendChild(alert);
   } else if(isAdminApproved) {
-      const alert = el('div','admin-alert-ok'); alert.innerHTML ='<strong>✅ Aprovat per Direcció:</strong><br><span style="font-weight:normal;">Aquesta proposta ja no admet més modificacions.</span>'; body.appendChild(alert);
+      const alert = el('div','admin-alert-ok'); alert.innerHTML ='<strong>✅ Aprovat per Estratègia Corporativa:</strong><br><span style="font-weight:normal;">Aquesta proposta ja no admet més modificacions.</span>'; body.appendChild(alert);
   } else if (hasAdminAction) {
-      const alert = el('div','admin-alert-ok'); alert.innerHTML='🔒 <strong>Proposta Tancada:</strong><br><span style="font-weight:normal;">Aquesta proposta ha estat avaluada per Direcció i ja no admet modificacions.</span>'; body.appendChild(alert);
+      const alert = el('div','admin-alert-ok'); alert.innerHTML='🔒 <strong>Proposta Tancada:</strong><br><span style="font-weight:normal;">Aquesta proposta ha estat avaluada per Estratègia Corporativa i ja no admet modificacions.</span>'; body.appendChild(alert);
   }
 
   const BLOCKS=[
@@ -860,7 +860,7 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
   if(isAdminRejected) {
       body.appendChild(el('div','admin-alert')).innerHTML = '<strong>❌ Descartat per Estratègia Corporativa:</strong><br>' + escH(prev.comentari_admin || 'Sense motiu especificat');
   } else if(isAdminApproved) {
-      body.appendChild(el('div','admin-alert-ok')).textContent = '✅ Aprovat per Direcció';
+      body.appendChild(el('div','admin-alert-ok')).textContent = '✅ Aprovat per Estratègia Corporativa';
   }
 
   const NFIELDS=[
@@ -915,7 +915,7 @@ function renderUserDashboard() {
         return;
     }
     
-    html += `<table class="admin-table"><thead><tr><th>Tipus</th><th>Enfocament / Títol</th><th>Estat (Direcció)</th><th>Retorn de Direcció</th></tr></thead><tbody>`;
+    html += `<table class="admin-table"><thead><tr><th>Tipus</th><th>Enfocament / Títol</th><th>Estat (Estratègia Corporativa)</th><th>Retorn de Estratègia Corporativa</th></tr></thead><tbody>`;
     
     myResp.forEach(r => {
         const isNew = String(r.id_enfocament).startsWith('NEW-');
@@ -1267,7 +1267,7 @@ function downloadUserSummary(email, nomUsuari) {
         else { isN ? eDes.push(r) : pDes.push(r); }
     });
 
-    let h = `<div style="font-family:sans-serif; color:#333;"><h2>Resum de decisions - Memòria EFQM</h2><p>Aquest és el retorn de la Direcció sobre les teves aportacions:</p>`;
+    let h = `<div style="font-family:sans-serif; color:#333;"><h2>Resum de decisions - Memòria EFQM</h2><p>Aquest és el retorn de la Estratègia Corporativa sobre les teves aportacions:</p>`;
 
     if(pInc.length>0){
         h += `<h3 style="color:#16a34a">[ACTUALITZAT] Propostes incorporades a la memòria</h3><ul>`;
