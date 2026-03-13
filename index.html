@@ -104,7 +104,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 
 .sub-prog { font-size: .7rem; background: var(--g100); color: var(--g700); padding: .15rem .45rem; border-radius: 99px; font-weight: 700; transition: all var(--tr);}
 .sub-prog.done { background: #dcfce7; color: #166534; }
-.sub-chev { font-size: 0.8rem; color: var(--navy); transition: transform var(--tr); margin-right: 6px; }
+.sub-chev { font-size: 0.8rem; color: var(--navy); transition: transform var(--tr); margin-right: 2px; }
 
 .sb.collapsed .sb-content { display: none; }
 .sb.collapsed .sub-chev { transform: rotate(-90deg); }
@@ -421,13 +421,12 @@ function setSync(state) {
 /* ══ API ══ */
 async function api(method, body){
   const o = { redirect: 'follow' };
-  let url = APPS_SCRIPT_URL;
   if(method === 'POST'){
     o.method = 'POST';
     o.headers = { 'Content-Type': 'text/plain;charset=utf-8' };
     o.body = JSON.stringify(body);
   }
-  const r = await fetch(url, o);
+  const r = await fetch(APPS_SCRIPT_URL, o);
   return r.json();
 }
 
@@ -450,30 +449,34 @@ async function loadBackendData(){
     const btn = $('btn-login');
     if(btn) { btn.textContent = 'Carregant base de dades...'; btn.disabled = true; }
     
+    // Fer crida GET a l'Apps Script
     const d = await api('GET');
     
-    mem=d.memoria||[]; resp=d.respostes||[]; usuaris=d.usuaris||[]; 
+    mem=d.memoria||[]; 
+    resp=d.respostes||[]; 
+    usuaris=d.usuaris||[]; 
     lastSyncTime = new Date();
+    
     const sanitize = arr => arr.forEach(r => Object.keys(r).forEach(k => r[k] = r[k] != null ? String(r[k]).trim() : ''));
     sanitize(mem); sanitize(resp); sanitize(usuaris);
     
     if(btn) { btn.textContent = 'Accedir a la revisió'; btn.disabled = false; }
   } catch(e){ 
-    showErr($('ferr'), 'Error connectant amb el servidor.');
+    showErr($('ferr'), 'Error connectant amb el servidor. Recarrega la pàgina.');
   }
 }
 
-/* ══ LOGIN ══ */
+/* ══ LOGIN CLÀSSIC (CLIENT-SIDE) ══ */
 function doLogin(){
   const email = $('fe').value.trim().toLowerCase();
   const err = $('ferr');
   
-  if(!email){ showErr(err,'Introdueix un correu electrònic vàlid.'); return; }
-  if(usuaris.length === 0){ showErr(err,'Base de dades buida o carregant...'); return; }
+  if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ showErr(err,'Introdueix un correu electrònic vàlid.'); return; }
+  if(usuaris.length === 0){ showErr(err,'Encara s\'està carregant la base de dades, espera un segon...'); return; }
 
   // Busquem l'usuari asseggurant-nos de netejar espais invisibles de l'Excel
   const user = usuaris.find(u => String(u.email_autoritzat || '').trim().toLowerCase() === email);
-  if(!user){ showErr(err, 'Accés denegat. Aquest correu no està autoritzat.'); return; }
+  if(!user){ showErr(err, 'Accés denegat. Aquest correu no està a la llista d\'usuaris autoritzats.'); return; }
 
   err.classList.add('hidden');
   sess={ nom: user.nom_usuari || 'Usuari', email: email, area: user.area_assignada || '' };
@@ -827,6 +830,7 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
 
   card.className='card cnew ' + (prev ? 'saved' : 'pending expanded') + (isAdminRejected ? ' rejected' : '');
   
+  // FIX: Guardar criteri i subcriteri per enviar al backend correctament
   card.dataset.id=tid; card.dataset.isNew='1'; card.dataset.crit=crit; card.dataset.sub=sub; 
   card.dataset.st = prev ? Object.values(prev).join(' ').toLowerCase() : '';
 
@@ -845,6 +849,7 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
     e.stopPropagation(); 
     if(!confirm('Segur que vols eliminar-lo definitivament?')) return;
     
+    // FIX: Eliminar només localment si no està desat, sense recarregar la pàgina
     if(!card.classList.contains('saved')){ 
         card.remove(); 
         cards[crit]=(cards[crit]||[]).filter(x=>x.id!==tid); 
@@ -895,6 +900,7 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
   
   body.appendChild(makeAZ(tid,prev,true)); card.appendChild(body); 
   
+  // FIX: Retornem el subcriteri per poder-lo filtrar
   return {el:card, id:tid, isNew:true, sub:sub};
 }
 
@@ -1443,6 +1449,7 @@ function applyF(){
 
   (cards[curC]||[]).forEach(({el:e})=>{
     let show=true;
+    // Fix: El filtre nous només mira que sigui nou, independentment de si està desat o no
     if(curF==='pending') show = !e.classList.contains('saved');
     else if(curF==='validated') show = e.classList.contains('saved');
     else if(curF==='new') show = e.dataset.isNew==='1';
@@ -1511,7 +1518,6 @@ async function saveNew(tid,btn){
   
   if (faltan) {
       toast('⚠️ Avís: Falten camps obligatoris per omplir.', 'terr');
-      setSync('err');
       return;
   }
 
