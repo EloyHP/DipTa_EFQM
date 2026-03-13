@@ -700,6 +700,7 @@ function buildCard(row,crit){
   
   const isAdminRejected = prev && prev.estat_admin === 'Descartat';
   const isAdminApproved = prev && prev.estat_admin === 'Aprovat';
+  const hasAdminAction = isAdminRejected || isAdminApproved;
   const isChecked = prev&&(prev.validat===true||prev.validat==='TRUE'||prev.validat==='1'||prev.validat===1||prev.validat==='true');
   
   card.className='card'+(isChecked?' saved':' pending');
@@ -747,6 +748,7 @@ function buildCard(row,crit){
     if(b.taKey){
       const pl=el('span','prop-lbl','Proposta de millora');
       const ta=document.createElement('textarea'); ta.className='prop-ta'; ta.dataset.key=b.taKey; ta.rows=2; ta.value=b.taVal||'';
+      if(hasAdminAction) ta.readOnly = true;
       
       ta.addEventListener('input',()=>{ 
           markPending(id); 
@@ -763,18 +765,21 @@ function buildCard(row,crit){
 
 function makeAZ(id,prev,isNew){
   const az=el('div','az');
+  const hasAdminAction = prev && (prev.estat_admin === 'Aprovat' || prev.estat_admin === 'Descartat');
+
   if(!isNew){
     const cl=el('label','chk-wrap');
     const chk=document.createElement('input'); chk.type='checkbox'; chk.dataset.card=id; chk.className='chk-v';
     const isChecked = prev&&(prev.validat===true||prev.validat==='TRUE'||prev.validat==='1'||prev.validat===1||prev.validat==='true');
     chk.checked = isChecked;
-    if(isChecked) { chk.disabled = true; cl.style.opacity = '0.6'; cl.style.cursor = 'not-allowed'; } 
+    if(isChecked || hasAdminAction) { chk.disabled = true; cl.style.opacity = '0.6'; cl.style.cursor = 'not-allowed'; } 
     else { chk.addEventListener('change',()=>markPending(id)); }
     cl.appendChild(chk); cl.appendChild(el('span','','✅ Revisió finalitzada')); az.appendChild(cl);
   }
   const cw=el('div','cmt-w');
   const cta=document.createElement('textarea'); cta.className='ta-cmt'; cta.dataset.card=id;
   cta.rows=2; cta.placeholder='Comentari (opcional)'; cta.value=prev?.comentari_general||'';
+  if(hasAdminAction) cta.readOnly = true;
   
   cta.addEventListener('input',(e)=>{ 
       markPending(id); 
@@ -783,10 +788,13 @@ function makeAZ(id,prev,isNew){
   });
   
   cw.appendChild(cta); az.appendChild(cw);
-  const sb=document.createElement('button');
-  if(isNew){ sb.className='btn-sn btn-sc'; sb.textContent= prev ? 'Actualitzar proposta' : 'Desar proposta'; sb.addEventListener('click',()=>saveNew(id,sb)); } 
-  else { sb.className='btn btn-primary btn-sc'; sb.textContent='Desar'; sb.addEventListener('click',()=>saveExisting(id,sb)); }
-  az.appendChild(sb); return az;
+  if(!hasAdminAction) {
+    const sb=document.createElement('button');
+    if(isNew){ sb.className='btn-sn btn-sc'; sb.textContent= prev ? 'Actualitzar proposta' : 'Desar proposta'; sb.addEventListener('click',()=>saveNew(id,sb)); } 
+    else { sb.className='btn btn-primary btn-sc'; sb.textContent='Desar'; sb.addEventListener('click',()=>saveExisting(id,sb)); }
+    az.appendChild(sb); 
+  }
+  return az;
 }
 
 function insertNew(crit,sub,subTitol,blk,addBtn){
@@ -801,6 +809,7 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
   const card=document.createElement('div');
   const isAdminRejected = prev && prev.estat_admin === 'Descartat';
   const isAdminApproved = prev && prev.estat_admin === 'Aprovat';
+  const hasAdminAction = isAdminRejected || isAdminApproved;
 
   card.className='card cnew ' + (prev ? 'saved' : 'pending expanded') + (isAdminRejected ? ' rejected' : '');
   card.dataset.id=tid; card.dataset.isNew='1'; card.dataset.crit=crit; card.dataset.sub=sub; 
@@ -833,7 +842,9 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
     }
   });
   
-  ban.appendChild(nl); ban.appendChild(el('span','cs-chev','▼')); ban.appendChild(rm); card.appendChild(ban);
+  ban.appendChild(nl); ban.appendChild(el('span','cs-chev','▼')); 
+  if(!hasAdminAction) ban.appendChild(rm); 
+  card.appendChild(ban);
 
   const body=el('div','card-body new-body');
   
@@ -855,6 +866,7 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
     const wrap=el('div','nf'); const lbl=el('div','nf-lbl '+f.cls); lbl.innerHTML='<span class="nf-dot" style="background:'+f.color+'"></span>'+escH(f.lbl)+(f.req?'<span class="req">*</span>':'');
     const ta=document.createElement('textarea'); ta.className='nta '+f.cls2; ta.dataset.key=f.key; ta.rows=2; ta.placeholder=f.ph;
     ta.value = prev ? (prev[f.key] || '') : '';
+    if(hasAdminAction) { ta.readOnly = true; ta.style.opacity = '0.8'; ta.style.cursor = 'not-allowed'; }
     ta.addEventListener('input',(e)=>{
       ta.style.borderColor = ''; ta.style.backgroundColor = ''; 
       if(f.key === 'sug_titol_enfocament') titleSpan.textContent = e.target.value.trim() || 'Escriu el títol...';
