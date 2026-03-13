@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
+
 <title>Revisió Memòria EFQM - La DipTa</title>
 <style>
 /* ══ CONFIGURACIÓ DE COLORS CORPORATIUS La DipTa ══ */
@@ -87,17 +90,25 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .sw input{padding:.32rem .62rem .32rem 1.82rem;font-size:.79rem;height:29px}
 .s-ico{position:absolute;left:.5rem;top:50%;transform:translateY(-50%);color:var(--g300);font-size:.8rem;pointer-events:none}
 
+.toolbar-actions { display:flex; gap:0.5rem; margin-left:auto; }
+
 .scroll-area{flex:1;overflow-y:auto;padding:.9rem 1.2rem 3rem}
 
 .sb{margin-bottom:1.5rem}
 
 .sub-sticky{position:sticky;top:0;z-index:50;background:var(--white);border-radius:8px;box-shadow:var(--sh);margin-bottom:.55rem;overflow:hidden;border:1px solid var(--g100)}
-.sub-title-row{display:flex;align-items:center;gap:.6rem;padding:.5rem .82rem}
+.sub-title-row{display:flex;align-items:center;gap:.6rem;padding:.5rem .82rem; cursor:pointer; transition:background var(--tr);}
+.sub-title-row:hover{background:var(--g50);}
 .sub-num{font-size:.68rem;font-weight:700;background:var(--navy);color:#fff;padding:.08rem .42rem;border-radius:5px;flex-shrink:0}
 .sub-title{font-size:.86rem;font-weight:800;color:var(--navy);flex:1; display:flex; align-items:center; gap:.5rem;}
 
 .sub-prog { font-size: .7rem; background: var(--g100); color: var(--g700); padding: .15rem .45rem; border-radius: 99px; font-weight: 700; transition: all var(--tr);}
 .sub-prog.done { background: #dcfce7; color: #166534; }
+.sub-chev { font-size: 0.8rem; color: var(--navy); transition: transform var(--tr); margin-right: 6px; }
+
+.sb.collapsed .sb-content { display: none; }
+.sb.collapsed .sub-chev { transform: rotate(-90deg); }
+.sb-content { padding-top: 0.5rem; }
 
 .efqm-btn{background:transparent;border:1.5px solid var(--g100);border-radius:6px;padding:.26rem .62rem;cursor:pointer;font-size:.73rem;font-weight:600;transition:background var(--tr);white-space:nowrap;flex-shrink:0}
 
@@ -116,6 +127,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .prev-btn:hover { background: #f0fdfa; }
 .prev-panel { display:none; padding:.58rem .82rem .68rem; background:#f0fdfa; border-top:1px solid #99f6e4; font-size:.8rem; color:#115e59; white-space:pre-wrap; line-height:1.6; border-left:4px solid #0f766e; }
 .prev-panel.open { display:block; }
+
 
 /* ── CARD ── */
 .card{background:var(--white);border-radius:var(--r);box-shadow:var(--sh);margin-bottom:.5rem;border:2px solid transparent;transition:border-color var(--tr)}
@@ -230,6 +242,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .badge-pend { background: #fff7ed; color: var(--orange); padding: 3px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; border: 1px solid #fed7aa;}
 .badge-ok { background: #f0fdf4; color: var(--green); padding: 3px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; border: 1px solid #bbf7d0;}
 .badge-ko { background: #fef2f2; color: var(--red); padding: 3px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; border: 1px solid #fecaca;}
+.badge-neutral { background: #f1f5f9; color: #475569; padding: 3px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; border: 1px solid #cbd5e1;}
 
 /* Indicadors de millora a la taula */
 .indicator-row { display: flex; gap: 4px; margin-top: 4px; }
@@ -338,6 +351,10 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
         <span class="s-ico">🔍</span>
         <input type="text" id="srch" placeholder="Cerca…" oninput="applyF()"/>
       </div>
+      <div class="toolbar-actions">
+          <button class="btn btn-ghost" style="padding:.3rem .6rem; font-size:.7rem" onclick="expandAllSub()">▼ Expandir tot</button>
+          <button class="btn btn-ghost" style="padding:.3rem .6rem; font-size:.7rem" onclick="collapseAllSub()">▶ Col·lapsar tot</button>
+      </div>
     </div>
     
     <div class="scroll-area" id="sarea"></div>
@@ -356,12 +373,12 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
     
     <div id="admin-feedback-section" style="padding: 0 1.5rem 1rem;">
       <label style="margin-top:0;">Comentari intern / a l'usuari (Obligatori si es descarta)</label>
-      <textarea id="admin-comment" rows="2" placeholder="Anota el motiu..."></textarea>
+      <textarea id="admin-comment" rows="2" style="width:100%; border:1px solid var(--g200); border-radius:6px; padding:0.5rem" placeholder="Anota el motiu..."></textarea>
     </div>
 
     <div class="modal-footer" id="modal-footer">
       <button class="btn btn-danger" id="btn-ko" onclick="submitAdminDecision('Descartat')">❌ Descartar proposta</button>
-      <button class="btn btn-primary" id="btn-ok" style="background:#16a34a;" onclick="submitAdminDecision('Aprovat')">✅ Aprovar i incloure a l'informe</button>
+      <button class="btn btn-primary" id="btn-ok" style="background:#16a34a;" onclick="submitAdminDecision('Aprovat')">✅ Desar decisions d'aprovació</button>
     </div>
   </div>
 </div>
@@ -379,15 +396,39 @@ let mem=[], resp=[], usuaris=[], sess=null;
 let cData={}, curC=null, curF='all';
 let cards={}, nc=0;
 let currentAdminCardId = null;
-let lastSyncTime = null; // TIMESTAMP DE CÀRREGA
+let lastSyncTime = null; 
+let collapsedStateBeforeSearch = []; 
+
+/* ══ UTILS ══ */
+const $ = id => document.getElementById(id);
+const el = (tag,cls,txt) => { const e=document.createElement(tag); if(cls) e.className=cls; if(txt!==undefined) e.textContent=txt; return e; };
+const wait = ms => new Promise(r=>setTimeout(r,ms));
+const escH = t => String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const escJS = t => String(t||'').replace(/'/g, "\\'").replace(/"/g, "&quot;");
+
+function toast(msg,cls){ const c=$('toasts'); const t=el('div','toast '+(cls||'')); t.textContent=msg; c.appendChild(t); setTimeout(()=>t.remove(),3400); }
+function showErr(e,m){ e.textContent=m; e.classList.remove('hidden'); }
 
 /* ══ SYNC UI ══ */
 function setSync(state) {
-    const s = document.getElementById('sync-status');
+    const s = $('sync-status');
     if(state === 'syncing') { s.innerHTML = '🔄 Guardant...'; s.className = 'syncing'; }
     else if(state === 'ok') { s.innerHTML = '✅ Guardat'; s.className = ''; setTimeout(()=>setSync('idle'), 3000); }
     else if(state === 'err') { s.innerHTML = '❌ Error'; s.className = ''; }
     else { s.innerHTML = '☁️ Connectat'; s.className = ''; }
+}
+
+/* ══ API ══ */
+async function api(method, body){
+  const o = { redirect: 'follow' };
+  let url = APPS_SCRIPT_URL;
+  if(method === 'POST'){
+    o.method = 'POST';
+    o.headers = { 'Content-Type': 'text/plain;charset=utf-8' };
+    o.body = JSON.stringify(body);
+  }
+  const r = await fetch(url, o);
+  return r.json();
 }
 
 /* ══ INIT ══ */
@@ -395,44 +436,30 @@ window.addEventListener('DOMContentLoaded', async ()=>{
   const st=localStorage.getItem('efqm_v4');
   if(st){
     sess=JSON.parse(st);
-    document.getElementById('wname').textContent='Benvinguda/t de nou, '+sess.nom;
-    document.getElementById('wsub').textContent=sess.email+' · '+sess.area;
-    document.getElementById('wblock').classList.remove('hidden');
-    document.getElementById('lform').classList.add('hidden');
+    $('wname').textContent='Benvinguda/t de nou, '+sess.nom;
+    $('wsub').textContent=sess.email+' · '+sess.area;
+    $('wblock').classList.remove('hidden');
+    $('lform').classList.add('hidden');
   }
   await loadBackendData();
 });
 
-async function api(method, body){
-  const o = { redirect: 'follow' };
-  if(method === 'POST'){ 
-    o.method = 'POST'; 
-    o.headers = { 'Content-Type': 'text/plain;charset=utf-8' }; 
-    o.body = JSON.stringify(body); 
-  }
-  const r = await fetch(APPS_SCRIPT_URL, o);
-  return r.json();
-}
-
 async function loadBackendData(){
   if(!APPS_SCRIPT_URL) return;
   try{
-    const btn = document.getElementById('btn-login');
+    const btn = $('btn-login');
     if(btn) { btn.textContent = 'Carregant base de dades...'; btn.disabled = true; }
     
-    const d=await api('GET');
-    mem=d.memoria||[]; 
-    resp=d.respostes||[];
-    usuaris=d.usuaris||[]; 
+    const d = await api('GET');
     
-    lastSyncTime = new Date(); // Guardem el moment de la descàrrega
-    
+    mem=d.memoria||[]; resp=d.respostes||[]; usuaris=d.usuaris||[]; 
+    lastSyncTime = new Date();
     const sanitize = arr => arr.forEach(r => Object.keys(r).forEach(k => r[k] = r[k] != null ? String(r[k]).trim() : ''));
     sanitize(mem); sanitize(resp); sanitize(usuaris);
     
     if(btn) { btn.textContent = 'Accedir a la revisió'; btn.disabled = false; }
   } catch(e){ 
-    showErr(document.getElementById('ferr'), 'Error connectant amb el servidor. Recarrega la pàgina.');
+    showErr($('ferr'), 'Error connectant amb el servidor.');
   }
 }
 
@@ -441,11 +468,12 @@ function doLogin(){
   const email = $('fe').value.trim().toLowerCase();
   const err = $('ferr');
   
-  if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ showErr(err,'Introdueix un correu electrònic vàlid.'); return; }
-  if(usuaris.length === 0){ showErr(err,'Encara s\'està carregant la base de dades, espera un segon...'); return; }
+  if(!email){ showErr(err,'Introdueix un correu electrònic vàlid.'); return; }
+  if(usuaris.length === 0){ showErr(err,'Base de dades buida o carregant...'); return; }
 
-  const user = usuaris.find(u => String(u.email_autoritzat || '').toLowerCase() === email);
-  if(!user){ showErr(err, 'Accés denegat. Aquest correu no està a la llista d\'usuaris autoritzats.'); return; }
+  // Busquem l'usuari asseggurant-nos de netejar espais invisibles de l'Excel
+  const user = usuaris.find(u => String(u.email_autoritzat || '').trim().toLowerCase() === email);
+  if(!user){ showErr(err, 'Accés denegat. Aquest correu no està autoritzat.'); return; }
 
   err.classList.add('hidden');
   sess={ nom: user.nom_usuari || 'Usuari', email: email, area: user.area_assignada || '' };
@@ -540,7 +568,6 @@ function buildTabs(){
     b.onclick=()=>selCrit(c); nav.appendChild(b);
   });
 
-  // NOU: Pestanya de l'usuari
   const bu = document.createElement('button');
   bu.className = 'ctab ctab-user';
   bu.dataset.c = 'user_summary';
@@ -562,10 +589,10 @@ function selCrit(c){
   $('user-view').classList.add('hidden');
   $('sarea').classList.remove('hidden');
   $('main-toolbar').style.display='flex';
-  $('top-prog').style.display='flex'; // Tornem a mostrar la barra de progrés
+  $('top-prog').style.display='flex'; 
   
   document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('active'));
-  document.querySelector('.ctab[data-c="'+c+'"]').classList.add('active');
+  document.querySelector(`.ctab[data-c="${c}"]`).classList.add('active');
   
   $('srch').value=''; curF='all';
   document.querySelectorAll('.tog-btn').forEach((b,i)=>b.classList.toggle('active',i===0));
@@ -578,7 +605,7 @@ function showAdminView(){
   $('user-view').classList.add('hidden');
   $('admin-view').classList.remove('hidden');
   $('main-toolbar').style.display='none';
-  $('top-prog').style.display='none'; // Ocultem a la vista admin
+  $('top-prog').style.display='none'; 
 
   document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('active'));
   document.querySelector('.ctab-admin').classList.add('active');
@@ -592,13 +619,21 @@ function showUserSummary(btnElement){
   $('admin-view').classList.add('hidden');
   $('user-view').classList.remove('hidden');
   $('main-toolbar').style.display='none';
-  $('top-prog').style.display='none'; // Ocultem a la vista usuari
+  $('top-prog').style.display='none'; 
 
   document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('active'));
   btnElement.classList.add('active');
   
   renderUserDashboard();
 }
+
+/* ══ COLLAPSE/EXPAND ALL ══ */
+window.expandAllSub = function() {
+    document.querySelectorAll('.sb').forEach(sb => sb.classList.remove('collapsed'));
+};
+window.collapseAllSub = function() {
+    document.querySelectorAll('.sb').forEach(sb => sb.classList.add('collapsed'));
+};
 
 /* ══ RENDER CRITERI NORMAL ══ */
 function renderCrit(c){
@@ -607,13 +642,21 @@ function renderCrit(c){
   const exNew=(cards[c]||[]).filter(x=>x.isNew);
   cards[c]=[];
 
+  let idx = 0;
   Object.keys(cData[c].subs).sort().forEach(s=>{
     const sub=cData[c].subs[s];
     const blk=el('div','sb'); blk.dataset.s=s;
+    if (idx !== 0) blk.classList.add('collapsed');
+    idx++;
 
     const sticky=el('div','sub-sticky');
     const tr=el('div','sub-title-row');
+    tr.onclick = (e) => {
+        if(e.target.closest('button')) return;
+        blk.classList.toggle('collapsed');
+    };
     
+    tr.appendChild(el('span', 'sub-chev', '▼'));
     tr.appendChild(el('span','sub-num',s));
     const titleWrap = el('div','sub-title');
     titleWrap.appendChild(document.createTextNode(sub.titol||s));
@@ -627,42 +670,48 @@ function renderCrit(c){
     if(sub.que_diu && sub.que_diu !== ''){
       const eb=el('button','efqm-btn model-btn','📖 Què diu el model?');
       ep=el('div','efqm-panel'); ep.textContent=sub.que_diu; 
-      eb.onclick=()=>{ ep.classList.toggle('open'); eb.textContent=(ep.classList.contains('open')?'▲ ':'📖 ')+'Què diu el model?'; };
+      eb.onclick=(e)=>{ e.stopPropagation(); ep.classList.toggle('open'); eb.textContent=(ep.classList.contains('open')?'▲ ':'📖 ')+'Què diu el model?'; };
       actions.appendChild(eb);
     }
     
     if(sub.preg_avaluadors && sub.preg_avaluadors !== ''){
       const evb=el('button','efqm-btn eval-btn','❓ Preguntes avaluadors');
       evp=el('div','eval-panel'); evp.textContent=sub.preg_avaluadors; 
-      evb.onclick=()=>{ evp.classList.toggle('open'); evb.textContent=(evp.classList.contains('open')?'▲ ':'❓ ')+'Preguntes avaluadors'; };
+      evb.onclick=(e)=>{ e.stopPropagation(); evp.classList.toggle('open'); evb.textContent=(evp.classList.contains('open')?'▲ ':'❓ ')+'Preguntes avaluadors'; };
       actions.appendChild(evb);
     }
 
     if(sub.informe_ant && sub.informe_ant !== ''){
       const ib=el('button','efqm-btn prev-btn','💡 Informe anterior');
       ip=el('div','prev-panel'); ip.textContent=sub.informe_ant; 
-      ib.onclick=()=>{ ip.classList.toggle('open'); ib.textContent=(ip.classList.contains('open')?'▲ ':'💡 ')+'Informe anterior'; };
+      ib.onclick=(e)=>{ e.stopPropagation(); ip.classList.toggle('open'); ib.textContent=(ip.classList.contains('open')?'▲ ':'💡 ')+'Informe anterior'; };
       actions.appendChild(ib);
     }
 
     if(actions.childNodes.length > 0) tr.appendChild(actions);
+    
     sticky.appendChild(tr); if(ep) sticky.appendChild(ep); if(evp) sticky.appendChild(evp); if(ip) sticky.appendChild(ip);
     blk.appendChild(sticky);
 
-    sub.rows.forEach(row=>{ const card=buildCard(row,c); blk.appendChild(card.el); cards[c].push(card); });
-    exNew.filter(x=>x.sub===s).forEach(x=>{ blk.appendChild(x.el); cards[c].push(x); });
+    const contentWrap = el('div', 'sb-content');
+
+    sub.rows.forEach(row=>{ const card=buildCard(row,c); contentWrap.appendChild(card.el); cards[c].push(card); });
+    exNew.filter(x=>x.sub===s).forEach(x=>{ contentWrap.appendChild(x.el); cards[c].push(x); });
 
     const strSearch = 'NEW-' + c + '-' + s + '-';
     resp.filter(r => r.email === sess.email && r.id_enfocament && String(r.id_enfocament).startsWith(strSearch)).forEach(r => {
       if (!exNew.find(x => x.id === r.id_enfocament)) {
         const card = buildNewCard(r.id_enfocament, c, s, sub.titol, r);
-        blk.appendChild(card.el); cards[c].push(card);
+        contentWrap.appendChild(card.el); cards[c].push(card);
       }
     });
 
     const ab=el('button','btn-add'); ab.innerHTML='➕ Proposar un nou enfocament per a <strong style="margin-left:.25rem">'+escH(s)+'</strong>';
-    ab.addEventListener('click',()=>insertNew(c,s,sub.titol,blk,ab));
-    blk.appendChild(ab); area.appendChild(blk);
+    ab.addEventListener('click',()=>{ insertNew(c,s,sub.titol,contentWrap,ab); blk.classList.remove('collapsed'); });
+    contentWrap.appendChild(ab); 
+    
+    blk.appendChild(contentWrap);
+    area.appendChild(blk);
   });
   updProgress(); updTabPending(); 
 }
@@ -701,7 +750,7 @@ function buildCard(row,crit){
       const alert = el('div','admin-alert'); alert.innerHTML = '<strong>❌ Descartat per Estratègia Corporativa:</strong><br>' + escH(prev.comentari_admin || 'Sense comentaris');
       body.appendChild(alert);
   } else if(isAdminApproved) {
-      const alert = el('div','admin-alert-ok','✅ Aprovat per Direcció'); body.appendChild(alert);
+      const alert = el('div','admin-alert-ok','✅ Aprovat per Estratègia Corporativa'); body.appendChild(alert);
   }
 
   const BLOCKS=[
@@ -763,12 +812,12 @@ function makeAZ(id,prev,isNew){
   az.appendChild(sb); return az;
 }
 
-function insertNew(crit,sub,subTitol,blk,addBtn){
+function insertNew(crit,sub,subTitol,contentWrap,addBtn){
   const tid='NEW-'+crit+'-'+sub+'-'+Date.now();
-  const card=buildNewCard(tid,crit,sub,subTitol);
-  blk.insertBefore(card.el,addBtn); cards[crit]=cards[crit]||[]; cards[crit].push(card);
+  const cardObj=buildNewCard(tid,crit,sub,subTitol);
+  contentWrap.insertBefore(cardObj.el,addBtn); cards[crit]=cards[crit]||[]; cards[crit].push(cardObj);
   updProgress(); updTabPending();
-  setTimeout(()=>card.el.scrollIntoView({behavior:'smooth',block:'nearest'}),60);
+  setTimeout(()=>cardObj.el.scrollIntoView({behavior:'smooth',block:'nearest'}),60);
 }
 
 function buildNewCard(tid,crit,sub,subTitol,prev=null){
@@ -777,6 +826,7 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
   const isAdminApproved = prev && prev.estat_admin === 'Aprovat';
 
   card.className='card cnew ' + (prev ? 'saved' : 'pending expanded') + (isAdminRejected ? ' rejected' : '');
+  
   card.dataset.id=tid; card.dataset.isNew='1'; card.dataset.crit=crit; card.dataset.sub=sub; 
   card.dataset.st = prev ? Object.values(prev).join(' ').toLowerCase() : '';
 
@@ -793,17 +843,23 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
   const rm=el('button','btn-rm'); rm.innerHTML='🗑️ Eliminar'; 
   rm.addEventListener('click', async (e)=>{
     e.stopPropagation(); 
-    if(!card.classList.contains('saved')){ card.remove(); cards[crit]=(cards[crit]||[]).filter(x=>x.id!==tid); updProgress(); updTabPending(); } 
+    if(!confirm('Segur que vols eliminar-lo definitivament?')) return;
+    
+    if(!card.classList.contains('saved')){ 
+        card.remove(); 
+        cards[crit]=(cards[crit]||[]).filter(x=>x.id!==tid); 
+        updProgress(); updTabPending(); 
+    } 
     else {
-      if(confirm('Segur que vols eliminar-lo definitivament?')){
         const origBtn = rm.innerHTML; rm.textContent = '⏳';
         try {
-          const r = await api('POST', { action:'delete', email: sess.email, id_enfocament: tid, esborrar: true });
+          const r = await api('POST', { action: 'delete', email: sess.email, id_enfocament: tid, esborrar: true });
           if(!r.success) throw new Error(r.error);
-          card.remove(); cards[crit]=(cards[crit]||[]).filter(x=>x.id!==tid); resp = resp.filter(r => r.id_enfocament !== tid);
+          card.remove(); 
+          cards[crit]=(cards[crit]||[]).filter(x=>x.id!==tid); 
+          resp = resp.filter(r => r.id_enfocament !== tid);
           updProgress(); updTabPending(); toast('Eliminat.', 'tinfo');
         } catch(err) { rm.innerHTML = origBtn; toast('Error: ' + err.message, 'terr'); }
-      }
     }
   });
   
@@ -814,7 +870,7 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
   if(isAdminRejected) {
       body.appendChild(el('div','admin-alert')).innerHTML = '<strong>❌ Descartat per Estratègia Corporativa:</strong><br>' + escH(prev.comentari_admin || 'Sense motiu especificat');
   } else if(isAdminApproved) {
-      body.appendChild(el('div','admin-alert-ok')).textContent = '✅ Aprovat per Direcció';
+      body.appendChild(el('div','admin-alert-ok')).textContent = '✅ Aprovat per Estratègia Corporativa';
   }
 
   const NFIELDS=[
@@ -837,7 +893,9 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
     wrap.appendChild(lbl); wrap.appendChild(ta); body.appendChild(wrap);
   });
   
-  body.appendChild(makeAZ(tid,prev,true)); card.appendChild(body); return {el:card, id:tid, isNew:true, sub};
+  body.appendChild(makeAZ(tid,prev,true)); card.appendChild(body); 
+  
+  return {el:card, id:tid, isNew:true, sub:sub};
 }
 
 /* ══ FILTRE TAULES ADMIN ══ */
@@ -851,14 +909,13 @@ window.filterAdminViews = function(val) {
 /* ══ RENDER DASHBOARD USUARI NORMAL ══ */
 function renderUserDashboard() {
     const area = $('user-view');
-    // CORRECCIÓ: Ara el dashboard recull TOTS els treballs de l'usuari (també els "simplement validats")
     const myResp = resp.filter(r => r.email === sess.email && (r.id_enfocament.startsWith('NEW-') || r.sug_desplegament || r.sug_avaluacio || r.sug_evidencies || r.comentari_general || r.validat === true || r.validat === 'true' || r.validat === 'TRUE'));
     
     let html = `
     <div class="admin-section">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem; flex-wrap:wrap; gap:1rem;">
             <div class="admin-title" style="margin:0;">📊 Resum de les meves aportacions</div>
-            <button class="btn btn-primary" onclick="downloadUserSummary('${sess.email}', '${sess.nom}')">⬇️ Descarregar el meu resum (.doc)</button>
+            <button class="btn btn-primary" onclick="downloadUserSummary('${escJS(sess.email)}', '${escJS(sess.nom)}')">⬇️ Descarregar el meu resum (.doc)</button>
         </div>
         <div style="font-size:0.75rem; color:var(--g500); margin-bottom:1.5rem;">Dades actualitzades: ${lastSyncTime ? lastSyncTime.toLocaleString() : 'Ara'}</div>`;
     
@@ -868,7 +925,7 @@ function renderUserDashboard() {
         return;
     }
     
-    html += `<table class="admin-table"><thead><tr><th>Tipus</th><th>Enfocament / Títol</th><th>Estat (Direcció)</th><th>Retorn de Direcció</th></tr></thead><tbody>`;
+    html += `<table class="admin-table"><thead><tr><th>Tipus</th><th>Enfocament / Títol</th><th>Estat (Estratègia)</th><th>Retorn d'Estratègia Corporativa</th></tr></thead><tbody>`;
     
     myResp.forEach(r => {
         const isNew = String(r.id_enfocament).startsWith('NEW-');
@@ -881,11 +938,11 @@ function renderUserDashboard() {
         let bcls = 'badge-pend', btxt = 'Pendent de revisió';
         if(r.estat_admin === 'Aprovat') { bcls = 'badge-ok'; btxt = 'Aprovat'; }
         else if(r.estat_admin === 'Descartat') { bcls = 'badge-ko'; btxt = 'Descartat'; }
-        else if(isJustVal) { bcls = 'badge-ok'; btxt = 'Sense canvis (Conforme)'; }
+        else if(isJustVal) { bcls = 'badge-neutral'; btxt = 'Sense canvis (Conforme)'; }
         
         let typeCls = 'badge-pend', typeTxt = 'MILLORA';
         if(isNew) { typeCls = 'badge-ok'; typeTxt = 'NOU'; }
-        else if(isJustVal) { typeCls = 'badge-ok'; typeTxt = 'REVISAT'; }
+        else if(isJustVal) { typeCls = 'badge-neutral'; typeTxt = 'REVISAT'; }
 
         html += `<tr>
             <td><span class="${typeCls}">${typeTxt}</span></td>
@@ -932,7 +989,7 @@ function renderAdminDashboard(){
     const filterContainer = el('div'); filterContainer.innerHTML = filterHtml;
     actionRow.appendChild(filterContainer);
 
-    const btnPdf = el('button', 'btn btn-primary', '📄 Generar Informe Memòria amb Millores (PDF)');
+    const btnPdf = el('button', 'btn btn-primary', '📄 Generar Informe Memòria amb Millores (.doc)');
     btnPdf.onclick = () => {
         if(pendentsAdmin.length > 0) {
             if(!confirm(`⚠️ ATENCIÓ:\n\nHi ha ${pendentsAdmin.length} enfocaments nous pendents de validar que NO sortiran a l'informe.\n\nVols generar l'informe de totes maneres?`)) return;
@@ -987,7 +1044,7 @@ function renderAdminDashboard(){
                     <span style="font-size:.7rem; color:var(--g500); min-width:35px; text-align:right;">${pct}%</span>
                 </div>
             </td>
-            <td><button class="btn btn-ghost btn-sm" onclick="downloadUserSummary('${escH(u.email_autoritzat)}', '${escH(u.nom_usuari)}')">⬇️ Descarregar resum (.doc)</button></td>
+            <td><button class="btn btn-ghost btn-sm" onclick="downloadAdminUserSummary('${escJS(u.email_autoritzat)}', '${escJS(u.nom_usuari)}')">⬇️ Descarregar resum (.doc)</button></td>
         `;
         tb0.appendChild(tr);
     });
@@ -1016,7 +1073,7 @@ function renderAdminDashboard(){
             <td>${escH(r.sug_titol_enfocament || 'Sense títol')}</td>
             <td>${escH(r.nom_visible)}<br><small style="color:var(--g300)">${escH(r.area_revisora)}</small></td>
             <td><span class="${bcls}">${btxt}</span></td>
-            <td><button class="btn-sm btn-sm-vio" onclick="openAdminModal('${r.id_enfocament}', '${r.email}')">Revisar</button></td>
+            <td><button class="btn-sm btn-sm-vio" onclick="openAdminModal('${escJS(r.id_enfocament)}', '${escJS(r.email)}')">Revisar</button></td>
         `;
         tb1.appendChild(tr);
     });
@@ -1058,7 +1115,7 @@ function renderAdminDashboard(){
             </td>
             <td>${escH(r.nom_visible)} <small style="color:var(--g300)">(${escH(r.area_revisora)})</small></td>
             <td><span class="${bcls}">${btxt}</span></td>
-            <td><button class="btn-sm btn-sm-vio" onclick="openAdminModal('${r.id_enfocament}', '${r.email}')">Revisar</button></td>
+            <td><button class="btn-sm btn-sm-vio" onclick="openAdminModal('${escJS(r.id_enfocament)}', '${escJS(r.email)}')">Revisar</button></td>
         `;
         tb2.appendChild(tr);
     });
@@ -1185,7 +1242,15 @@ async function submitAdminDecision(estat){
 }
 
 /* ══ EXPORTACIÓ A WORD - RESUM USUARI ══ */
+function downloadAdminUserSummary(email, nomUsuari) {
+    _downloadSummary(email, nomUsuari);
+}
+
 function downloadUserSummary(email, nomUsuari) {
+    _downloadSummary(email, nomUsuari);
+}
+
+function _downloadSummary(email, nomUsuari) {
     const uResp = resp.filter(r => r.email === email && (r.estat_admin === 'Aprovat' || r.estat_admin === 'Descartat'));
     if(uResp.length === 0) { toast("Aquest usuari no té decisions preses encara.", "tinfo"); return; }
 
@@ -1196,7 +1261,7 @@ function downloadUserSummary(email, nomUsuari) {
         else { isN ? eDes.push(r) : pDes.push(r); }
     });
 
-    let h = `<div style="font-family:sans-serif; color:#333;"><h2>Resum de decisions - Memòria EFQM</h2><p>Aquest és el retorn de la Direcció sobre les teves aportacions:</p>`;
+    let h = `<div style="font-family:sans-serif; color:#333;"><h2>Resum de decisions - Memòria EFQM</h2><p>Aquest és el retorn d'Estratègia Corporativa sobre les teves aportacions:</p>`;
 
     if(pInc.length>0){
         h += `<h3 style="color:#16a34a">[ACTUALITZAT] Propostes incorporades a la memòria</h3><ul>`;
@@ -1244,7 +1309,7 @@ function downloadUserSummary(email, nomUsuari) {
 
 /* ══ EXPORTACIÓ A WORD - MEMÒRIA GLOBAL ══ */
 function exportToWord() {
-    let pa = '<h1 style="text-align:center; color:#0083A9;">Informe Memòria EFQM amb Millores</h1><p style="text-align:center; font-style:italic; font-size:12px; margin-bottom:40px; color:#666;">Aquest document mostra el text original de la memòria. A sota de cada apartat hi figuren les propostes de millora que han estat aprovades per la direcció per tal de facilitar-ne la integració manual al document oficial.</p><br>';
+    let pa = '<h1 style="text-align:center; color:#0083A9;">Informe Memòria EFQM amb Millores</h1><p style="text-align:center; font-style:italic; font-size:12px; margin-bottom:40px; color:#666;">Aquest document mostra el text original de la memòria. A sota de cada apartat hi figuren les propostes de millora que han estat aprovades per Estratègia Corporativa per tal de facilitar-ne la integració manual al document oficial.</p><br>';
 
     Object.keys(cData).sort().forEach(c => {
         pa += `<h2 style="color:#0083A9; border-bottom:2px solid #0083A9;">Criteri ${c} - ${escH(cData[c].titol)}</h2>`;
@@ -1370,16 +1435,42 @@ function updProgress(){
 function setF(f,btn){ curF=f; document.querySelectorAll('.tog-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); applyF(); }
 function applyF(){
   const kw=document.getElementById('srch').value.toLowerCase().trim();
+  
+  // Guardem l'estat original abans de filtrar només si estem començant a escriure
+  if (kw && collapsedStateBeforeSearch.length === 0) {
+      document.querySelectorAll('.sb.collapsed').forEach(b => collapsedStateBeforeSearch.push(b.dataset.s));
+  }
+
   (cards[curC]||[]).forEach(({el:e})=>{
     let show=true;
-    // Fix: El filtre nous només mira que sigui nou, independentment de si està desat o no
     if(curF==='pending') show = !e.classList.contains('saved');
     else if(curF==='validated') show = e.classList.contains('saved');
     else if(curF==='new') show = e.dataset.isNew==='1';
     if(show&&kw) show=(e.dataset.st||'').includes(kw);
     e.style.display=show?'':'none';
   });
-  document.querySelectorAll('.sb').forEach(b=>{ b.style.display=[...b.querySelectorAll('.card')].some(c=>c.style.display!=='none')?'':'none'; });
+
+  document.querySelectorAll('.sb').forEach(b=>{ 
+      const hasVis = [...b.querySelectorAll('.card')].some(c=>c.style.display!=='none');
+      b.style.display = hasVis ? '' : 'none'; 
+      
+      if (kw && hasVis) {
+          b.classList.remove('collapsed');
+      }
+      
+      // RESTAURAR COL·LAPSE EN ESBORRAR
+      if (!kw) {
+          if (collapsedStateBeforeSearch.includes(b.dataset.s)) {
+              b.classList.add('collapsed');
+          } else {
+              b.classList.remove('collapsed');
+          }
+      }
+  });
+  
+  if (!kw) {
+      collapsedStateBeforeSearch = [];
+  }
 }
 
 function cardData(id){
@@ -1420,6 +1511,7 @@ async function saveNew(tid,btn){
   
   if (faltan) {
       toast('⚠️ Avís: Falten camps obligatoris per omplir.', 'terr');
+      setSync('err');
       return;
   }
 
@@ -1448,13 +1540,6 @@ async function doSave(payload,id,btn,orig,isNew, isDone){
 
 function updResp(p){ const i=resp.findIndex(r=>r.email===p.email&&r.id_enfocament===p.id_enfocament); if(i>=0) Object.assign(resp[i],p); else resp.push(p); }
 
-/* ══ UTILS ══ */
-const $=id=>document.getElementById(id);
-const el=(tag,cls,txt)=>{ const e=document.createElement(tag); if(cls) e.className=cls; if(txt!==undefined) e.textContent=txt; return e; };
-const wait=ms=>new Promise(r=>setTimeout(r,ms));
-const escH=t=>String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-function toast(msg,cls){ const c=$('toasts'); const t=el('div','toast '+(cls||'')); t.textContent=msg; c.appendChild(t); setTimeout(()=>t.remove(),3400); }
-function showErr(e,m){ e.textContent=m; e.classList.remove('hidden'); }
 </script>
 </body>
 </html>
