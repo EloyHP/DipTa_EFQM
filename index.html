@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
+
 <title>Revisió Memòria EFQM - La DipTa</title>
 <style>
 /* ══ CONFIGURACIÓ DE COLORS CORPORATIUS La DipTa ══ */
@@ -12,13 +15,13 @@
   --navy-pale: #e6f6fa;  
   --gray-dipta: #747678; 
   --black-dipta: #000000;
-
+  
   --orange: #f97316; --green: #16a34a; --red: #dc2626;
   --violet: #7c3aed; --vp: #f5f3ff; --vb: #c4b5fd;
   --bg: #f0f4f8; --white: #fff;
   --g50: #f8fafc; --g100: #e2e8f0; --g200: #cbd5e1;
   --g300: #94a3b8; --g500: #64748b; --g700: #334155; --g900: #0f172a;
-
+  
   --sh: 0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.05);
   --sh2: 0 4px 16px rgba(0,0,0,.1);
   --r: 10px; --tr: .17s ease;
@@ -87,17 +90,25 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .sw input{padding:.32rem .62rem .32rem 1.82rem;font-size:.79rem;height:29px}
 .s-ico{position:absolute;left:.5rem;top:50%;transform:translateY(-50%);color:var(--g300);font-size:.8rem;pointer-events:none}
 
+.toolbar-actions { display:flex; gap:0.5rem; margin-left:auto; }
+
 .scroll-area{flex:1;overflow-y:auto;padding:.9rem 1.2rem 3rem}
 
 .sb{margin-bottom:1.5rem}
 
 .sub-sticky{position:sticky;top:0;z-index:50;background:var(--white);border-radius:8px;box-shadow:var(--sh);margin-bottom:.55rem;overflow:hidden;border:1px solid var(--g100)}
-.sub-title-row{display:flex;align-items:center;gap:.6rem;padding:.5rem .82rem}
+.sub-title-row{display:flex;align-items:center;gap:.6rem;padding:.5rem .82rem; cursor:pointer; transition:background var(--tr);}
+.sub-title-row:hover{background:var(--g50);}
 .sub-num{font-size:.68rem;font-weight:700;background:var(--navy);color:#fff;padding:.08rem .42rem;border-radius:5px;flex-shrink:0}
 .sub-title{font-size:.86rem;font-weight:800;color:var(--navy);flex:1; display:flex; align-items:center; gap:.5rem;}
 
 .sub-prog { font-size: .7rem; background: var(--g100); color: var(--g700); padding: .15rem .45rem; border-radius: 99px; font-weight: 700; transition: all var(--tr);}
 .sub-prog.done { background: #dcfce7; color: #166534; }
+.sub-chev { font-size: 0.8rem; color: var(--navy); transition: transform var(--tr); margin-right: 2px; }
+
+.sb.collapsed .sb-content { display: none; }
+.sb.collapsed .sub-chev { transform: rotate(-90deg); }
+.sb-content { padding-top: 0.5rem; }
 
 .efqm-btn{background:transparent;border:1.5px solid var(--g100);border-radius:6px;padding:.26rem .62rem;cursor:pointer;font-size:.73rem;font-weight:600;transition:background var(--tr);white-space:nowrap;flex-shrink:0}
 
@@ -340,8 +351,12 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
         <span class="s-ico">🔍</span>
         <input type="text" id="srch" placeholder="Cerca…" oninput="applyF()"/>
       </div>
+      <div class="toolbar-actions">
+          <button class="btn btn-ghost" style="padding:.3rem .6rem; font-size:.7rem" onclick="expandAllSub()">▼ Expandir tot</button>
+          <button class="btn btn-ghost" style="padding:.3rem .6rem; font-size:.7rem" onclick="collapseAllSub()">▶ Col·lapsar tot</button>
+      </div>
     </div>
-
+    
     <div class="scroll-area" id="sarea"></div>
     <div class="scroll-area hidden" id="admin-view" style="background: var(--bg);"></div>
     <div class="scroll-area hidden" id="user-view" style="background: var(--bg);"></div>
@@ -355,15 +370,15 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
       <button class="close-btn" onclick="closeModal()">✕</button>
     </div>
     <div class="modal-body" id="modal-content"></div>
-
+    
     <div id="admin-feedback-section" style="padding: 0 1.5rem 1rem;">
       <label style="margin-top:0;">Comentari intern / a l'usuari (Obligatori si es descarta)</label>
-      <textarea id="admin-comment" rows="2" placeholder="Anota el motiu..."></textarea>
+      <textarea id="admin-comment" rows="2" style="width:100%; border:1px solid var(--g200); border-radius:6px; padding:0.5rem" placeholder="Anota el motiu..."></textarea>
     </div>
 
     <div class="modal-footer" id="modal-footer">
       <button class="btn btn-danger" id="btn-ko" onclick="submitAdminDecision('Descartat')">❌ Descartar proposta</button>
-      <button class="btn btn-primary" id="btn-ok" style="background:#16a34a;" onclick="submitAdminDecision('Aprovat')">✅ Aprovar i incloure a l'informe</button>
+      <button class="btn btn-primary" id="btn-ok" style="background:#16a34a;" onclick="submitAdminDecision('Aprovat')">✅ Desar decisions d'aprovació</button>
     </div>
   </div>
 </div>
@@ -381,16 +396,38 @@ let mem=[], resp=[], usuaris=[], sess=null;
 let cData={}, curC=null, curF='all';
 let cards={}, nc=0;
 let currentAdminCardId = null;
-let lastSyncTime = null;
-let lastSyncTime = null; // TIMESTAMP DE CÀRREGA
+let lastSyncTime = null; 
+let collapsedStateBeforeSearch = []; 
+
+/* ══ UTILS ══ */
+const $ = id => document.getElementById(id);
+const el = (tag,cls,txt) => { const e=document.createElement(tag); if(cls) e.className=cls; if(txt!==undefined) e.textContent=txt; return e; };
+const wait = ms => new Promise(r=>setTimeout(r,ms));
+const escH = t => String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const escJS = t => String(t||'').replace(/'/g, "\\'").replace(/"/g, "&quot;");
+
+function toast(msg,cls){ const c=$('toasts'); const t=el('div','toast '+(cls||'')); t.textContent=msg; c.appendChild(t); setTimeout(()=>t.remove(),3400); }
+function showErr(e,m){ e.textContent=m; e.classList.remove('hidden'); }
 
 /* ══ SYNC UI ══ */
 function setSync(state) {
-    const s = document.getElementById('sync-status');
+    const s = $('sync-status');
     if(state === 'syncing') { s.innerHTML = '🔄 Guardant...'; s.className = 'syncing'; }
     else if(state === 'ok') { s.innerHTML = '✅ Guardat'; s.className = ''; setTimeout(()=>setSync('idle'), 3000); }
     else if(state === 'err') { s.innerHTML = '❌ Error'; s.className = ''; }
     else { s.innerHTML = '☁️ Connectat'; s.className = ''; }
+}
+
+/* ══ API ══ */
+async function api(method, body){
+  const o = { redirect: 'follow' };
+  if(method === 'POST'){
+    o.method = 'POST';
+    o.headers = { 'Content-Type': 'text/plain;charset=utf-8' };
+    o.body = JSON.stringify(body);
+  }
+  const r = await fetch(APPS_SCRIPT_URL, o);
+  return r.json();
 }
 
 /* ══ INIT ══ */
@@ -398,57 +435,47 @@ window.addEventListener('DOMContentLoaded', async ()=>{
   const st=localStorage.getItem('efqm_v4');
   if(st){
     sess=JSON.parse(st);
-    document.getElementById('wname').textContent='Benvinguda/t de nou, '+sess.nom;
-    document.getElementById('wsub').textContent=sess.email+' · '+sess.area;
-    document.getElementById('wblock').classList.remove('hidden');
-    document.getElementById('lform').classList.add('hidden');
+    $('wname').textContent='Benvinguda/t de nou, '+sess.nom;
+    $('wsub').textContent=sess.email+' · '+sess.area;
+    $('wblock').classList.remove('hidden');
+    $('lform').classList.add('hidden');
   }
   await loadBackendData();
 });
 
-async function api(method, body){
-  const o = { redirect: 'follow' };
-  if(method === 'POST'){ 
-    o.method = 'POST'; 
-    o.headers = { 'Content-Type': 'text/plain;charset=utf-8' }; 
-    o.body = JSON.stringify(body); 
-  }
-  const r = await fetch(APPS_SCRIPT_URL, o);
-  return r.json();
-}
-
 async function loadBackendData(){
   if(!APPS_SCRIPT_URL) return;
   try{
-    const btn = document.getElementById('btn-login');
+    const btn = $('btn-login');
     if(btn) { btn.textContent = 'Carregant base de dades...'; btn.disabled = true; }
-
-    const d=await api('GET');
+    
+    // Fer crida GET a l'Apps Script
+    const d = await api('GET');
+    
     mem=d.memoria||[]; 
-    resp=d.respostes||[];
+    resp=d.respostes||[]; 
     usuaris=d.usuaris||[]; 
-
     lastSyncTime = new Date();
-    lastSyncTime = new Date(); // Guardem el moment de la descàrrega
-
+    
     const sanitize = arr => arr.forEach(r => Object.keys(r).forEach(k => r[k] = r[k] != null ? String(r[k]).trim() : ''));
     sanitize(mem); sanitize(resp); sanitize(usuaris);
-
+    
     if(btn) { btn.textContent = 'Accedir a la revisió'; btn.disabled = false; }
   } catch(e){ 
-    showErr(document.getElementById('ferr'), 'Error connectant amb el servidor. Recarrega la pàgina.');
+    showErr($('ferr'), 'Error connectant amb el servidor. Recarrega la pàgina.');
   }
 }
 
-/* ══ LOGIN ══ */
+/* ══ LOGIN CLÀSSIC (CLIENT-SIDE) ══ */
 function doLogin(){
   const email = $('fe').value.trim().toLowerCase();
   const err = $('ferr');
-
+  
   if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ showErr(err,'Introdueix un correu electrònic vàlid.'); return; }
   if(usuaris.length === 0){ showErr(err,'Encara s\'està carregant la base de dades, espera un segon...'); return; }
 
-  const user = usuaris.find(u => String(u.email_autoritzat || '').toLowerCase() === email);
+  // Busquem l'usuari asseggurant-nos de netejar espais invisibles de l'Excel
+  const user = usuaris.find(u => String(u.email_autoritzat || '').trim().toLowerCase() === email);
   if(!user){ showErr(err, 'Accés denegat. Aquest correu no està a la llista d\'usuaris autoritzats.'); return; }
 
   err.classList.add('hidden');
@@ -479,9 +506,9 @@ async function loadData(){
     $('sarea').innerHTML='<p style="color:var(--g300);padding:2rem;text-align:center">Processant dades…</p>';
     if(mem.length === 0 && APPS_SCRIPT_URL) await loadBackendData();
     mem.sort((a,b) => String(a.id || '').localeCompare(String(b.id || '')));
-
+    
     buildData(); buildTabs();
-
+    
     if(isGlobal()) showAdminView();
     else {
         const first=Object.keys(cData).sort()[0];
@@ -512,7 +539,7 @@ function buildData(){
     const c=String(row.criteri), s=String(row.subcriteri);
     if(!cData[c]) cData[c]={titol:row.titol_criteri||'',subs:{}};
     if(!cData[c].titol&&row.titol_criteri) cData[c].titol=row.titol_criteri;
-
+    
     if(!cData[c].subs[s]) cData[c].subs[s]={
         titol:row.titol_subcriteri||'',
         que_diu:'',
@@ -524,7 +551,7 @@ function buildData(){
     if(row.que_diu_el_model && row.que_diu_el_model.trim() !== '') target.que_diu = row.que_diu_el_model;
     if(row.preg_avaluadors && row.preg_avaluadors.trim() !== '') target.preg_avaluadors = row.preg_avaluadors;
     if(row.informe_ant && row.informe_ant.trim() !== '') target.informe_ant = row.informe_ant;
-
+    
     cData[c].subs[s].rows.push(row);
   });
 }
@@ -532,7 +559,7 @@ function buildData(){
 /* ══ TABS ══ */
 function buildTabs(){
   const nav=$('ctabs'); nav.innerHTML='';
-
+  
   if(isGlobal()) {
       const ba=el('button','ctab ctab-admin','👑 Administració');
       ba.onclick=()=>showAdminView(); nav.appendChild(ba);
@@ -544,7 +571,6 @@ function buildTabs(){
     b.onclick=()=>selCrit(c); nav.appendChild(b);
   });
 
-  // NOU: Pestanya de l'usuari
   const bu = document.createElement('button');
   bu.className = 'ctab ctab-user';
   bu.dataset.c = 'user_summary';
@@ -566,12 +592,11 @@ function selCrit(c){
   $('user-view').classList.add('hidden');
   $('sarea').classList.remove('hidden');
   $('main-toolbar').style.display='flex';
-  $('top-prog').style.display='flex';
-  $('top-prog').style.display='flex'; // Tornem a mostrar la barra de progrés
-
+  $('top-prog').style.display='flex'; 
+  
   document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('active'));
-  document.querySelector('.ctab[data-c="'+c+'"]').classList.add('active');
-
+  document.querySelector(`.ctab[data-c="${c}"]`).classList.add('active');
+  
   $('srch').value=''; curF='all';
   document.querySelectorAll('.tog-btn').forEach((b,i)=>b.classList.toggle('active',i===0));
   renderCrit(c);
@@ -583,12 +608,11 @@ function showAdminView(){
   $('user-view').classList.add('hidden');
   $('admin-view').classList.remove('hidden');
   $('main-toolbar').style.display='none';
-  $('top-prog').style.display='none';
-  $('top-prog').style.display='none'; // Ocultem a la vista admin
+  $('top-prog').style.display='none'; 
 
   document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('active'));
   document.querySelector('.ctab-admin').classList.add('active');
-
+  
   renderAdminDashboard();
 }
 
@@ -598,14 +622,21 @@ function showUserSummary(btnElement){
   $('admin-view').classList.add('hidden');
   $('user-view').classList.remove('hidden');
   $('main-toolbar').style.display='none';
-  $('top-prog').style.display='none';
-  $('top-prog').style.display='none'; // Ocultem a la vista usuari
+  $('top-prog').style.display='none'; 
 
   document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('active'));
   btnElement.classList.add('active');
-
+  
   renderUserDashboard();
 }
+
+/* ══ COLLAPSE/EXPAND ALL ══ */
+window.expandAllSub = function() {
+    document.querySelectorAll('.sb').forEach(sb => sb.classList.remove('collapsed'));
+};
+window.collapseAllSub = function() {
+    document.querySelectorAll('.sb').forEach(sb => sb.classList.add('collapsed'));
+};
 
 /* ══ RENDER CRITERI NORMAL ══ */
 function renderCrit(c){
@@ -614,62 +645,76 @@ function renderCrit(c){
   const exNew=(cards[c]||[]).filter(x=>x.isNew);
   cards[c]=[];
 
+  let idx = 0;
   Object.keys(cData[c].subs).sort().forEach(s=>{
     const sub=cData[c].subs[s];
     const blk=el('div','sb'); blk.dataset.s=s;
+    if (idx !== 0) blk.classList.add('collapsed');
+    idx++;
 
     const sticky=el('div','sub-sticky');
     const tr=el('div','sub-title-row');
-
+    tr.onclick = (e) => {
+        if(e.target.closest('button')) return;
+        blk.classList.toggle('collapsed');
+    };
+    
+    tr.appendChild(el('span', 'sub-chev', '▼'));
     tr.appendChild(el('span','sub-num',s));
     const titleWrap = el('div','sub-title');
     titleWrap.appendChild(document.createTextNode(sub.titol||s));
     const subProg = el('span', 'sub-prog', '0 / 0');
     titleWrap.appendChild(subProg);
     tr.appendChild(titleWrap);
-
+    
     const actions = el('div'); actions.style.display = 'flex'; actions.style.gap = '.5rem'; actions.style.flexWrap = 'wrap';
     let ep = null, evp = null, ip = null;
 
     if(sub.que_diu && sub.que_diu !== ''){
       const eb=el('button','efqm-btn model-btn','📖 Què diu el model?');
       ep=el('div','efqm-panel'); ep.textContent=sub.que_diu; 
-      eb.onclick=()=>{ ep.classList.toggle('open'); eb.textContent=(ep.classList.contains('open')?'▲ ':'📖 ')+'Què diu el model?'; };
+      eb.onclick=(e)=>{ e.stopPropagation(); ep.classList.toggle('open'); eb.textContent=(ep.classList.contains('open')?'▲ ':'📖 ')+'Què diu el model?'; };
       actions.appendChild(eb);
     }
-
+    
     if(sub.preg_avaluadors && sub.preg_avaluadors !== ''){
       const evb=el('button','efqm-btn eval-btn','❓ Preguntes avaluadors');
       evp=el('div','eval-panel'); evp.textContent=sub.preg_avaluadors; 
-      evb.onclick=()=>{ evp.classList.toggle('open'); evb.textContent=(evp.classList.contains('open')?'▲ ':'❓ ')+'Preguntes avaluadors'; };
+      evb.onclick=(e)=>{ e.stopPropagation(); evp.classList.toggle('open'); evb.textContent=(evp.classList.contains('open')?'▲ ':'❓ ')+'Preguntes avaluadors'; };
       actions.appendChild(evb);
     }
 
     if(sub.informe_ant && sub.informe_ant !== ''){
       const ib=el('button','efqm-btn prev-btn','💡 Informe anterior');
       ip=el('div','prev-panel'); ip.textContent=sub.informe_ant; 
-      ib.onclick=()=>{ ip.classList.toggle('open'); ib.textContent=(ip.classList.contains('open')?'▲ ':'💡 ')+'Informe anterior'; };
+      ib.onclick=(e)=>{ e.stopPropagation(); ip.classList.toggle('open'); ib.textContent=(ip.classList.contains('open')?'▲ ':'💡 ')+'Informe anterior'; };
       actions.appendChild(ib);
     }
 
     if(actions.childNodes.length > 0) tr.appendChild(actions);
+    
     sticky.appendChild(tr); if(ep) sticky.appendChild(ep); if(evp) sticky.appendChild(evp); if(ip) sticky.appendChild(ip);
     blk.appendChild(sticky);
 
-    sub.rows.forEach(row=>{ const card=buildCard(row,c); blk.appendChild(card.el); cards[c].push(card); });
-    exNew.filter(x=>x.sub===s).forEach(x=>{ blk.appendChild(x.el); cards[c].push(x); });
+    const contentWrap = el('div', 'sb-content');
+
+    sub.rows.forEach(row=>{ const card=buildCard(row,c); contentWrap.appendChild(card.el); cards[c].push(card); });
+    exNew.filter(x=>x.sub===s).forEach(x=>{ contentWrap.appendChild(x.el); cards[c].push(x); });
 
     const strSearch = 'NEW-' + c + '-' + s + '-';
     resp.filter(r => r.email === sess.email && r.id_enfocament && String(r.id_enfocament).startsWith(strSearch)).forEach(r => {
       if (!exNew.find(x => x.id === r.id_enfocament)) {
         const card = buildNewCard(r.id_enfocament, c, s, sub.titol, r);
-        blk.appendChild(card.el); cards[c].push(card);
+        contentWrap.appendChild(card.el); cards[c].push(card);
       }
     });
 
     const ab=el('button','btn-add'); ab.innerHTML='➕ Proposar un nou enfocament per a <strong style="margin-left:.25rem">'+escH(s)+'</strong>';
-    ab.addEventListener('click',()=>insertNew(c,s,sub.titol,blk,ab));
-    blk.appendChild(ab); area.appendChild(blk);
+    ab.addEventListener('click',()=>{ insertNew(c,s,sub.titol,contentWrap,ab); blk.classList.remove('collapsed'); });
+    contentWrap.appendChild(ab); 
+    
+    blk.appendChild(contentWrap);
+    area.appendChild(blk);
   });
   updProgress(); updTabPending(); 
 }
@@ -678,14 +723,14 @@ function buildCard(row,crit){
   const id=row.id||'';
   const prev=resp.find(r=>r.email===sess.email&&r.id_enfocament===id);
   const card=document.createElement('div');
-
+  
   const isAdminRejected = prev && prev.estat_admin === 'Descartat';
   const isAdminApproved = prev && prev.estat_admin === 'Aprovat';
   const isChecked = prev&&(prev.validat===true||prev.validat==='TRUE'||prev.validat==='1'||prev.validat===1||prev.validat==='true');
-
+  
   card.className='card'+(isChecked?' saved':' pending');
   card.dataset.id=id; card.dataset.isNew='0';
-
+  
   const searchString = [
       row.titol_enfocament, row.enfocament, row.desplegament, row.avaluacio, row.evidencies, row.titol_subcriteri,
       prev?.sug_desplegament, prev?.sug_avaluacio, prev?.sug_evidencies, prev?.comentari_general
@@ -694,7 +739,7 @@ function buildCard(row,crit){
 
   const sum=el('div','card-sum');
   sum.appendChild(el('span','cs-title',row.titol_enfocament||'(sense títol)'));
-
+  
   let bcls = isChecked ? 'bs' : 'bp'; let btxt = isChecked ? 'Revisat ✅' : '● Pendent';
   if(isAdminRejected) { bcls = 'bdismiss'; btxt = '❌ Descartat'; }
   const sbadge = el('span','cs-badge '+bcls, btxt);
@@ -703,12 +748,12 @@ function buildCard(row,crit){
   card.appendChild(sum);
 
   const body=el('div','card-body');
-
+  
   if(isAdminRejected) {
       const alert = el('div','admin-alert'); alert.innerHTML = '<strong>❌ Descartat per Estratègia Corporativa:</strong><br>' + escH(prev.comentari_admin || 'Sense comentaris');
       body.appendChild(alert);
   } else if(isAdminApproved) {
-      const alert = el('div','admin-alert-ok','✅ Aprovat per Direcció'); body.appendChild(alert);
+      const alert = el('div','admin-alert-ok','✅ Aprovat per Estratègia Corporativa'); body.appendChild(alert);
   }
 
   const BLOCKS=[
@@ -728,7 +773,7 @@ function buildCard(row,crit){
     if(b.taKey){
       const pl=el('span','prop-lbl','Proposta de millora');
       const ta=document.createElement('textarea'); ta.className='prop-ta'; ta.dataset.key=b.taKey; ta.rows=2; ta.value=b.taVal||'';
-
+      
       ta.addEventListener('input',()=>{ 
           markPending(id); 
           acc.classList.toggle('has-content',ta.value.trim()!==''); 
@@ -756,13 +801,13 @@ function makeAZ(id,prev,isNew){
   const cw=el('div','cmt-w');
   const cta=document.createElement('textarea'); cta.className='ta-cmt'; cta.dataset.card=id;
   cta.rows=2; cta.placeholder='Comentari (opcional)'; cta.value=prev?.comentari_general||'';
-
+  
   cta.addEventListener('input',(e)=>{ 
       markPending(id); 
       const card = document.querySelector(`.card[data-id="${id}"]`);
       if(card) card.dataset.st += ' ' + e.target.value.toLowerCase();
   });
-
+  
   cw.appendChild(cta); az.appendChild(cw);
   const sb=document.createElement('button');
   if(isNew){ sb.className='btn-sn btn-sc'; sb.textContent= prev ? 'Actualitzar proposta' : 'Desar proposta'; sb.addEventListener('click',()=>saveNew(id,sb)); } 
@@ -770,12 +815,12 @@ function makeAZ(id,prev,isNew){
   az.appendChild(sb); return az;
 }
 
-function insertNew(crit,sub,subTitol,blk,addBtn){
+function insertNew(crit,sub,subTitol,contentWrap,addBtn){
   const tid='NEW-'+crit+'-'+sub+'-'+Date.now();
-  const card=buildNewCard(tid,crit,sub,subTitol);
-  blk.insertBefore(card.el,addBtn); cards[crit]=cards[crit]||[]; cards[crit].push(card);
+  const cardObj=buildNewCard(tid,crit,sub,subTitol);
+  contentWrap.insertBefore(cardObj.el,addBtn); cards[crit]=cards[crit]||[]; cards[crit].push(cardObj);
   updProgress(); updTabPending();
-  setTimeout(()=>card.el.scrollIntoView({behavior:'smooth',block:'nearest'}),60);
+  setTimeout(()=>cardObj.el.scrollIntoView({behavior:'smooth',block:'nearest'}),60);
 }
 
 function buildNewCard(tid,crit,sub,subTitol,prev=null){
@@ -784,45 +829,53 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
   const isAdminApproved = prev && prev.estat_admin === 'Aprovat';
 
   card.className='card cnew ' + (prev ? 'saved' : 'pending expanded') + (isAdminRejected ? ' rejected' : '');
+  
+  // FIX: Guardar criteri i subcriteri per enviar al backend correctament
   card.dataset.id=tid; card.dataset.isNew='1'; card.dataset.crit=crit; card.dataset.sub=sub; 
   card.dataset.st = prev ? Object.values(prev).join(' ').toLowerCase() : '';
 
   const ban=el('div','new-banner'); ban.style.cursor='pointer'; ban.addEventListener('click',()=>card.classList.toggle('expanded'));
-
+  
   const nl=el('div','new-label'); 
   const pillClass = isAdminRejected ? 'new-pill rejected-pill' : 'new-pill';
   const pillText = isAdminRejected ? 'DESCARTAT' : 'NOU';
   nl.innerHTML=`<span class="${pillClass}">${pillText}</span>`;
-
+  
   const titleSpan = el('span', 'new-title-text', prev ? (prev.sug_titol_enfocament || 'Nou Enfocament') : 'Escriu el títol...');
   nl.appendChild(titleSpan);
 
   const rm=el('button','btn-rm'); rm.innerHTML='🗑️ Eliminar'; 
   rm.addEventListener('click', async (e)=>{
     e.stopPropagation(); 
-    if(!card.classList.contains('saved')){ card.remove(); cards[crit]=(cards[crit]||[]).filter(x=>x.id!==tid); updProgress(); updTabPending(); } 
+    if(!confirm('Segur que vols eliminar-lo definitivament?')) return;
+    
+    // FIX: Eliminar només localment si no està desat, sense recarregar la pàgina
+    if(!card.classList.contains('saved')){ 
+        card.remove(); 
+        cards[crit]=(cards[crit]||[]).filter(x=>x.id!==tid); 
+        updProgress(); updTabPending(); 
+    } 
     else {
-      if(confirm('Segur que vols eliminar-lo definitivament?')){
         const origBtn = rm.innerHTML; rm.textContent = '⏳';
         try {
           const r = await api('POST', { action: 'delete', email: sess.email, id_enfocament: tid, esborrar: true });
-          const r = await api('POST', { action:'delete', email: sess.email, id_enfocament: tid, esborrar: true });
           if(!r.success) throw new Error(r.error);
-          card.remove(); cards[crit]=(cards[crit]||[]).filter(x=>x.id!==tid); resp = resp.filter(r => r.id_enfocament !== tid);
+          card.remove(); 
+          cards[crit]=(cards[crit]||[]).filter(x=>x.id!==tid); 
+          resp = resp.filter(r => r.id_enfocament !== tid);
           updProgress(); updTabPending(); toast('Eliminat.', 'tinfo');
         } catch(err) { rm.innerHTML = origBtn; toast('Error: ' + err.message, 'terr'); }
-      }
     }
   });
-
+  
   ban.appendChild(nl); ban.appendChild(el('span','cs-chev','▼')); ban.appendChild(rm); card.appendChild(ban);
 
   const body=el('div','card-body new-body');
-
+  
   if(isAdminRejected) {
       body.appendChild(el('div','admin-alert')).innerHTML = '<strong>❌ Descartat per Estratègia Corporativa:</strong><br>' + escH(prev.comentari_admin || 'Sense motiu especificat');
   } else if(isAdminApproved) {
-      body.appendChild(el('div','admin-alert-ok')).textContent = '✅ Aprovat per Direcció';
+      body.appendChild(el('div','admin-alert-ok')).textContent = '✅ Aprovat per Estratègia Corporativa';
   }
 
   const NFIELDS=[
@@ -832,7 +885,7 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
     {key:'sug_avaluacio',        cls:'nfl-a', color:'#0369a1',       lbl:'Avaluació', ph:'Com s\'avalua?', cls2:'nta-b', req:true},
     {key:'sug_evidencies',       cls:'nfl-ev',color:'#0f766e',       lbl:'Evidències', ph:'Quines?', cls2:'nta-b', req:true},
   ];
-
+  
   NFIELDS.forEach(f=>{
     const wrap=el('div','nf'); const lbl=el('div','nf-lbl '+f.cls); lbl.innerHTML='<span class="nf-dot" style="background:'+f.color+'"></span>'+escH(f.lbl)+(f.req?'<span class="req">*</span>':'');
     const ta=document.createElement('textarea'); ta.className='nta '+f.cls2; ta.dataset.key=f.key; ta.rows=2; ta.placeholder=f.ph;
@@ -844,8 +897,11 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
     });
     wrap.appendChild(lbl); wrap.appendChild(ta); body.appendChild(wrap);
   });
-
-  body.appendChild(makeAZ(tid,prev,true)); card.appendChild(body); return {el:card, id:tid, isNew:true, sub};
+  
+  body.appendChild(makeAZ(tid,prev,true)); card.appendChild(body); 
+  
+  // FIX: Retornem el subcriteri per poder-lo filtrar
+  return {el:card, id:tid, isNew:true, sub:sub};
 }
 
 /* ══ FILTRE TAULES ADMIN ══ */
@@ -856,32 +912,27 @@ window.filterAdminViews = function(val) {
     });
 };
 
-// Funció helper per escapar el nom de l'usuari als enllaços onclick inline
-const escJS = t => String(t||'').replace(/'/g, "\\'").replace(/"/g, "&quot;");
-
 /* ══ RENDER DASHBOARD USUARI NORMAL ══ */
 function renderUserDashboard() {
     const area = $('user-view');
-    // CORRECCIÓ: Ara el dashboard recull TOTS els treballs de l'usuari (també els "simplement validats")
     const myResp = resp.filter(r => r.email === sess.email && (r.id_enfocament.startsWith('NEW-') || r.sug_desplegament || r.sug_avaluacio || r.sug_evidencies || r.comentari_general || r.validat === true || r.validat === 'true' || r.validat === 'TRUE'));
-
+    
     let html = `
     <div class="admin-section">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem; flex-wrap:wrap; gap:1rem;">
             <div class="admin-title" style="margin:0;">📊 Resum de les meves aportacions</div>
-            <button class="btn btn-primary" onclick="downloadUserSummary(sess.email, sess.nom)">⬇️ Descarregar el meu resum (.doc)</button>
-            <button class="btn btn-primary" onclick="downloadUserSummary('${sess.email}', '${sess.nom}')">⬇️ Descarregar el meu resum (.doc)</button>
+            <button class="btn btn-primary" onclick="downloadUserSummary('${escJS(sess.email)}', '${escJS(sess.nom)}')">⬇️ Descarregar el meu resum (.doc)</button>
         </div>
         <div style="font-size:0.75rem; color:var(--g500); margin-bottom:1.5rem;">Dades actualitzades: ${lastSyncTime ? lastSyncTime.toLocaleString() : 'Ara'}</div>`;
-
+    
     if(myResp.length === 0) {
         html += `<p style="color:var(--g500); text-align:center; padding:2rem;">Encara no has validat cap targeta, fet cap proposta de millora ni creat cap nou enfocament.</p></div>`;
         area.innerHTML = html;
         return;
     }
-
-    html += `<table class="admin-table"><thead><tr><th>Tipus</th><th>Enfocament / Títol</th><th>Estat (Direcció)</th><th>Retorn de Direcció</th></tr></thead><tbody>`;
-
+    
+    html += `<table class="admin-table"><thead><tr><th>Tipus</th><th>Enfocament / Títol</th><th>Estat (Estratègia)</th><th>Retorn d'Estratègia Corporativa</th></tr></thead><tbody>`;
+    
     myResp.forEach(r => {
         const isNew = String(r.id_enfocament).startsWith('NEW-');
         const hasImps = r.sug_desplegament || r.sug_avaluacio || r.sug_evidencies || r.comentari_general;
@@ -889,17 +940,15 @@ function renderUserDashboard() {
 
         const o = mem.find(m => String(m.id) === String(r.id_enfocament));
         const title = isNew ? r.sug_titol_enfocament : (o ? o.titol_enfocament : r.id_enfocament);
-
+        
         let bcls = 'badge-pend', btxt = 'Pendent de revisió';
         if(r.estat_admin === 'Aprovat') { bcls = 'badge-ok'; btxt = 'Aprovat'; }
         else if(r.estat_admin === 'Descartat') { bcls = 'badge-ko'; btxt = 'Descartat'; }
         else if(isJustVal) { bcls = 'badge-neutral'; btxt = 'Sense canvis (Conforme)'; }
-        else if(isJustVal) { bcls = 'badge-ok'; btxt = 'Sense canvis (Conforme)'; }
-
+        
         let typeCls = 'badge-pend', typeTxt = 'MILLORA';
         if(isNew) { typeCls = 'badge-ok'; typeTxt = 'NOU'; }
         else if(isJustVal) { typeCls = 'badge-neutral'; typeTxt = 'REVISAT'; }
-        else if(isJustVal) { typeCls = 'badge-ok'; typeTxt = 'REVISAT'; }
 
         html += `<tr>
             <td><span class="${typeCls}">${typeTxt}</span></td>
@@ -908,7 +957,7 @@ function renderUserDashboard() {
             <td style="color:var(--gray-dipta); font-size:0.8rem; max-width:300px;">${isJustVal ? '---' : escH(r.comentari_admin || '---')}</td>
         </tr>`;
     });
-
+    
     html += `</tbody></table></div>`;
     area.innerHTML = html;
 }
@@ -916,11 +965,11 @@ function renderUserDashboard() {
 /* ══ RENDER DASHBOARD ADMIN ══ */
 function renderAdminDashboard(){
     const area=$('admin-view'); area.innerHTML='';
-
+    
     const novesPropostes = resp.filter(r => String(r.id_enfocament).startsWith('NEW-'));
     const millores = resp.filter(r => !String(r.id_enfocament).startsWith('NEW-') && 
         (r.sug_desplegament || r.sug_avaluacio || r.sug_evidencies || r.sug_titol_enfocament || r.sug_enfocament || r.comentari_general));
-
+    
     const pendentsAdmin = novesPropostes.filter(r => !r.estat_admin || r.estat_admin === '' || r.estat_admin === 'Pendent');
 
     const grid = el('div', 'kpi-grid');
@@ -932,7 +981,7 @@ function renderAdminDashboard(){
     area.appendChild(grid);
 
     const actionRow = el('div'); actionRow.style.marginBottom = '2rem'; actionRow.style.display = 'flex'; actionRow.style.justifyContent = 'space-between'; actionRow.style.alignItems = 'center'; actionRow.style.flexWrap = 'wrap'; actionRow.style.gap = '1rem';
-
+    
     const uniqueAreas = Array.from(new Set(usuaris.flatMap(u => (u.area_assignada||'').split(',').map(a => a.trim())))).filter(a => a && a.toLowerCase() !== 'global' && a.toLowerCase() !== 'totes');
     const filterHtml = `
         <div style="display:flex; align-items:center; gap:.5rem;">
@@ -946,8 +995,7 @@ function renderAdminDashboard(){
     const filterContainer = el('div'); filterContainer.innerHTML = filterHtml;
     actionRow.appendChild(filterContainer);
 
-    const btnPdf = el('button', 'btn btn-primary', '📄 Generar Informe Memòria amb Millores (Word .doc)');
-    const btnPdf = el('button', 'btn btn-primary', '📄 Generar Informe Memòria amb Millores (PDF)');
+    const btnPdf = el('button', 'btn btn-primary', '📄 Generar Informe Memòria amb Millores (.doc)');
     btnPdf.onclick = () => {
         if(pendentsAdmin.length > 0) {
             if(!confirm(`⚠️ ATENCIÓ:\n\nHi ha ${pendentsAdmin.length} enfocaments nous pendents de validar que NO sortiran a l'informe.\n\nVols generar l'informe de totes maneres?`)) return;
@@ -967,7 +1015,7 @@ function renderAdminDashboard(){
         const uEmail = String(u.email_autoritzat||'').toLowerCase().trim();
         const uAreas = String(u.area_assignada||'').toLowerCase().split(',').map(a=>a.trim());
         const isGlob = uAreas.some(a => a.includes('global') || a.includes('totes'));
-
+        
         if(isGlob) return;
 
         let totalCards = 0;
@@ -1002,8 +1050,7 @@ function renderAdminDashboard(){
                     <span style="font-size:.7rem; color:var(--g500); min-width:35px; text-align:right;">${pct}%</span>
                 </div>
             </td>
-            <td><button class="btn btn-ghost btn-sm" onclick="downloadUserSummary('${escJS(u.email_autoritzat)}', '${escJS(u.nom_usuari)}')">⬇️ Descarregar resum (.doc)</button></td>
-            <td><button class="btn btn-ghost btn-sm" onclick="downloadUserSummary('${escH(u.email_autoritzat)}', '${escH(u.nom_usuari)}')">⬇️ Descarregar resum (.doc)</button></td>
+            <td><button class="btn btn-ghost btn-sm" onclick="downloadAdminUserSummary('${escJS(u.email_autoritzat)}', '${escJS(u.nom_usuari)}')">⬇️ Descarregar resum (.doc)</button></td>
         `;
         tb0.appendChild(tr);
     });
@@ -1014,13 +1061,13 @@ function renderAdminDashboard(){
     const t1 = document.createElement('table'); t1.className = 'admin-table';
     t1.innerHTML = `<thead><tr><th>Subcriteri</th><th>Títol</th><th>Usuari / Àrea</th><th>Estat</th><th>Acció</th></tr></thead><tbody></tbody>`;
     const tb1 = t1.querySelector('tbody');
-
+    
     if(novesPropostes.length === 0) tb1.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--g300)">No hi ha nous enfocaments encara.</td></tr>';
-
+    
     novesPropostes.sort((a,b) => String(a.id_enfocament).localeCompare(String(b.id_enfocament))).forEach(r => {
         const tr = document.createElement('tr');
         tr.dataset.area = escH(r.area_revisora);
-
+        
         const match = r.id_enfocament.match(/NEW-\d+-([\d.]+)-/);
         const subc = match ? match[1] : '?';
         let bcls = 'badge-pend', btxt = 'Pendent';
@@ -1033,7 +1080,6 @@ function renderAdminDashboard(){
             <td>${escH(r.nom_visible)}<br><small style="color:var(--g300)">${escH(r.area_revisora)}</small></td>
             <td><span class="${bcls}">${btxt}</span></td>
             <td><button class="btn-sm btn-sm-vio" onclick="openAdminModal('${escJS(r.id_enfocament)}', '${escJS(r.email)}')">Revisar</button></td>
-            <td><button class="btn-sm btn-sm-vio" onclick="openAdminModal('${r.id_enfocament}', '${r.email}')">Revisar</button></td>
         `;
         tb1.appendChild(tr);
     });
@@ -1050,21 +1096,21 @@ function renderAdminDashboard(){
     millores.forEach(r => {
         const tr = document.createElement('tr');
         tr.dataset.area = escH(r.area_revisora);
-
+        
         // ETIQUETES D, A, E, C
         let indicators = '';
         if(r.sug_desplegament) indicators += '<span class="ind ind-d">D</span>';
         if(r.sug_avaluacio) indicators += '<span class="ind ind-a">A</span>';
         if(r.sug_evidencies) indicators += '<span class="ind ind-e">E</span>';
         if(r.comentari_general) indicators += '<span class="ind ind-c">C</span>';
-
+        
         const orig = mem.find(m => String(m.id) === String(r.id_enfocament));
         const titolOriginal = orig ? orig.titol_enfocament : 'Enfocament existent';
 
         let bcls = 'badge-pend', btxt = 'Pendent';
         if(r.estat_admin === 'Aprovat') { bcls = 'badge-ok'; btxt = 'Revisat'; }
         if(r.estat_admin === 'Descartat') { bcls = 'badge-ko'; btxt = 'Descartat'; }
-
+        
         tr.innerHTML = `
             <td>
               <div style="font-size:.85rem; font-weight:700; color:var(--navy); margin-bottom:.3rem;">${escH(titolOriginal)}</div>
@@ -1076,7 +1122,6 @@ function renderAdminDashboard(){
             <td>${escH(r.nom_visible)} <small style="color:var(--g300)">(${escH(r.area_revisora)})</small></td>
             <td><span class="${bcls}">${btxt}</span></td>
             <td><button class="btn-sm btn-sm-vio" onclick="openAdminModal('${escJS(r.id_enfocament)}', '${escJS(r.email)}')">Revisar</button></td>
-            <td><button class="btn-sm btn-sm-vio" onclick="openAdminModal('${r.id_enfocament}', '${r.email}')">Revisar</button></td>
         `;
         tb2.appendChild(tr);
     });
@@ -1089,10 +1134,10 @@ function openAdminModal(id, email){
     if(!r) return;
     currentAdminCardId = r; 
     const isNew = String(id).startsWith('NEW-');
-
+    
     const content = $('modal-content');
     $('modal-title').textContent = isNew ? 'Revisió de Nou Enfocament' : 'Revisió de Millores Proposades';
-
+    
     if(isNew){
         content.innerHTML = `
             <div class="admin-item-box"><strong>Títol</strong><p>${escH(r.sug_titol_enfocament)}</p></div>
@@ -1111,7 +1156,7 @@ function openAdminModal(id, email){
             {l:'Avaluació (A)', k:'avaluacio', sk:'sug_avaluacio', ak:'aprovat_avaluacio'}, 
             {l:'Evidències (E)', k:'evidencies', sk:'sug_evidencies', ak:'aprovat_evidencies'}
         ];
-
+        
         fields.forEach(f => {
             if(r[f.sk]){
                 const isChecked = r[f.ak] === true || r[f.ak] === 'true' || r[f.ak] === 'TRUE' ? 'checked' : '';
@@ -1132,7 +1177,7 @@ function openAdminModal(id, email){
         content.innerHTML = h;
         $('btn-ok').textContent = '✅ Desar decisions d\'aprovació';
     }
-
+    
     $('admin-comment').value = r.comentari_admin || '';
     $('admin-modal').classList.add('open');
 }
@@ -1152,7 +1197,7 @@ async function submitAdminDecision(estat){
 
     const origR = currentAdminCardId;
     const isNew = String(origR.id_enfocament).startsWith('NEW-');
-
+    
     const payload = {
         action: 'save',
         email: origR.email, 
@@ -1165,7 +1210,7 @@ async function submitAdminDecision(estat){
         payload.aprovat_desplegament = $('chk-desplegament') ? $('chk-desplegament').checked : false;
         payload.aprovat_avaluacio = $('chk-avaluacio') ? $('chk-avaluacio').checked : false;
         payload.aprovat_evidencies = $('chk-evidencies') ? $('chk-evidencies').checked : false;
-
+        
         if(estat === 'Aprovat' && !payload.aprovat_desplegament && !payload.aprovat_avaluacio && !payload.aprovat_evidencies) {
             toast('⚠️ Marca algun element per aprovar (checkbox).','terr');
             return;
@@ -1181,20 +1226,20 @@ async function submitAdminDecision(estat){
         }
         origR.estat_admin = estat; 
         origR.comentari_admin = comment;
-
+        
         if(!isNew) {
             origR.aprovat_desplegament = payload.aprovat_desplegament;
             origR.aprovat_avaluacio = payload.aprovat_avaluacio;
             origR.aprovat_evidencies = payload.aprovat_evidencies;
         }
-
+        
         setSync('ok');
         closeModal(); 
-
+        
         // Refresca la vista en la que estiguem
         if(curC === 'admin') renderAdminDashboard();
         else if (curC === 'user') renderUserDashboard();
-
+        
     } catch(err) {
         setSync('err');
         toast('Error guardant: ' + err.message, 'terr');
@@ -1203,7 +1248,15 @@ async function submitAdminDecision(estat){
 }
 
 /* ══ EXPORTACIÓ A WORD - RESUM USUARI ══ */
+function downloadAdminUserSummary(email, nomUsuari) {
+    _downloadSummary(email, nomUsuari);
+}
+
 function downloadUserSummary(email, nomUsuari) {
+    _downloadSummary(email, nomUsuari);
+}
+
+function _downloadSummary(email, nomUsuari) {
     const uResp = resp.filter(r => r.email === email && (r.estat_admin === 'Aprovat' || r.estat_admin === 'Descartat'));
     if(uResp.length === 0) { toast("Aquest usuari no té decisions preses encara.", "tinfo"); return; }
 
@@ -1214,7 +1267,7 @@ function downloadUserSummary(email, nomUsuari) {
         else { isN ? eDes.push(r) : pDes.push(r); }
     });
 
-    let h = `<div style="font-family:sans-serif; color:#333;"><h2>Resum de decisions - Memòria EFQM</h2><p>Aquest és el retorn de la Direcció sobre les teves aportacions:</p>`;
+    let h = `<div style="font-family:sans-serif; color:#333;"><h2>Resum de decisions - Memòria EFQM</h2><p>Aquest és el retorn d'Estratègia Corporativa sobre les teves aportacions:</p>`;
 
     if(pInc.length>0){
         h += `<h3 style="color:#16a34a">[ACTUALITZAT] Propostes incorporades a la memòria</h3><ul>`;
@@ -1262,20 +1315,20 @@ function downloadUserSummary(email, nomUsuari) {
 
 /* ══ EXPORTACIÓ A WORD - MEMÒRIA GLOBAL ══ */
 function exportToWord() {
-    let pa = '<h1 style="text-align:center; color:#0083A9;">Informe Memòria EFQM amb Millores</h1><p style="text-align:center; font-style:italic; font-size:12px; margin-bottom:40px; color:#666;">Aquest document mostra el text original de la memòria. A sota de cada apartat hi figuren les propostes de millora que han estat aprovades per la direcció per tal de facilitar-ne la integració manual al document oficial.</p><br>';
+    let pa = '<h1 style="text-align:center; color:#0083A9;">Informe Memòria EFQM amb Millores</h1><p style="text-align:center; font-style:italic; font-size:12px; margin-bottom:40px; color:#666;">Aquest document mostra el text original de la memòria. A sota de cada apartat hi figuren les propostes de millora que han estat aprovades per Estratègia Corporativa per tal de facilitar-ne la integració manual al document oficial.</p><br>';
 
     Object.keys(cData).sort().forEach(c => {
         pa += `<h2 style="color:#0083A9; border-bottom:2px solid #0083A9;">Criteri ${c} - ${escH(cData[c].titol)}</h2>`;
-
+        
         Object.keys(cData[c].subs).sort().forEach(s => {
             const sub = cData[c].subs[s];
             pa += `<h3 style="color:#006b8a; margin-top:20px;">${s} ${escH(sub.titol)}</h3>`;
-
+            
             sub.rows.forEach(row => {
                 const approvedSugs = resp.filter(x => String(x.id_enfocament) === String(row.id) && x.estat_admin === 'Aprovat'); 
-
+                
                 pa += `<div style="border:1px solid #ccc; padding:15px; margin-bottom:15px;"><h4>${escH(row.titol_enfocament || 'Sense títol')}</h4>`;
-
+                
                 const keysMap = [
                     {k: 'enfocament', ak: null, sk: null},
                     {k: 'desplegament', ak: 'aprovat_desplegament', sk: 'sug_desplegament'},
@@ -1288,12 +1341,11 @@ function exportToWord() {
                         pa += `<div style="margin-bottom:15px;">
                             <strong>${f.k.toUpperCase()}</strong>
                             <p style="margin-top:2px;">${escH(row[f.k])}</p>`;
-
+                        
                         approvedSugs.forEach(appR => {
                             if (f.ak && (appR[f.ak] === true || appR[f.ak] === 'true' || appR[f.ak] === 'TRUE') && appR[f.sk] && appR[f.sk].trim() !== '') {
                                 // Fix: Text pla sense emojis pel Word
                                 pa += `<div style="background:#f0fdf4; border:1px dashed #16a34a; padding:8px; margin-top:5px;">
-                                    <strong style="color:#16a34a; font-size:11px;">[+] MILLORA APROVADA APLICADA (${escH(appR.nom_visible)}):</strong><br>
                                     <strong style="color:#16a34a; font-size:11px;">[MILLORA APROVADA APLICADA] (${escH(appR.nom_visible)}):</strong><br>
                                     ${escH(appR[f.sk])}
                                 </div>`;
@@ -1307,7 +1359,6 @@ function exportToWord() {
                             if (f.ak && (appR[f.ak] === true || appR[f.ak] === 'true' || appR[f.ak] === 'TRUE') && appR[f.sk] && appR[f.sk].trim() !== '') {
                                 hasImprovements = true;
                                 impHtml += `<div style="background:#f0fdf4; border:1px dashed #16a34a; padding:8px; margin-top:5px;">
-                                    <strong style="color:#16a34a; font-size:11px;">[+] MILLORA APROVADA APLICADA (${escH(appR.nom_visible)}):</strong><br>
                                     <strong style="color:#16a34a; font-size:11px;">[MILLORA APROVADA APLICADA] (${escH(appR.nom_visible)}):</strong><br>
                                     ${escH(appR[f.sk])}
                                 </div>`;
@@ -1337,12 +1388,12 @@ function exportToWord() {
 
             const strSearch = 'NEW-' + c + '-' + s + '-';
             const nousAprovats = resp.filter(r => String(r.id_enfocament).startsWith(strSearch) && r.estat_admin === 'Aprovat');
-
+            
             nousAprovats.forEach(r => {
                 pa += `<div style="border:2px dashed #7c3aed; padding:15px; margin-bottom:15px; background:#faf5ff">
                     <strong style="color:#7c3aed; font-size:11px;">[NOU ENFOCAMENT APROVAT] Proposat per: ${escH(r.nom_visible)}</strong>
                     <h4 style="margin-top:5px;">${escH(r.sug_titol_enfocament)}</h4>`;
-
+                
                 if(r.sug_enfocament) pa += `<strong>ENFOCAMENT</strong><p>${escH(r.sug_enfocament)}</p>`;
                 if(r.sug_desplegament) pa += `<strong>DESPLEGAMENT</strong><p>${escH(r.sug_desplegament)}</p>`;
                 if(r.sug_avaluacio) pa += `<strong>AVALUACIÓ</strong><p>${escH(r.sug_avaluacio)}</p>`;
@@ -1371,7 +1422,7 @@ function updProgress(){
   let tot=0,sav=0; 
   Object.values(cards).forEach(arr=>{ tot+=arr.length; arr.forEach(({el:e})=>{ if(e.classList.contains('saved')) sav++; }); }); 
   $('pfill').style.width=(tot?Math.round(sav/tot*100):0)+'%'; $('plbl').textContent=sav+' / '+tot; 
-
+  
   document.querySelectorAll('.sb').forEach(blk => {
       const cList = blk.querySelectorAll('.card[data-is-new="0"]'); 
       if(cList.length === 0) return;
@@ -1390,6 +1441,12 @@ function updProgress(){
 function setF(f,btn){ curF=f; document.querySelectorAll('.tog-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); applyF(); }
 function applyF(){
   const kw=document.getElementById('srch').value.toLowerCase().trim();
+  
+  // Guardem l'estat original abans de filtrar només si estem començant a escriure
+  if (kw && collapsedStateBeforeSearch.length === 0) {
+      document.querySelectorAll('.sb.collapsed').forEach(b => collapsedStateBeforeSearch.push(b.dataset.s));
+  }
+
   (cards[curC]||[]).forEach(({el:e})=>{
     let show=true;
     // Fix: El filtre nous només mira que sigui nou, independentment de si està desat o no
@@ -1399,7 +1456,28 @@ function applyF(){
     if(show&&kw) show=(e.dataset.st||'').includes(kw);
     e.style.display=show?'':'none';
   });
-  document.querySelectorAll('.sb').forEach(b=>{ b.style.display=[...b.querySelectorAll('.card')].some(c=>c.style.display!=='none')?'':'none'; });
+
+  document.querySelectorAll('.sb').forEach(b=>{ 
+      const hasVis = [...b.querySelectorAll('.card')].some(c=>c.style.display!=='none');
+      b.style.display = hasVis ? '' : 'none'; 
+      
+      if (kw && hasVis) {
+          b.classList.remove('collapsed');
+      }
+      
+      // RESTAURAR COL·LAPSE EN ESBORRAR
+      if (!kw) {
+          if (collapsedStateBeforeSearch.includes(b.dataset.s)) {
+              b.classList.add('collapsed');
+          } else {
+              b.classList.remove('collapsed');
+          }
+      }
+  });
+  
+  if (!kw) {
+      collapsedStateBeforeSearch = [];
+  }
 }
 
 function cardData(id){
@@ -1413,7 +1491,6 @@ function cardData(id){
 async function saveExisting(id,btn){
   if(!sess) return; 
   setSync('syncing');
-  if(!sess) return; const orig=btn.textContent; btn.textContent='Enviant…'; btn.disabled=true; const d=cardData(id);
   const orig=btn.textContent; btn.textContent='Enviant…'; btn.disabled=true; 
   const d=cardData(id);
   const isDone = d.validat; 
@@ -1422,11 +1499,9 @@ async function saveExisting(id,btn){
 }
 
 async function saveNew(tid,btn){
-  setSync('syncing');
-  if(!sess) return; const card=document.querySelector('.card[data-id="'+tid+'"]'); if(!card) return;
   if(!sess) return; 
   const card=document.querySelector('.card[data-id="'+tid+'"]'); if(!card) return;
-
+  
   let faltan = false;
   const requiredKeys = ['sug_titol_enfocament', 'sug_enfocament', 'sug_desplegament', 'sug_avaluacio', 'sug_evidencies'];
   for (let key of requiredKeys) {
@@ -1440,10 +1515,9 @@ async function saveNew(tid,btn){
         ta.style.backgroundColor = '';
     }
   }
-
+  
   if (faltan) {
       toast('⚠️ Avís: Falten camps obligatoris per omplir.', 'terr');
-      setSync('err');
       return;
   }
 
@@ -1472,13 +1546,6 @@ async function doSave(payload,id,btn,orig,isNew, isDone){
 
 function updResp(p){ const i=resp.findIndex(r=>r.email===p.email&&r.id_enfocament===p.id_enfocament); if(i>=0) Object.assign(resp[i],p); else resp.push(p); }
 
-/* ══ UTILS ══ */
-const $=id=>document.getElementById(id);
-const el=(tag,cls,txt)=>{ const e=document.createElement(tag); if(cls) e.className=cls; if(txt!==undefined) e.textContent=txt; return e; };
-const wait=ms=>new Promise(r=>setTimeout(r,ms));
-const escH=t=>String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-function toast(msg,cls){ const c=$('toasts'); const t=el('div','toast '+(cls||'')); t.textContent=msg; c.appendChild(t); setTimeout(()=>t.remove(),3400); }
-function showErr(e,m){ e.textContent=m; e.classList.remove('hidden'); }
 </script>
 </body>
 </html>
