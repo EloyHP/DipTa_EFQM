@@ -128,7 +128,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .prev-panel { display:none; padding:.58rem .82rem .68rem; background:#f0fdfa; border-top:1px solid #99f6e4; font-size:.8rem; color:#115e59; white-space:pre-wrap; line-height:1.6; border-left:4px solid #0f766e; }
 .prev-panel.open { display:block; }
 
-
 /* ── CARD ── */
 .card{background:var(--white);border-radius:var(--r);box-shadow:var(--sh);margin-bottom:.5rem;border:2px solid transparent;transition:border-color var(--tr)}
 .card.saved{border-color:transparent;}
@@ -188,6 +187,9 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .prop-lbl{font-size:.69rem;color:var(--orange);font-weight:700;margin-bottom:.2rem;display:block}
 .prop-ta{font-size:.81rem;resize:vertical;min-height:54px;background:#fffbf5;border-color:#fed7aa;border-radius:7px;transition:all var(--tr)}
 .prop-ta:focus{border-color:var(--orange);outline:none}
+
+/* Estil per als textareas bloquejats (mode read-only) */
+textarea:disabled { background: var(--g50); border-color: transparent; cursor: not-allowed; color: var(--g700); }
 
 .new-body{padding:.62rem .72rem;background:var(--white)}
 .nf{margin-bottom:.62rem}
@@ -279,11 +281,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 
 /* ══ VISTA D'IMPRESSIÓ (PDF) ══ */
 #print-area { display: none; background: white; padding: 20px; color: black; }
-@media print {
-  body { background: white; }
-  #s1, #s2, .topbar, .crit-tabs, .toolbar, #admin-view, #user-view, #toasts, .modal-overlay { display: none !important; }
-  #print-area { display: block !important; }
-}
 
 #toasts{position:fixed;bottom:1rem;right:1rem;z-index:9999;display:flex;flex-direction:column;gap:.38rem;max-width:280px}
 .toast{background:var(--black-dipta);color:#fff;padding:.58rem .82rem;border-radius:9px;font-size:.79rem;font-weight:500;animation:fu .2s ease;box-shadow:var(--sh2)}
@@ -389,7 +386,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 
 <script>
 /* ══ CONFIGURACIÓ DE L'API ══ */
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz7ntaHKjHKmlQJNd-JqWIenNw69R6jKtPc7Ssg8ZEWV18ZLAZTBiDoZpoJc3GuY5W9/exec"; 
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbynrl8dl98JTPXd0sycbke2s21JtedYTIU90S21uHuWBDwNJHnvbhEIK23MDYQpQlEAEQ/exec"; 
 
 /* ══ STATE ══ */
 let mem=[], resp=[], usuaris=[], sess=null;
@@ -421,12 +418,13 @@ function setSync(state) {
 /* ══ API ══ */
 async function api(method, body){
   const o = { redirect: 'follow' };
+  let url = APPS_SCRIPT_URL;
   if(method === 'POST'){
     o.method = 'POST';
     o.headers = { 'Content-Type': 'text/plain;charset=utf-8' };
     o.body = JSON.stringify(body);
   }
-  const r = await fetch(APPS_SCRIPT_URL, o);
+  const r = await fetch(url, o);
   return r.json();
 }
 
@@ -449,14 +447,10 @@ async function loadBackendData(){
     const btn = $('btn-login');
     if(btn) { btn.textContent = 'Carregant base de dades...'; btn.disabled = true; }
     
-    // Fer crida GET a l'Apps Script
     const d = await api('GET');
     
-    mem=d.memoria||[]; 
-    resp=d.respostes||[]; 
-    usuaris=d.usuaris||[]; 
+    mem=d.memoria||[]; resp=d.respostes||[]; usuaris=d.usuaris||[]; 
     lastSyncTime = new Date();
-    
     const sanitize = arr => arr.forEach(r => Object.keys(r).forEach(k => r[k] = r[k] != null ? String(r[k]).trim() : ''));
     sanitize(mem); sanitize(resp); sanitize(usuaris);
     
@@ -466,17 +460,16 @@ async function loadBackendData(){
   }
 }
 
-/* ══ LOGIN CLÀSSIC (CLIENT-SIDE) ══ */
+/* ══ LOGIN ══ */
 function doLogin(){
   const email = $('fe').value.trim().toLowerCase();
   const err = $('ferr');
   
-  if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ showErr(err,'Introdueix un correu electrònic vàlid.'); return; }
-  if(usuaris.length === 0){ showErr(err,'Encara s\'està carregant la base de dades, espera un segon...'); return; }
+  if(!email){ showErr(err,'Introdueix un correu electrònic vàlid.'); return; }
+  if(usuaris.length === 0){ showErr(err,'Base de dades buida o carregant...'); return; }
 
-  // Busquem l'usuari asseggurant-nos de netejar espais invisibles de l'Excel
   const user = usuaris.find(u => String(u.email_autoritzat || '').trim().toLowerCase() === email);
-  if(!user){ showErr(err, 'Accés denegat. Aquest correu no està a la llista d\'usuaris autoritzats.'); return; }
+  if(!user){ showErr(err, 'Accés denegat. Aquest correu no està autoritzat.'); return; }
 
   err.classList.add('hidden');
   sess={ nom: user.nom_usuari || 'Usuari', email: email, area: user.area_assignada || '' };
@@ -726,6 +719,8 @@ function buildCard(row,crit){
   
   const isAdminRejected = prev && prev.estat_admin === 'Descartat';
   const isAdminApproved = prev && prev.estat_admin === 'Aprovat';
+  const hasAdminAction = isAdminRejected || isAdminApproved; // BLOQUEIG D'AUDITORIA
+  
   const isChecked = prev&&(prev.validat===true||prev.validat==='TRUE'||prev.validat==='1'||prev.validat===1||prev.validat==='true');
   
   card.className='card'+(isChecked?' saved':' pending');
@@ -774,11 +769,15 @@ function buildCard(row,crit){
       const pl=el('span','prop-lbl','Proposta de millora');
       const ta=document.createElement('textarea'); ta.className='prop-ta'; ta.dataset.key=b.taKey; ta.rows=2; ta.value=b.taVal||'';
       
-      ta.addEventListener('input',()=>{ 
-          markPending(id); 
-          acc.classList.toggle('has-content',ta.value.trim()!==''); 
-          card.dataset.st += ' ' + ta.value.toLowerCase();
-      });
+      if (hasAdminAction) {
+          ta.disabled = true; // Bloqueig si està aprovat/descartat
+      } else {
+          ta.addEventListener('input',()=>{ 
+              markPending(id); 
+              acc.classList.toggle('has-content',ta.value.trim()!==''); 
+              card.dataset.st += ' ' + ta.value.toLowerCase();
+          });
+      }
       abody.appendChild(pl); abody.appendChild(ta);
     }
     acc.appendChild(hdr); acc.appendChild(abody); body.appendChild(acc);
@@ -789,12 +788,16 @@ function buildCard(row,crit){
 
 function makeAZ(id,prev,isNew){
   const az=el('div','az');
+  const hasAdminAction = prev && (prev.estat_admin === 'Aprovat' || prev.estat_admin === 'Descartat');
+  
   if(!isNew){
     const cl=el('label','chk-wrap');
     const chk=document.createElement('input'); chk.type='checkbox'; chk.dataset.card=id; chk.className='chk-v';
     const isChecked = prev&&(prev.validat===true||prev.validat==='TRUE'||prev.validat==='1'||prev.validat===1||prev.validat==='true');
     chk.checked = isChecked;
-    if(isChecked) { chk.disabled = true; cl.style.opacity = '0.6'; cl.style.cursor = 'not-allowed'; } 
+    
+    // Bloqueig del checkbox si està revisat o validat
+    if(isChecked || hasAdminAction) { chk.disabled = true; cl.style.opacity = '0.6'; cl.style.cursor = 'not-allowed'; } 
     else { chk.addEventListener('change',()=>markPending(id)); }
     cl.appendChild(chk); cl.appendChild(el('span','','✅ Revisió finalitzada')); az.appendChild(cl);
   }
@@ -802,17 +805,26 @@ function makeAZ(id,prev,isNew){
   const cta=document.createElement('textarea'); cta.className='ta-cmt'; cta.dataset.card=id;
   cta.rows=2; cta.placeholder='Comentari (opcional)'; cta.value=prev?.comentari_general||'';
   
-  cta.addEventListener('input',(e)=>{ 
-      markPending(id); 
-      const card = document.querySelector(`.card[data-id="${id}"]`);
-      if(card) card.dataset.st += ' ' + e.target.value.toLowerCase();
-  });
+  if (hasAdminAction) {
+      cta.disabled = true; // Bloqueig del comentari general
+  } else {
+      cta.addEventListener('input',(e)=>{ 
+          markPending(id); 
+          const card = document.querySelector(`.card[data-id="${id}"]`);
+          if(card) card.dataset.st += ' ' + e.target.value.toLowerCase();
+      });
+  }
   
   cw.appendChild(cta); az.appendChild(cw);
-  const sb=document.createElement('button');
-  if(isNew){ sb.className='btn-sn btn-sc'; sb.textContent= prev ? 'Actualitzar proposta' : 'Desar proposta'; sb.addEventListener('click',()=>saveNew(id,sb)); } 
-  else { sb.className='btn btn-primary btn-sc'; sb.textContent='Desar'; sb.addEventListener('click',()=>saveExisting(id,sb)); }
-  az.appendChild(sb); return az;
+  
+  // Amagar el botó Desar si hi ha una decisió d'administració
+  if (!hasAdminAction) {
+      const sb=document.createElement('button');
+      if(isNew){ sb.className='btn-sn btn-sc'; sb.textContent= prev ? 'Actualitzar proposta' : 'Desar proposta'; sb.addEventListener('click',()=>saveNew(id,sb)); } 
+      else { sb.className='btn btn-primary btn-sc'; sb.textContent='Desar'; sb.addEventListener('click',()=>saveExisting(id,sb)); }
+      az.appendChild(sb); 
+  }
+  return az;
 }
 
 function insertNew(crit,sub,subTitol,contentWrap,addBtn){
@@ -827,6 +839,7 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
   const card=document.createElement('div');
   const isAdminRejected = prev && prev.estat_admin === 'Descartat';
   const isAdminApproved = prev && prev.estat_admin === 'Aprovat';
+  const hasAdminAction = isAdminRejected || isAdminApproved; // BLOQUEIG D'AUDITORIA
 
   card.className='card cnew ' + (prev ? 'saved' : 'pending expanded') + (isAdminRejected ? ' rejected' : '');
   
@@ -844,31 +857,36 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
   const titleSpan = el('span', 'new-title-text', prev ? (prev.sug_titol_enfocament || 'Nou Enfocament') : 'Escriu el títol...');
   nl.appendChild(titleSpan);
 
-  const rm=el('button','btn-rm'); rm.innerHTML='🗑️ Eliminar'; 
-  rm.addEventListener('click', async (e)=>{
-    e.stopPropagation(); 
-    if(!confirm('Segur que vols eliminar-lo definitivament?')) return;
-    
-    // FIX: Eliminar només localment si no està desat, sense recarregar la pàgina
-    if(!card.classList.contains('saved')){ 
-        card.remove(); 
-        cards[crit]=(cards[crit]||[]).filter(x=>x.id!==tid); 
-        updProgress(); updTabPending(); 
-    } 
-    else {
-        const origBtn = rm.innerHTML; rm.textContent = '⏳';
-        try {
-          const r = await api('POST', { action: 'delete', email: sess.email, id_enfocament: tid, esborrar: true });
-          if(!r.success) throw new Error(r.error);
-          card.remove(); 
-          cards[crit]=(cards[crit]||[]).filter(x=>x.id!==tid); 
-          resp = resp.filter(r => r.id_enfocament !== tid);
-          updProgress(); updTabPending(); toast('Eliminat.', 'tinfo');
-        } catch(err) { rm.innerHTML = origBtn; toast('Error: ' + err.message, 'terr'); }
-    }
-  });
+  ban.appendChild(nl); ban.appendChild(el('span','cs-chev','▼')); 
+
+  // NOMÉS AFEGIM EL BOTÓ ELIMINAR SI NO ESTÀ BLOQUEJAT PER L'ADMIN
+  if (!hasAdminAction) {
+      const rm=el('button','btn-rm'); rm.innerHTML='🗑️ Eliminar'; 
+      rm.addEventListener('click', async (e)=>{
+        e.stopPropagation(); 
+        if(!confirm('Segur que vols eliminar-lo definitivament?')) return;
+        
+        if(!card.classList.contains('saved')){ 
+            card.remove(); 
+            cards[crit]=(cards[crit]||[]).filter(x=>x.id!==tid); 
+            updProgress(); updTabPending(); 
+        } 
+        else {
+            const origBtn = rm.innerHTML; rm.textContent = '⏳';
+            try {
+              const r = await api('POST', { action: 'delete', email: sess.email, id_enfocament: tid, esborrar: true });
+              if(!r.success) throw new Error(r.error);
+              card.remove(); 
+              cards[crit]=(cards[crit]||[]).filter(x=>x.id!==tid); 
+              resp = resp.filter(r => r.id_enfocament !== tid);
+              updProgress(); updTabPending(); toast('Eliminat.', 'tinfo');
+            } catch(err) { rm.innerHTML = origBtn; toast('Error: ' + err.message, 'terr'); }
+        }
+      });
+      ban.appendChild(rm); 
+  }
   
-  ban.appendChild(nl); ban.appendChild(el('span','cs-chev','▼')); ban.appendChild(rm); card.appendChild(ban);
+  card.appendChild(ban);
 
   const body=el('div','card-body new-body');
   
@@ -890,11 +908,16 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
     const wrap=el('div','nf'); const lbl=el('div','nf-lbl '+f.cls); lbl.innerHTML='<span class="nf-dot" style="background:'+f.color+'"></span>'+escH(f.lbl)+(f.req?'<span class="req">*</span>':'');
     const ta=document.createElement('textarea'); ta.className='nta '+f.cls2; ta.dataset.key=f.key; ta.rows=2; ta.placeholder=f.ph;
     ta.value = prev ? (prev[f.key] || '') : '';
-    ta.addEventListener('input',(e)=>{
-      ta.style.borderColor = ''; ta.style.backgroundColor = ''; 
-      if(f.key === 'sug_titol_enfocament') titleSpan.textContent = e.target.value.trim() || 'Escriu el títol...';
-      markPending(tid); card.dataset.st=[...card.querySelectorAll('textarea[data-key]')].map(t=>t.value).join(' ').toLowerCase();
-    });
+    
+    if (hasAdminAction) {
+        ta.disabled = true; // Bloqueig d'auditoria
+    } else {
+        ta.addEventListener('input',(e)=>{
+          ta.style.borderColor = ''; ta.style.backgroundColor = ''; 
+          if(f.key === 'sug_titol_enfocament') titleSpan.textContent = e.target.value.trim() || 'Escriu el títol...';
+          markPending(tid); card.dataset.st=[...card.querySelectorAll('textarea[data-key]')].map(t=>t.value).join(' ').toLowerCase();
+        });
+    }
     wrap.appendChild(lbl); wrap.appendChild(ta); body.appendChild(wrap);
   });
   
@@ -1518,6 +1541,7 @@ async function saveNew(tid,btn){
   
   if (faltan) {
       toast('⚠️ Avís: Falten camps obligatoris per omplir.', 'terr');
+      setSync('err');
       return;
   }
 
