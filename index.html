@@ -163,6 +163,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .new-label{display:flex;align-items:center;gap:.38rem;font-size:.74rem;font-weight:800;color:var(--violet);text-transform:uppercase;letter-spacing:.05em;flex:1;overflow:hidden;}
 .new-pill{background:var(--violet);color:#fff;font-size:.61rem;padding:.07rem .38rem;border-radius:99px;font-weight:700;flex-shrink:0;}
 .new-pill.rejected-pill { background: var(--red) !important; }
+.new-pill.draft-pill { background: var(--orange) !important; color:#fff !important; } /* NOU ESTIL ESBORRANY */
 .new-title-text{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--violet);font-weight:700;text-transform:none;}
 
 .btn-rm{background:transparent;border:1px solid transparent;color:var(--gray-dipta);cursor:pointer;font-size:.75rem;font-weight:600;padding:.2rem .5rem;border-radius:6px;transition:all var(--tr);flex-shrink:0;display:flex;align-items:center;gap:.25rem;}
@@ -488,6 +489,7 @@ function doLogin(){
   if(!email){ showErr(err,'Introdueix un correu electrònic vàlid.'); return; }
   if(usuaris.length === 0){ showErr(err,'Base de dades buida o carregant...'); return; }
 
+  // Busquem l'usuari asseggurant-nos de netejar espais invisibles de l'Excel
   const user = usuaris.find(u => String(u.email_autoritzat || '').trim().toLowerCase() === email);
   if(!user){ showErr(err, 'Accés denegat. Aquest correu no està autoritzat.'); return; }
 
@@ -505,6 +507,30 @@ function clearSess(){
 function doLogout(){
   if(document.querySelectorAll('.card.pending').length>0 && !confirm('Tens canvis pendents. Si tanques la sessió es perdran. Continuar?')) return;
   clearSess(); $('s2').style.display='none'; $('s1').style.display='flex';
+}
+
+/* ══ FUNCIONS DE NETEJA D'ESBORRANYS ══ */
+function cleanEmptyDrafts() {
+    if(!curC || curC === 'admin' || curC === 'user' || !cards[curC]) return;
+    cards[curC] = cards[curC].filter(cardObj => {
+        if(!cardObj.isNew) return true;
+        
+        const isSaved = resp.some(r => r.id_enfocament === cardObj.id);
+        if(isSaved) return true;
+        
+        const d = cardData(cardObj.id);
+        const textLength = (d.sug_titol_enfocament||'').trim() + 
+                           (d.sug_enfocament||'').trim() + 
+                           (d.sug_desplegament||'').trim() + 
+                           (d.sug_avaluacio||'').trim() + 
+                           (d.sug_evidencies||'').trim();
+        
+        if(textLength.length === 0) {
+            if(cardObj.el && cardObj.el.parentNode) cardObj.el.remove();
+            return false;
+        }
+        return true;
+    });
 }
 
 /* ══ SCREEN 2 ══ */
@@ -600,6 +626,7 @@ function updTabPending(){
 
 /* ══ CONTROLS DE VISTA ══ */
 function selCrit(c){
+  cleanEmptyDrafts(); // Netegem abans de canviar de pestanya
   curC=c;
   $('admin-view').classList.add('hidden');
   $('user-view').classList.add('hidden');
@@ -616,6 +643,7 @@ function selCrit(c){
 }
 
 function showAdminView(){
+  cleanEmptyDrafts();
   curC='admin';
   $('sarea').classList.add('hidden');
   $('user-view').classList.add('hidden');
@@ -630,6 +658,7 @@ function showAdminView(){
 }
 
 function showUserSummary(btnElement){
+  cleanEmptyDrafts();
   curC='user';
   $('sarea').classList.add('hidden');
   $('admin-view').classList.add('hidden');
@@ -889,8 +918,15 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
   const ban=el('div','new-banner'); ban.style.cursor='pointer'; ban.addEventListener('click',()=>card.classList.toggle('expanded'));
   
   const nl=el('div','new-label'); 
-  const pillClass = isAdminRejected ? 'new-pill rejected-pill' : 'new-pill';
-  const pillText = isAdminRejected ? 'DESCARTAT' : 'NOU';
+  let pillClass = 'new-pill';
+  let pillText = 'NOU';
+  if(isAdminRejected) {
+      pillClass += ' rejected-pill';
+      pillText = 'DESCARTAT';
+  } else if(!prev) {
+      pillClass += ' draft-pill';
+      pillText = '✏️ NO DESAT';
+  }
   nl.innerHTML=`<span class="${pillClass}">${pillText}</span>`;
   
   const titleSpan = el('span', 'new-title-text', prev ? (prev.sug_titol_enfocament || 'Nou Enfocament') : 'Escriu el títol...');
@@ -962,6 +998,7 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
   
   body.appendChild(makeAZ(tid,prev,true)); card.appendChild(body); 
   
+  // FIX: Retornem el subcriteri per poder-lo filtrar
   return {el:card, id:tid, isNew:true, sub:sub};
 }
 
@@ -1667,7 +1704,9 @@ async function saveNew(tid,btn){
   
   if (faltan) {
       toast('⚠️ Avís: Falten camps obligatoris per omplir.', 'terr');
-      setSync('err');
+      const origTxt = btn.textContent;
+      btn.textContent = '❌ Falten camps';
+      setTimeout(() => { if(btn.textContent === '❌ Falten camps') btn.textContent = origTxt; }, 3000);
       return;
   }
 
@@ -1685,7 +1724,18 @@ async function doSave(payload,id,btn,orig,isNew, isDone){
     if(isDone) { markSaved(id); btn.textContent='Revisat ✅'; toast(isNew?'Nova proposta desada! ✨':'Revisió finalitzada i desada.','tok'); } 
     else { markPending(id); btn.textContent='Desat (Esborrany)'; toast('Esborrany desat. Encara pendent de finalitzar.','tinfo'); }
     const c=document.querySelector('.card[data-id="'+id+'"]');
-    if(c){ if(isNew && isDone) c.classList.remove('expanded'); const chk = c.querySelector('.chk-v'); if(chk && chk.checked){ chk.disabled = true; chk.parentElement.style.opacity = '0.6'; chk.parentElement.style.cursor = 'not-allowed'; } }
+    if(c){ 
+        if(isNew && isDone) {
+            c.classList.remove('expanded'); 
+            const pill = c.querySelector('.new-pill');
+            if(pill && pill.classList.contains('draft-pill')) {
+                pill.classList.remove('draft-pill');
+                pill.textContent = 'NOU';
+            }
+        }
+        const chk = c.querySelector('.chk-v'); 
+        if(chk && chk.checked){ chk.disabled = true; chk.parentElement.style.opacity = '0.6'; chk.parentElement.style.cursor = 'not-allowed'; } 
+    }
   } catch(e){ 
       btn.textContent='Error ❌'; 
       toast('Error de xarxa','terr'); 
@@ -1696,6 +1746,29 @@ async function doSave(payload,id,btn,orig,isNew, isDone){
 
 function updResp(p){ const i=resp.findIndex(r=>r.email===p.email&&r.id_enfocament===p.id_enfocament); if(i>=0) Object.assign(resp[i],p); else resp.push(p); }
 
+/* ══ FUNCIONS DE NETEJA D'ESBORRANYS ══ */
+function cleanEmptyDrafts() {
+    if(!curC || curC === 'admin' || curC === 'user' || !cards[curC]) return;
+    cards[curC] = cards[curC].filter(cardObj => {
+        if(!cardObj.isNew) return true;
+        
+        const isSaved = resp.some(r => r.id_enfocament === cardObj.id);
+        if(isSaved) return true;
+        
+        const d = cardData(cardObj.id);
+        const textLength = (d.sug_titol_enfocament||'').trim() + 
+                           (d.sug_enfocament||'').trim() + 
+                           (d.sug_desplegament||'').trim() + 
+                           (d.sug_avaluacio||'').trim() + 
+                           (d.sug_evidencies||'').trim();
+        
+        if(textLength.length === 0) {
+            if(cardObj.el && cardObj.el.parentNode) cardObj.el.remove();
+            return false;
+        }
+        return true;
+    });
+}
 </script>
 </body>
 </html>
