@@ -326,10 +326,26 @@ input:checked + .slider:before { transform: translateX(22px); }
       <button class="btn btn-primary btn-full" onclick="goS2()">Continuar →</button>
     </div>
     <div id="lform">
-      <label for="fe">Correu corporatiu <span style="text-transform:lowercase; opacity:0.7; font-weight:500; letter-spacing:normal;">(@dipta.cat)</span></label>
-      <input id="fe" type="email" placeholder="usuari@dipta.cat" autocomplete="email" onkeypress="if(event.key==='Enter') doLogin()"/>
-      <div id="ferr" class="err hidden"></div>
-      <button id="btn-login" class="btn btn-primary btn-full" onclick="doLogin()">Accedir a la revisió</button>
+      <div id="login-step1">
+        <label for="fe">Correu corporatiu <span style="text-transform:lowercase; opacity:0.7; font-weight:500; letter-spacing:normal;">(@dipta.cat)</span></label>
+        <input id="fe" type="email" placeholder="usuari@dipta.cat" autocomplete="email" onkeypress="if(event.key==='Enter') requestOtp()"/>
+        <div id="ferr1" class="err hidden"></div>
+        <button id="btn-req-otp" class="btn btn-primary btn-full" onclick="requestOtp()">Sol·licitar codi d'accés</button>
+      </div>
+      
+      <div id="login-step2" class="hidden">
+        <div class="welcome-box" style="justify-content:center; text-align:center; flex-direction:column; gap:0.2rem;">
+          <small>Hem enviat un codi de 6 dígits a:</small>
+          <strong id="lbl-email-sent"></strong>
+        </div>
+        <label for="fotp">Codi d'accés (PIN)</label>
+        <input id="fotp" type="text" placeholder="------" maxlength="6" style="text-align:center; letter-spacing:0.5em; font-size:1.2rem; font-weight:bold;" onkeypress="if(event.key==='Enter') verifyOtp()"/>
+        <div id="ferr2" class="err hidden"></div>
+        <button id="btn-verify-otp" class="btn btn-primary btn-full" onclick="verifyOtp()">Verificar i Accedir</button>
+        <div style="text-align:center; margin-top:1rem;">
+          <a href="#" onclick="goStep1(); return false;" style="font-size:0.75rem; color:var(--g500); text-decoration:underline;">Tornar enrere / Correu equivocat</a>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -481,27 +497,97 @@ async function loadBackendData(){
   }
 }
 
-/* ══ LOGIN CLÀSSIC (CLIENT-SIDE) ══ */
-function doLogin(){
+/* ══ LOGIN 2-STEP (OTP) ══ */
+async function requestOtp() {
   const email = $('fe').value.trim().toLowerCase();
-  const err = $('ferr');
+  const err = $('ferr1');
   
   if(!email){ showErr(err,'Introdueix un correu electrònic vàlid.'); return; }
-  if(usuaris.length === 0){ showErr(err,'Base de dades buida o carregant...'); return; }
-
-  // Busquem l'usuari asseggurant-nos de netejar espais invisibles de l'Excel
-  const user = usuaris.find(u => String(u.email_autoritzat || '').trim().toLowerCase() === email);
-  if(!user){ showErr(err, 'Accés denegat. Aquest correu no està autoritzat.'); return; }
-
+  
   err.classList.add('hidden');
-  sess={ nom: user.nom_usuari || 'Usuari', email: email, area: user.area_assignada || '' };
-  localStorage.setItem('efqm_v4',JSON.stringify(sess));
-  goS2();
+  const btn = $('btn-req-otp');
+  const oldText = btn.textContent;
+  btn.textContent = 'Enviant codi...'; btn.disabled = true;
+  
+  try {
+    // Si la DB está buida intentem carregar per validar correu (opcional)
+    if(usuaris.length === 0 && APPS_SCRIPT_URL) await loadBackendData();
+    
+    // Verificació prèvia per no enviar peticions inútils (si tenim dades)
+    if(usuaris.length > 0) {
+      const userObj = usuaris.find(u => String(u.email_autoritzat || '').trim().toLowerCase() === email);
+      if(!userObj){ 
+        showErr(err, 'Accés denegat. Aquest correu no està autoritzat.'); 
+        btn.textContent = oldText; btn.disabled = false;
+        return; 
+      }
+    }
+
+    const r = await api('POST', { action: 'request_otp', email: email });
+    
+    if(r.success) {
+      // Passem al pas 2
+      $('lbl-email-sent').textContent = email;
+      $('login-step1').classList.add('hidden');
+      $('login-step2').classList.remove('hidden');
+      $('fotp').value = '';
+      $('fotp').focus();
+    } else {
+      showErr(err, r.error || 'Error sol·licitant el codi.');
+    }
+  } catch(e) {
+    showErr(err, 'Error de connexió amb el servidor.');
+  }
+  btn.textContent = oldText; btn.disabled = false;
+}
+
+async function verifyOtp() {
+  const email = $('fe').value.trim().toLowerCase();
+  const otp = $('fotp').value.trim();
+  const err = $('ferr2');
+  
+  if(!otp || otp.length < 5){ showErr(err,'Introdueix el codi de 6 dígits.'); return; }
+  
+  err.classList.add('hidden');
+  const btn = $('btn-verify-otp');
+  const oldText = btn.textContent;
+  btn.textContent = 'Verificant...'; btn.disabled = true;
+  
+  try {
+    const r = await api('POST', { action: 'verify_otp', email: email, otp: otp });
+    
+    if(r.success && r.user) {
+      // Login OK
+      sess = { 
+        nom: r.user.nom || 'Usuari', 
+        email: r.user.email || email, 
+        area: r.user.area || '' 
+      };
+      localStorage.setItem('efqm_v4', JSON.stringify(sess));
+      goS2();
+    } else {
+      showErr(err, r.error || 'Codi incorrecte o caducat.');
+    }
+  } catch(e) {
+    showErr(err, 'Error de connexió amb el servidor.');
+  }
+  btn.textContent = oldText; btn.disabled = false;
+}
+
+function goStep1() {
+  $('login-step2').classList.add('hidden');
+  $('login-step1').classList.remove('hidden');
+  $('ferr1').classList.add('hidden');
+  $('ferr2').classList.add('hidden');
+  $('fotp').value = '';
 }
 
 function clearSess(){
   localStorage.removeItem('efqm_v4'); sess=null;
-  $('wblock').classList.add('hidden'); $('lform').classList.remove('hidden'); $('fe').value = '';
+  $('wblock').classList.add('hidden'); 
+  $('lform').classList.remove('hidden'); 
+  goStep1();
+  $('fe').value = '';
 }
 
 function doLogout(){
