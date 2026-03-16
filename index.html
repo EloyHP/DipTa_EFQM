@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
+
 <title>Revisió Memòria EFQM - La DipTa</title>
 <style>
 /* ══ CONFIGURACIÓ DE COLORS CORPORATIUS La DipTa ══ */
@@ -87,17 +90,25 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .sw input{padding:.32rem .62rem .32rem 1.82rem;font-size:.79rem;height:29px}
 .s-ico{position:absolute;left:.5rem;top:50%;transform:translateY(-50%);color:var(--g300);font-size:.8rem;pointer-events:none}
 
+.toolbar-actions { display:flex; gap:0.5rem; margin-left:auto; }
+
 .scroll-area{flex:1;overflow-y:auto;padding:.9rem 1.2rem 3rem}
 
 .sb{margin-bottom:1.5rem}
 
 .sub-sticky{position:sticky;top:0;z-index:50;background:var(--white);border-radius:8px;box-shadow:var(--sh);margin-bottom:.55rem;overflow:hidden;border:1px solid var(--g100)}
-.sub-title-row{display:flex;align-items:center;gap:.6rem;padding:.5rem .82rem}
+.sub-title-row{display:flex;align-items:center;gap:.6rem;padding:.5rem .82rem; cursor:pointer; transition:background var(--tr);}
+.sub-title-row:hover{background:var(--g50);}
 .sub-num{font-size:.68rem;font-weight:700;background:var(--navy);color:#fff;padding:.08rem .42rem;border-radius:5px;flex-shrink:0}
 .sub-title{font-size:.86rem;font-weight:800;color:var(--navy);flex:1; display:flex; align-items:center; gap:.5rem;}
 
 .sub-prog { font-size: .7rem; background: var(--g100); color: var(--g700); padding: .15rem .45rem; border-radius: 99px; font-weight: 700; transition: all var(--tr);}
 .sub-prog.done { background: #dcfce7; color: #166534; }
+.sub-chev { font-size: 0.8rem; color: var(--navy); transition: transform var(--tr); margin-right: 2px; }
+
+.sb.collapsed .sb-content { display: none; }
+.sb.collapsed .sub-chev { transform: rotate(-90deg); }
+.sb-content { padding-top: 0.5rem; }
 
 .efqm-btn{background:transparent;border:1.5px solid var(--g100);border-radius:6px;padding:.26rem .62rem;cursor:pointer;font-size:.73rem;font-weight:600;transition:background var(--tr);white-space:nowrap;flex-shrink:0}
 
@@ -116,6 +127,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .prev-btn:hover { background: #f0fdfa; }
 .prev-panel { display:none; padding:.58rem .82rem .68rem; background:#f0fdfa; border-top:1px solid #99f6e4; font-size:.8rem; color:#115e59; white-space:pre-wrap; line-height:1.6; border-left:4px solid #0f766e; }
 .prev-panel.open { display:block; }
+
 
 /* ── CARD ── */
 .card{background:var(--white);border-radius:var(--r);box-shadow:var(--sh);margin-bottom:.5rem;border:2px solid transparent;transition:border-color var(--tr)}
@@ -144,6 +156,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 
 .admin-alert { background: #fef2f2; border: 1px solid #fca5a5; padding: .6rem; border-radius: 6px; margin: .5rem .72rem; color: #991b1b; font-size: .8rem; }
 .admin-alert-ok { background: #f0fdf4; border: 1px solid #bbf7d0; padding: .6rem; border-radius: 6px; margin: .5rem .72rem; color: #166534; font-size: .8rem; font-weight: bold;}
+.admin-alert-rev { background: #f0f9ff; border: 1px solid #bae6fd; padding: .6rem; border-radius: 6px; margin: .5rem .72rem; color: #0369a1; font-size: .8rem; }
 
 .new-banner{display:flex;align-items:center;gap:.48rem;padding:.48rem .72rem;background:linear-gradient(135deg,var(--vp),#ede9fe);border-bottom:1px dashed var(--vb);transition:background var(--tr)}
 .new-banner:hover{background:#ede9fe}
@@ -176,6 +189,9 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .prop-lbl{font-size:.69rem;color:var(--orange);font-weight:700;margin-bottom:.2rem;display:block}
 .prop-ta{font-size:.81rem;resize:vertical;min-height:54px;background:#fffbf5;border-color:#fed7aa;border-radius:7px;transition:all var(--tr)}
 .prop-ta:focus{border-color:var(--orange);outline:none}
+
+/* Estil per als textareas bloquejats (mode read-only) */
+textarea:disabled { background: var(--g50); border-color: transparent; cursor: not-allowed; color: var(--g700); }
 
 .new-body{padding:.62rem .72rem;background:var(--white)}
 .nf{margin-bottom:.62rem}
@@ -230,6 +246,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .badge-pend { background: #fff7ed; color: var(--orange); padding: 3px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; border: 1px solid #fed7aa;}
 .badge-ok { background: #f0fdf4; color: var(--green); padding: 3px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; border: 1px solid #bbf7d0;}
 .badge-ko { background: #fef2f2; color: var(--red); padding: 3px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; border: 1px solid #fecaca;}
+.badge-neutral { background: #f1f5f9; color: #0369a1; padding: 3px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; border: 1px solid #bae6fd;}
 
 /* Indicadors de millora a la taula */
 .indicator-row { display: flex; gap: 4px; margin-top: 4px; }
@@ -261,8 +278,17 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 .sb-hdr { background: var(--g50); padding: 0.5rem 0.8rem; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; border-bottom: 1px solid var(--g100); color: var(--g500); display:flex; justify-content:space-between; align-items:center;}
 .sb-body { padding: 1rem; font-size: 0.85rem; line-height: 1.5; white-space: pre-wrap; max-height: 300px; overflow-y: auto;}
 .sb-diff { background: #fffbeb; color: #92400e; font-style: italic; border-left: 3px solid #f59e0b;}
-.rev-check { display: flex; align-items: center; gap: 6px; font-weight: 800; font-size: 0.7rem; color: var(--navy); cursor: pointer; text-transform:none; margin:0;}
-.rev-check input { width: 14px; height: 14px; accent-color: var(--green); margin:0;}
+
+/* ══ NOUS ESTILS PER AL TOGGLE SLIDER (GRANULARITAT) ══ */
+.switch { position: relative; display: inline-block; width: 44px; height: 22px; margin:0; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--red); transition: .3s; border-radius: 22px; }
+.slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 2px; bottom: 2px; background-color: white; transition: .3s; border-radius: 50%; }
+input:checked + .slider { background-color: var(--green); }
+input:checked + .slider:before { transform: translateX(22px); }
+.toggle-label { font-size: 0.7rem; font-weight: 800; margin-left: 8px; letter-spacing: 0.05em; }
+.lbl-aprovat { color: var(--green); }
+.lbl-descartat { color: var(--red); }
 
 /* ══ VISTA D'IMPRESSIÓ (PDF) ══ */
 #print-area { display: none; background: white; padding: 20px; color: black; }
@@ -338,6 +364,10 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
         <span class="s-ico">🔍</span>
         <input type="text" id="srch" placeholder="Cerca…" oninput="applyF()"/>
       </div>
+      <div class="toolbar-actions">
+          <button class="btn btn-ghost" style="padding:.3rem .6rem; font-size:.7rem" onclick="expandAllSub()">▼ Expandir tot</button>
+          <button class="btn btn-ghost" style="padding:.3rem .6rem; font-size:.7rem" onclick="collapseAllSub()">▶ Col·lapsar tot</button>
+      </div>
     </div>
     
     <div class="scroll-area" id="sarea"></div>
@@ -355,13 +385,13 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
     <div class="modal-body" id="modal-content"></div>
     
     <div id="admin-feedback-section" style="padding: 0 1.5rem 1rem;">
-      <label style="margin-top:0;">Comentari intern / a l'usuari (Obligatori si es descarta)</label>
-      <textarea id="admin-comment" rows="2" placeholder="Anota el motiu..."></textarea>
+      <label style="margin-top:0;">Comentari general (Opcional si s'aprova, Obligatori si es descarta un Nou Enfocament)</label>
+      <textarea id="admin-comment" rows="2" style="width:100%; border:1px solid var(--g200); border-radius:6px; padding:0.5rem" placeholder="Afegeix un comentari de context..."></textarea>
     </div>
 
     <div class="modal-footer" id="modal-footer">
       <button class="btn btn-danger" id="btn-ko" onclick="submitAdminDecision('Descartat')">❌ Descartar proposta</button>
-      <button class="btn btn-primary" id="btn-ok" style="background:#16a34a;" onclick="submitAdminDecision('Aprovat')">✅ Aprovar i incloure a l'informe</button>
+      <button class="btn btn-primary" id="btn-ok" style="background:#16a34a;" onclick="submitAdminDecision('Aprovat')">✅ Desar decisions d'aprovació</button>
     </div>
   </div>
 </div>
@@ -372,22 +402,46 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy)}
 
 <script>
 /* ══ CONFIGURACIÓ DE L'API ══ */
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxZs954MDgbMEF69_2Wek-AfioMHSxrVzG8u7srFN9XCDIl_3CiL_g7fPql4bFe1fN-rA/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxZs954MDgbMEF69_2Wek-AfioMHSxrVzG8u7srFN9XCDIl_3CiL_g7fPql4bFe1fN-rA/exec"; 
 
 /* ══ STATE ══ */
 let mem=[], resp=[], usuaris=[], sess=null;
 let cData={}, curC=null, curF='all';
 let cards={}, nc=0;
 let currentAdminCardId = null;
-let lastSyncTime = null; // TIMESTAMP DE CÀRREGA
+let lastSyncTime = null; 
+let collapsedStateBeforeSearch = []; 
+
+/* ══ UTILS ══ */
+const $ = id => document.getElementById(id);
+const el = (tag,cls,txt) => { const e=document.createElement(tag); if(cls) e.className=cls; if(txt!==undefined) e.textContent=txt; return e; };
+const wait = ms => new Promise(r=>setTimeout(r,ms));
+const escH = t => String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const escJS = t => String(t||'').replace(/'/g, "\\'").replace(/"/g, "&quot;");
+
+function toast(msg,cls){ const c=$('toasts'); const t=el('div','toast '+(cls||'')); t.textContent=msg; c.appendChild(t); setTimeout(()=>t.remove(),3400); }
+function showErr(e,m){ e.textContent=m; e.classList.remove('hidden'); }
 
 /* ══ SYNC UI ══ */
 function setSync(state) {
-    const s = document.getElementById('sync-status');
+    const s = $('sync-status');
     if(state === 'syncing') { s.innerHTML = '🔄 Guardant...'; s.className = 'syncing'; }
     else if(state === 'ok') { s.innerHTML = '✅ Guardat'; s.className = ''; setTimeout(()=>setSync('idle'), 3000); }
     else if(state === 'err') { s.innerHTML = '❌ Error'; s.className = ''; }
     else { s.innerHTML = '☁️ Connectat'; s.className = ''; }
+}
+
+/* ══ API ══ */
+async function api(method, body){
+  const o = { redirect: 'follow' };
+  let url = APPS_SCRIPT_URL;
+  if(method === 'POST'){
+    o.method = 'POST';
+    o.headers = { 'Content-Type': 'text/plain;charset=utf-8' };
+    o.body = JSON.stringify(body);
+  }
+  const r = await fetch(url, o);
+  return r.json();
 }
 
 /* ══ INIT ══ */
@@ -395,75 +449,52 @@ window.addEventListener('DOMContentLoaded', async ()=>{
   const st=localStorage.getItem('efqm_v4');
   if(st){
     sess=JSON.parse(st);
-    document.getElementById('wname').textContent='Benvinguda/t de nou, '+sess.nom;
-    document.getElementById('wsub').textContent=sess.email+' · '+sess.area;
-    document.getElementById('wblock').classList.remove('hidden');
-    document.getElementById('lform').classList.add('hidden');
+    $('wname').textContent='Benvinguda/t de nou, '+sess.nom;
+    $('wsub').textContent=sess.email+' · '+sess.area;
+    $('wblock').classList.remove('hidden');
+    $('lform').classList.add('hidden');
   }
-  await loadBackendData(sess ? sess.email : '');
+  await loadBackendData();
 });
 
-async function api(method, body){
-  const o = { redirect: 'follow' };
-  let url = APPS_SCRIPT_URL;
-  if(method === 'GET' && body && body.email){
-    const qp = new URLSearchParams({ email: body.email });
-    if(body.token) qp.set('token', body.token);
-    url += (url.includes('?') ? '&' : '?') + qp.toString();
-  }
-  if(method === 'POST'){ 
-    o.method = 'POST'; 
-    o.headers = { 'Content-Type': 'text/plain;charset=utf-8' }; 
-    o.body = JSON.stringify(body); 
-  }
-  const r = await fetch(url, o);
-  return r.json();
-}
-
-async function loadBackendData(email){
+async function loadBackendData(){
   if(!APPS_SCRIPT_URL) return;
   try{
-    const btn = document.getElementById('btn-login');
+    const btn = $('btn-login');
     if(btn) { btn.textContent = 'Carregant base de dades...'; btn.disabled = true; }
     
-    const d=await api('GET', { email: email || '' });
-    mem=d.memoria||[]; 
-    resp=d.respostes||[];
-    usuaris=d.usuaris||[];
+    // Fer crida GET a l'Apps Script
+    const d = await api('GET');
     
-    lastSyncTime = new Date(); // Guardem el moment de la descàrrega
+    mem=d.memoria||[]; 
+    resp=d.respostes||[]; 
+    usuaris=d.usuaris||[]; 
+    lastSyncTime = new Date();
     
     const sanitize = arr => arr.forEach(r => Object.keys(r).forEach(k => r[k] = r[k] != null ? String(r[k]).trim() : ''));
     sanitize(mem); sanitize(resp); sanitize(usuaris);
     
     if(btn) { btn.textContent = 'Accedir a la revisió'; btn.disabled = false; }
   } catch(e){ 
-    showErr(document.getElementById('ferr'), 'Error connectant amb el servidor. Recarrega la pàgina.');
+    showErr($('ferr'), 'Error connectant amb el servidor. Recarrega la pàgina.');
   }
 }
 
-/* ══ LOGIN ══ */
-async function doLogin(){
+/* ══ LOGIN CLÀSSIC (CLIENT-SIDE) ══ */
+function doLogin(){
   const email = $('fe').value.trim().toLowerCase();
   const err = $('ferr');
   
-  if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ showErr(err,'Introdueix un correu electrònic vàlid.'); return; }
+  if(!email){ showErr(err,'Introdueix un correu electrònic vàlid.'); return; }
+  if(usuaris.length === 0){ showErr(err,'Base de dades buida o carregant...'); return; }
+
+  const user = usuaris.find(u => String(u.email_autoritzat || '').trim().toLowerCase() === email);
+  if(!user){ showErr(err, 'Accés denegat. Aquest correu no està autoritzat.'); return; }
 
   err.classList.add('hidden');
-  const btn = $('btn-login');
-  btn.textContent = 'Verificant credencials...'; btn.disabled = true;
-  
-  try {
-    await loadBackendData(email);
-    const user = usuaris.find(u => String(u.email_autoritzat || '').toLowerCase() === email);
-    if(!user){ showErr(err, 'Accés denegat. Aquest correu no està autoritzat.'); return; }
-    sess = { nom: user.nom_usuari || 'Usuari', email: email, area: user.area_assignada || '' };
-    localStorage.setItem('efqm_v4', JSON.stringify(sess));
-    goS2();
-  } catch(e) {
-    showErr(err, 'Error de connexió amb el servidor. Torna-ho a provar.');
-  }
-  btn.textContent = 'Accedir a la revisió'; btn.disabled = false;
+  sess={ nom: user.nom_usuari || 'Usuari', email: email, area: user.area_assignada || '' };
+  localStorage.setItem('efqm_v4',JSON.stringify(sess));
+  goS2();
 }
 
 function clearSess(){
@@ -486,7 +517,7 @@ async function goS2(){
 async function loadData(){
   try {
     $('sarea').innerHTML='<p style="color:var(--g300);padding:2rem;text-align:center">Processant dades…</p>';
-    if(mem.length === 0 && APPS_SCRIPT_URL) await loadBackendData(sess.email);
+    if(mem.length === 0 && APPS_SCRIPT_URL) await loadBackendData();
     mem.sort((a,b) => String(a.id || '').localeCompare(String(b.id || '')));
     
     buildData(); buildTabs();
@@ -553,7 +584,6 @@ function buildTabs(){
     b.onclick=()=>selCrit(c); nav.appendChild(b);
   });
 
-  // NOU: Pestanya de l'usuari
   const bu = document.createElement('button');
   bu.className = 'ctab ctab-user';
   bu.dataset.c = 'user_summary';
@@ -575,39 +605,26 @@ function selCrit(c){
   $('user-view').classList.add('hidden');
   $('sarea').classList.remove('hidden');
   $('main-toolbar').style.display='flex';
-  $('top-prog').style.display='flex'; // Tornem a mostrar la barra de progrés
+  $('top-prog').style.display='flex'; 
   
   document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('active'));
-  document.querySelector('.ctab[data-c="'+c+'"]').classList.add('active');
+  document.querySelector(`.ctab[data-c="${c}"]`).classList.add('active');
   
   $('srch').value=''; curF='all';
   document.querySelectorAll('.tog-btn').forEach((b,i)=>b.classList.toggle('active',i===0));
   renderCrit(c);
 }
 
-async function showAdminView(){
+function showAdminView(){
   curC='admin';
   $('sarea').classList.add('hidden');
   $('user-view').classList.add('hidden');
   $('admin-view').classList.remove('hidden');
   $('main-toolbar').style.display='none';
-  $('top-prog').style.display='none'; // Ocultem a la vista admin
+  $('top-prog').style.display='none'; 
 
   document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('active'));
   document.querySelector('.ctab-admin').classList.add('active');
-  
-  // Carreguem la llista d'usuaris des del servidor si no la tenim
-  if(usuaris.length === 0 && APPS_SCRIPT_URL) {
-    $('admin-view').innerHTML = '<p style="color:var(--g300);padding:2rem;text-align:center">Carregant dades d\'usuaris…</p>';
-    try {
-      const r = await api('POST', { action: 'get_users' });
-      if(r.success) {
-        usuaris = r.usuaris;
-        const sanitize = arr => arr.forEach(r => Object.keys(r).forEach(k => r[k] = r[k] != null ? String(r[k]).trim() : ''));
-        sanitize(usuaris);
-      }
-    } catch(e) { toast('Error carregant la llista d\'usuaris', 'terr'); }
-  }
   
   renderAdminDashboard();
 }
@@ -618,13 +635,21 @@ function showUserSummary(btnElement){
   $('admin-view').classList.add('hidden');
   $('user-view').classList.remove('hidden');
   $('main-toolbar').style.display='none';
-  $('top-prog').style.display='none'; // Ocultem a la vista usuari
+  $('top-prog').style.display='none'; 
 
   document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('active'));
   btnElement.classList.add('active');
   
   renderUserDashboard();
 }
+
+/* ══ COLLAPSE/EXPAND ALL ══ */
+window.expandAllSub = function() {
+    document.querySelectorAll('.sb').forEach(sb => sb.classList.remove('collapsed'));
+};
+window.collapseAllSub = function() {
+    document.querySelectorAll('.sb').forEach(sb => sb.classList.add('collapsed'));
+};
 
 /* ══ RENDER CRITERI NORMAL ══ */
 function renderCrit(c){
@@ -633,13 +658,21 @@ function renderCrit(c){
   const exNew=(cards[c]||[]).filter(x=>x.isNew);
   cards[c]=[];
 
+  let idx = 0;
   Object.keys(cData[c].subs).sort().forEach(s=>{
     const sub=cData[c].subs[s];
     const blk=el('div','sb'); blk.dataset.s=s;
+    if (idx !== 0) blk.classList.add('collapsed');
+    idx++;
 
     const sticky=el('div','sub-sticky');
     const tr=el('div','sub-title-row');
+    tr.onclick = (e) => {
+        if(e.target.closest('button')) return;
+        blk.classList.toggle('collapsed');
+    };
     
+    tr.appendChild(el('span', 'sub-chev', '▼'));
     tr.appendChild(el('span','sub-num',s));
     const titleWrap = el('div','sub-title');
     titleWrap.appendChild(document.createTextNode(sub.titol||s));
@@ -653,42 +686,48 @@ function renderCrit(c){
     if(sub.que_diu && sub.que_diu !== ''){
       const eb=el('button','efqm-btn model-btn','📖 Què diu el model?');
       ep=el('div','efqm-panel'); ep.textContent=sub.que_diu; 
-      eb.onclick=()=>{ ep.classList.toggle('open'); eb.textContent=(ep.classList.contains('open')?'▲ ':'📖 ')+'Què diu el model?'; };
+      eb.onclick=(e)=>{ e.stopPropagation(); ep.classList.toggle('open'); eb.textContent=(ep.classList.contains('open')?'▲ ':'📖 ')+'Què diu el model?'; };
       actions.appendChild(eb);
     }
     
     if(sub.preg_avaluadors && sub.preg_avaluadors !== ''){
       const evb=el('button','efqm-btn eval-btn','❓ Preguntes avaluadors');
       evp=el('div','eval-panel'); evp.textContent=sub.preg_avaluadors; 
-      evb.onclick=()=>{ evp.classList.toggle('open'); evb.textContent=(evp.classList.contains('open')?'▲ ':'❓ ')+'Preguntes avaluadors'; };
+      evb.onclick=(e)=>{ e.stopPropagation(); evp.classList.toggle('open'); evb.textContent=(evp.classList.contains('open')?'▲ ':'❓ ')+'Preguntes avaluadors'; };
       actions.appendChild(evb);
     }
 
     if(sub.informe_ant && sub.informe_ant !== ''){
       const ib=el('button','efqm-btn prev-btn','💡 Informe anterior');
       ip=el('div','prev-panel'); ip.textContent=sub.informe_ant; 
-      ib.onclick=()=>{ ip.classList.toggle('open'); ib.textContent=(ip.classList.contains('open')?'▲ ':'💡 ')+'Informe anterior'; };
+      ib.onclick=(e)=>{ e.stopPropagation(); ip.classList.toggle('open'); ib.textContent=(ip.classList.contains('open')?'▲ ':'💡 ')+'Informe anterior'; };
       actions.appendChild(ib);
     }
 
     if(actions.childNodes.length > 0) tr.appendChild(actions);
+    
     sticky.appendChild(tr); if(ep) sticky.appendChild(ep); if(evp) sticky.appendChild(evp); if(ip) sticky.appendChild(ip);
     blk.appendChild(sticky);
 
-    sub.rows.forEach(row=>{ const card=buildCard(row,c); blk.appendChild(card.el); cards[c].push(card); });
-    exNew.filter(x=>x.sub===s).forEach(x=>{ blk.appendChild(x.el); cards[c].push(x); });
+    const contentWrap = el('div', 'sb-content');
+
+    sub.rows.forEach(row=>{ const card=buildCard(row,c); contentWrap.appendChild(card.el); cards[c].push(card); });
+    exNew.filter(x=>x.sub===s).forEach(x=>{ contentWrap.appendChild(x.el); cards[c].push(x); });
 
     const strSearch = 'NEW-' + c + '-' + s + '-';
     resp.filter(r => r.email === sess.email && r.id_enfocament && String(r.id_enfocament).startsWith(strSearch)).forEach(r => {
       if (!exNew.find(x => x.id === r.id_enfocament)) {
         const card = buildNewCard(r.id_enfocament, c, s, sub.titol, r);
-        blk.appendChild(card.el); cards[c].push(card);
+        contentWrap.appendChild(card.el); cards[c].push(card);
       }
     });
 
     const ab=el('button','btn-add'); ab.innerHTML='➕ Proposar un nou enfocament per a <strong style="margin-left:.25rem">'+escH(s)+'</strong>';
-    ab.addEventListener('click',()=>insertNew(c,s,sub.titol,blk,ab));
-    blk.appendChild(ab); area.appendChild(blk);
+    ab.addEventListener('click',()=>{ insertNew(c,s,sub.titol,contentWrap,ab); blk.classList.remove('collapsed'); });
+    contentWrap.appendChild(ab); 
+    
+    blk.appendChild(contentWrap);
+    area.appendChild(blk);
   });
   updProgress(); updTabPending(); 
 }
@@ -698,9 +737,11 @@ function buildCard(row,crit){
   const prev=resp.find(r=>r.email===sess.email&&r.id_enfocament===id);
   const card=document.createElement('div');
   
-  const isAdminRejected = prev && prev.estat_admin === 'Descartat';
-  const isAdminApproved = prev && prev.estat_admin === 'Aprovat';
-  const hasAdminAction = isAdminRejected || isAdminApproved;
+  // LA NOVA LÒGICA D'ESTAT GRANULAR "REVISAT"
+  const isRevisat = prev && (prev.estat_admin === 'Revisat' || prev.estat_admin === 'Aprovat');
+  const isDescartat = prev && prev.estat_admin === 'Descartat'; // Lògica antiga de "Tot rebutjat"
+  const hasAdminAction = isRevisat || isDescartat;
+  
   const isChecked = prev&&(prev.validat===true||prev.validat==='TRUE'||prev.validat==='1'||prev.validat===1||prev.validat==='true');
   
   card.className='card'+(isChecked?' saved':' pending');
@@ -716,7 +757,7 @@ function buildCard(row,crit){
   sum.appendChild(el('span','cs-title',row.titol_enfocament||'(sense títol)'));
   
   let bcls = isChecked ? 'bs' : 'bp'; let btxt = isChecked ? 'Revisat ✅' : '● Pendent';
-  if(isAdminRejected) { bcls = 'bdismiss'; btxt = '❌ Descartat'; }
+  if(isDescartat) { bcls = 'bdismiss'; btxt = '❌ Descartat'; }
   const sbadge = el('span','cs-badge '+bcls, btxt);
   sum.appendChild(sbadge); sum.appendChild(el('span','cs-chev','▼'));
   sum.addEventListener('click',()=>card.classList.toggle('expanded'));
@@ -724,13 +765,30 @@ function buildCard(row,crit){
 
   const body=el('div','card-body');
   
-  if(isAdminRejected) {
+  if(isDescartat) {
       const alert = el('div','admin-alert'); alert.innerHTML = '<strong>❌ Descartat per Estratègia Corporativa:</strong><br>' + escH(prev.comentari_admin || 'Sense comentaris');
       body.appendChild(alert);
-  } else if(isAdminApproved) {
-      const alert = el('div','admin-alert-ok'); alert.innerHTML ='<strong>✅ Aprovat per Estratègia Corporativa:</strong><br><span style="font-weight:normal;">Aquesta proposta ja no admet més modificacions.</span>'; body.appendChild(alert);
-  } else if (hasAdminAction) {
-      const alert = el('div','admin-alert-ok'); alert.innerHTML='🔒 <strong>Proposta Tancada:</strong><br><span style="font-weight:normal;">Aquesta proposta ha estat avaluada per Estratègia Corporativa i ja no admet modificacions.</span>'; body.appendChild(alert);
+  } else if(isRevisat) {
+      // CONSTRUÏM LA LLISTA GRANULAR DEL QUE ESTÀ APROVAT I EL QUE NO
+      let listHtml = '<ul style="margin-top:8px; padding-left:20px; font-size:0.8rem; color:var(--g700);">';
+      [{k:'desplegament', l:'Desplegament'},{k:'avaluacio', l:'Avaluació i Revisió'},{k:'evidencies', l:'Evidències'}].forEach(f => {
+          if(prev['sug_'+f.k] && prev['sug_'+f.k].trim()!=='') {
+              const isAppr = (prev['aprovat_'+f.k] === true || prev['aprovat_'+f.k] === 'true' || prev['aprovat_'+f.k] === 'TRUE');
+              if (isAppr) {
+                  listHtml += `<li><strong>${f.l}:</strong> <span style="color:var(--green)">✅ Aprovat</span></li>`;
+              } else {
+                  const motiu = prev['motiu_'+f.k] || 'Sense motiu especificat';
+                  listHtml += `<li style="margin-bottom:6px"><strong>${f.l}:</strong> <span style="color:var(--red)">❌ Descartat</span> <br><span style="color:var(--g500); font-style:italic;">(Motiu: ${escH(motiu)})</span></li>`;
+              }
+          }
+      });
+      listHtml += '</ul>';
+
+      body.innerHTML += `<div class="admin-alert-rev">
+          <strong>🔍 Revisat per Estratègia Corporativa:</strong>
+          ${listHtml}
+          ${prev.comentari_admin ? `<div style="margin-top:8px; font-style:italic; padding-top:8px; border-top:1px solid var(--g200)">"${escH(prev.comentari_admin)}"</div>` : ''}
+      </div>`;
   }
 
   const BLOCKS=[
@@ -750,13 +808,16 @@ function buildCard(row,crit){
     if(b.taKey){
       const pl=el('span','prop-lbl','Proposta de millora');
       const ta=document.createElement('textarea'); ta.className='prop-ta'; ta.dataset.key=b.taKey; ta.rows=2; ta.value=b.taVal||'';
-      if(hasAdminAction) ta.readOnly = true;
       
-      ta.addEventListener('input',()=>{ 
-          markPending(id); 
-          acc.classList.toggle('has-content',ta.value.trim()!==''); 
-          card.dataset.st += ' ' + ta.value.toLowerCase();
-      });
+      if (hasAdminAction) {
+          ta.disabled = true; // Bloqueig si està aprovat/descartat
+      } else {
+          ta.addEventListener('input',()=>{ 
+              markPending(id); 
+              acc.classList.toggle('has-content',ta.value.trim()!==''); 
+              card.dataset.st += ' ' + ta.value.toLowerCase();
+          });
+      }
       abody.appendChild(pl); abody.appendChild(ta);
     }
     acc.appendChild(hdr); acc.appendChild(abody); body.appendChild(acc);
@@ -767,13 +828,15 @@ function buildCard(row,crit){
 
 function makeAZ(id,prev,isNew){
   const az=el('div','az');
-  const hasAdminAction = prev && (prev.estat_admin === 'Aprovat' || prev.estat_admin === 'Descartat');
-
+  const hasAdminAction = prev && (prev.estat_admin === 'Aprovat' || prev.estat_admin === 'Descartat' || prev.estat_admin === 'Revisat');
+  
   if(!isNew){
     const cl=el('label','chk-wrap');
     const chk=document.createElement('input'); chk.type='checkbox'; chk.dataset.card=id; chk.className='chk-v';
     const isChecked = prev&&(prev.validat===true||prev.validat==='TRUE'||prev.validat==='1'||prev.validat===1||prev.validat==='true');
     chk.checked = isChecked;
+    
+    // Bloqueig del checkbox si està revisat o validat per admin
     if(isChecked || hasAdminAction) { chk.disabled = true; cl.style.opacity = '0.6'; cl.style.cursor = 'not-allowed'; } 
     else { chk.addEventListener('change',()=>markPending(id)); }
     cl.appendChild(chk); cl.appendChild(el('span','','✅ Revisió finalitzada')); az.appendChild(cl);
@@ -781,46 +844,45 @@ function makeAZ(id,prev,isNew){
   const cw=el('div','cmt-w');
   const cta=document.createElement('textarea'); cta.className='ta-cmt'; cta.dataset.card=id;
   cta.rows=2; cta.placeholder='Comentari (opcional)'; cta.value=prev?.comentari_general||'';
-  if(hasAdminAction) cta.readOnly = true;
   
-  cta.addEventListener('input',(e)=>{ 
-      markPending(id); 
-      const card = document.querySelector(`.card[data-id="${id}"]`);
-      if(card) card.dataset.st += ' ' + e.target.value.toLowerCase();
-  });
+  if (hasAdminAction) {
+      cta.disabled = true; // Bloqueig del comentari general
+  } else {
+      cta.addEventListener('input',(e)=>{ 
+          markPending(id); 
+          const card = document.querySelector(`.card[data-id="${id}"]`);
+          if(card) card.dataset.st += ' ' + e.target.value.toLowerCase();
+      });
+  }
   
   cw.appendChild(cta); az.appendChild(cw);
   
-  const rightWrap = el('div'); rightWrap.style.display = 'flex'; rightWrap.style.flexDirection = 'column'; rightWrap.style.alignItems = 'flex-end'; rightWrap.style.gap = '4px'; rightWrap.style.flexShrink = '0';
-  const saveLabel = el('span', '', ''); saveLabel.style.fontSize = '0.65rem'; saveLabel.style.color = 'var(--g500)'; saveLabel.style.fontWeight = '600'; saveLabel.id = 'lbl-sav-' + id;
-  
-  if(!hasAdminAction) {
-    const sb=document.createElement('button');
-    if(isNew){ sb.className='btn-sn btn-sc'; sb.textContent= prev ? 'Actualitzar proposta' : 'Desar proposta'; sb.addEventListener('click',()=>saveNew(id,sb)); } 
-    else { sb.className='btn btn-primary btn-sc'; sb.textContent='Desar'; sb.addEventListener('click',()=>saveExisting(id,sb)); }
-    rightWrap.appendChild(sb); 
+  // Amagar el botó Desar si hi ha una decisió d'administració
+  if (!hasAdminAction) {
+      const sb=document.createElement('button');
+      if(isNew){ sb.className='btn-sn btn-sc'; sb.textContent= prev ? 'Actualitzar proposta' : 'Desar proposta'; sb.addEventListener('click',()=>saveNew(id,sb)); } 
+      else { sb.className='btn btn-primary btn-sc'; sb.textContent='Desar'; sb.addEventListener('click',()=>saveExisting(id,sb)); }
+      az.appendChild(sb); 
   }
-  
-  rightWrap.appendChild(saveLabel);
-  az.appendChild(rightWrap);
   return az;
 }
 
-function insertNew(crit,sub,subTitol,blk,addBtn){
+function insertNew(crit,sub,subTitol,contentWrap,addBtn){
   const tid='NEW-'+crit+'-'+sub+'-'+Date.now();
-  const card=buildNewCard(tid,crit,sub,subTitol);
-  blk.insertBefore(card.el,addBtn); cards[crit]=cards[crit]||[]; cards[crit].push(card);
+  const cardObj=buildNewCard(tid,crit,sub,subTitol);
+  contentWrap.insertBefore(cardObj.el,addBtn); cards[crit]=cards[crit]||[]; cards[crit].push(cardObj);
   updProgress(); updTabPending();
-  setTimeout(()=>card.el.scrollIntoView({behavior:'smooth',block:'nearest'}),60);
+  setTimeout(()=>cardObj.el.scrollIntoView({behavior:'smooth',block:'nearest'}),60);
 }
 
 function buildNewCard(tid,crit,sub,subTitol,prev=null){
   const card=document.createElement('div');
   const isAdminRejected = prev && prev.estat_admin === 'Descartat';
   const isAdminApproved = prev && prev.estat_admin === 'Aprovat';
-  const hasAdminAction = isAdminRejected || isAdminApproved;
+  const hasAdminAction = isAdminRejected || isAdminApproved; // BLOQUEIG D'AUDITORIA
 
   card.className='card cnew ' + (prev ? 'saved' : 'pending expanded') + (isAdminRejected ? ' rejected' : '');
+  
   card.dataset.id=tid; card.dataset.isNew='1'; card.dataset.crit=crit; card.dataset.sub=sub; 
   card.dataset.st = prev ? Object.values(prev).join(' ').toLowerCase() : '';
 
@@ -834,25 +896,35 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
   const titleSpan = el('span', 'new-title-text', prev ? (prev.sug_titol_enfocament || 'Nou Enfocament') : 'Escriu el títol...');
   nl.appendChild(titleSpan);
 
-  const rm=el('button','btn-rm'); rm.innerHTML='🗑️ Eliminar'; 
-  rm.addEventListener('click', async (e)=>{
-    e.stopPropagation(); 
-    if(!card.classList.contains('saved')){ card.remove(); cards[crit]=(cards[crit]||[]).filter(x=>x.id!==tid); updProgress(); updTabPending(); } 
-    else {
-      if(confirm('Segur que vols eliminar-lo definitivament?')){
-        const origBtn = rm.innerHTML; rm.textContent = '⏳';
-        try {
-          const r = await api('POST', { action:'delete', email: sess.email, id_enfocament: tid, esborrar: true });
-          if(!r.success) throw new Error(r.error);
-          card.remove(); cards[crit]=(cards[crit]||[]).filter(x=>x.id!==tid); resp = resp.filter(r => r.id_enfocament !== tid);
-          updProgress(); updTabPending(); toast('Eliminat.', 'tinfo');
-        } catch(err) { rm.innerHTML = origBtn; toast('Error: ' + err.message, 'terr'); }
-      }
-    }
-  });
-  
   ban.appendChild(nl); ban.appendChild(el('span','cs-chev','▼')); 
-  if(!hasAdminAction) ban.appendChild(rm); 
+
+  // NOMÉS AFEGIM EL BOTÓ ELIMINAR SI NO ESTÀ BLOQUEJAT PER L'ADMIN
+  if (!hasAdminAction) {
+      const rm=el('button','btn-rm'); rm.innerHTML='🗑️ Eliminar'; 
+      rm.addEventListener('click', async (e)=>{
+        e.stopPropagation(); 
+        if(!confirm('Segur que vols eliminar-lo definitivament?')) return;
+        
+        if(!card.classList.contains('saved')){ 
+            card.remove(); 
+            cards[crit]=(cards[crit]||[]).filter(x=>x.id!==tid); 
+            updProgress(); updTabPending(); 
+        } 
+        else {
+            const origBtn = rm.innerHTML; rm.textContent = '⏳';
+            try {
+              const r = await api('POST', { action: 'delete', email: sess.email, id_enfocament: tid, esborrar: true });
+              if(!r.success) throw new Error(r.error);
+              card.remove(); 
+              cards[crit]=(cards[crit]||[]).filter(x=>x.id!==tid); 
+              resp = resp.filter(r => r.id_enfocament !== tid);
+              updProgress(); updTabPending(); toast('Eliminat.', 'tinfo');
+            } catch(err) { rm.innerHTML = origBtn; toast('Error: ' + err.message, 'terr'); }
+        }
+      });
+      ban.appendChild(rm); 
+  }
+  
   card.appendChild(ban);
 
   const body=el('div','card-body new-body');
@@ -875,16 +947,22 @@ function buildNewCard(tid,crit,sub,subTitol,prev=null){
     const wrap=el('div','nf'); const lbl=el('div','nf-lbl '+f.cls); lbl.innerHTML='<span class="nf-dot" style="background:'+f.color+'"></span>'+escH(f.lbl)+(f.req?'<span class="req">*</span>':'');
     const ta=document.createElement('textarea'); ta.className='nta '+f.cls2; ta.dataset.key=f.key; ta.rows=2; ta.placeholder=f.ph;
     ta.value = prev ? (prev[f.key] || '') : '';
-    if(hasAdminAction) { ta.readOnly = true; ta.style.opacity = '0.8'; ta.style.cursor = 'not-allowed'; }
-    ta.addEventListener('input',(e)=>{
-      ta.style.borderColor = ''; ta.style.backgroundColor = ''; 
-      if(f.key === 'sug_titol_enfocament') titleSpan.textContent = e.target.value.trim() || 'Escriu el títol...';
-      markPending(tid); card.dataset.st=[...card.querySelectorAll('textarea[data-key]')].map(t=>t.value).join(' ').toLowerCase();
-    });
+    
+    if (hasAdminAction) {
+        ta.disabled = true; // Bloqueig d'auditoria
+    } else {
+        ta.addEventListener('input',(e)=>{
+          ta.style.borderColor = ''; ta.style.backgroundColor = ''; 
+          if(f.key === 'sug_titol_enfocament') titleSpan.textContent = e.target.value.trim() || 'Escriu el títol...';
+          markPending(tid); card.dataset.st=[...card.querySelectorAll('textarea[data-key]')].map(t=>t.value).join(' ').toLowerCase();
+        });
+    }
     wrap.appendChild(lbl); wrap.appendChild(ta); body.appendChild(wrap);
   });
   
-  body.appendChild(makeAZ(tid,prev,true)); card.appendChild(body); return {el:card, id:tid, isNew:true, sub};
+  body.appendChild(makeAZ(tid,prev,true)); card.appendChild(body); 
+  
+  return {el:card, id:tid, isNew:true, sub:sub};
 }
 
 /* ══ FILTRE TAULES ADMIN ══ */
@@ -898,14 +976,13 @@ window.filterAdminViews = function(val) {
 /* ══ RENDER DASHBOARD USUARI NORMAL ══ */
 function renderUserDashboard() {
     const area = $('user-view');
-    // CORRECCIÓ: Ara el dashboard recull TOTS els treballs de l'usuari (també els "simplement validats")
     const myResp = resp.filter(r => r.email === sess.email && (r.id_enfocament.startsWith('NEW-') || r.sug_desplegament || r.sug_avaluacio || r.sug_evidencies || r.comentari_general || r.validat === true || r.validat === 'true' || r.validat === 'TRUE'));
     
     let html = `
     <div class="admin-section">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem; flex-wrap:wrap; gap:1rem;">
             <div class="admin-title" style="margin:0;">📊 Resum de les meves aportacions</div>
-            <button class="btn btn-primary" onclick="downloadUserSummary('${sess.email}', '${sess.nom}')">⬇️ Descarregar el meu resum (.doc)</button>
+            <button class="btn btn-primary" onclick="downloadUserSummary('${escJS(sess.email)}', '${escJS(sess.nom)}')">⬇️ Descarregar el meu resum (.doc)</button>
         </div>
         <div style="font-size:0.75rem; color:var(--g500); margin-bottom:1.5rem;">Dades actualitzades: ${lastSyncTime ? lastSyncTime.toLocaleString() : 'Ara'}</div>`;
     
@@ -915,7 +992,7 @@ function renderUserDashboard() {
         return;
     }
     
-    html += `<table class="admin-table"><thead><tr><th>Tipus</th><th>Enfocament / Títol</th><th>Estat (Estratègia Corporativa)</th><th>Retorn de Estratègia Corporativa</th></tr></thead><tbody>`;
+    html += `<table class="admin-table"><thead><tr><th>Tipus</th><th>Enfocament / Títol</th><th>Estat (Estratègia Corporativa)</th><th>Retorn d'Estratègia Corporativa</th></tr></thead><tbody>`;
     
     myResp.forEach(r => {
         const isNew = String(r.id_enfocament).startsWith('NEW-');
@@ -928,17 +1005,33 @@ function renderUserDashboard() {
         let bcls = 'badge-pend', btxt = 'Pendent de revisió';
         if(r.estat_admin === 'Aprovat') { bcls = 'badge-ok'; btxt = 'Aprovat'; }
         else if(r.estat_admin === 'Descartat') { bcls = 'badge-ko'; btxt = 'Descartat'; }
-        else if(isJustVal) { bcls = 'badge-ok'; btxt = 'Sense canvis (Conforme)'; }
+        else if(r.estat_admin === 'Revisat') { bcls = 'badge-ok'; btxt = 'Revisat'; }
+        else if(isJustVal) { bcls = 'badge-neutral'; btxt = 'Sense canvis (Conforme)'; }
         
         let typeCls = 'badge-pend', typeTxt = 'MILLORA';
         if(isNew) { typeCls = 'badge-ok'; typeTxt = 'NOU'; }
-        else if(isJustVal) { typeCls = 'badge-ok'; typeTxt = 'REVISAT'; }
+        else if(isJustVal) { typeCls = 'badge-neutral'; typeTxt = 'REVISAT'; }
+
+        // Si és una millora i ja està revisada, mostrem la llista de motius com a retorn.
+        let textRetorn = isJustVal ? '---' : escH(r.comentari_admin || '---');
+        if(!isNew && (r.estat_admin === 'Revisat' || r.estat_admin === 'Aprovat')) {
+            textRetorn = '<ul style="margin:0; padding-left:15px;">';
+            [{k:'desplegament', l:'Desplegament'},{k:'avaluacio', l:'Avaluació'},{k:'evidencies', l:'Evidències'}].forEach(f => {
+                if(r['sug_'+f.k] && r['sug_'+f.k].trim()!=='') {
+                    const isAppr = (r['aprovat_'+f.k] === true || r['aprovat_'+f.k] === 'true' || r['aprovat_'+f.k] === 'TRUE');
+                    if (isAppr) textRetorn += `<li><b>${f.l}:</b> <span style="color:var(--green)">Aprovat</span></li>`;
+                    else textRetorn += `<li><b>${f.l}:</b> <span style="color:var(--red)">Descartat</span> <i style="color:var(--g500)">(${escH(r['motiu_'+f.k])})</i></li>`;
+                }
+            });
+            textRetorn += '</ul>';
+            if(r.comentari_admin) textRetorn += `<div style="margin-top:4px; font-style:italic">"${escH(r.comentari_admin)}"</div>`;
+        }
 
         html += `<tr>
             <td><span class="${typeCls}">${typeTxt}</span></td>
             <td><b>${escH(title)}</b></td>
             <td><span class="${bcls}">${btxt}</span></td>
-            <td style="color:var(--gray-dipta); font-size:0.8rem; max-width:300px;">${isJustVal ? '---' : escH(r.comentari_admin || '---')}</td>
+            <td style="color:var(--gray-dipta); font-size:0.8rem; max-width:350px;">${textRetorn}</td>
         </tr>`;
     });
     
@@ -979,7 +1072,7 @@ function renderAdminDashboard(){
     const filterContainer = el('div'); filterContainer.innerHTML = filterHtml;
     actionRow.appendChild(filterContainer);
 
-    const btnPdf = el('button', 'btn btn-primary', '📄 Generar Informe Memòria amb Millores (PDF)');
+    const btnPdf = el('button', 'btn btn-primary', '📄 Generar Informe Memòria amb Millores (.doc)');
     btnPdf.onclick = () => {
         if(pendentsAdmin.length > 0) {
             if(!confirm(`⚠️ ATENCIÓ:\n\nHi ha ${pendentsAdmin.length} enfocaments nous pendents de validar que NO sortiran a l'informe.\n\nVols generar l'informe de totes maneres?`)) return;
@@ -1034,7 +1127,7 @@ function renderAdminDashboard(){
                     <span style="font-size:.7rem; color:var(--g500); min-width:35px; text-align:right;">${pct}%</span>
                 </div>
             </td>
-            <td><button class="btn btn-ghost btn-sm" onclick="downloadUserSummary('${escH(u.email_autoritzat)}', '${escH(u.nom_usuari)}')">⬇️ Descarregar resum (.doc)</button></td>
+            <td><button class="btn btn-ghost btn-sm" onclick="downloadAdminUserSummary('${escJS(u.email_autoritzat)}', '${escJS(u.nom_usuari)}')">⬇️ Descarregar resum (.doc)</button></td>
         `;
         tb0.appendChild(tr);
     });
@@ -1063,7 +1156,7 @@ function renderAdminDashboard(){
             <td>${escH(r.sug_titol_enfocament || 'Sense títol')}</td>
             <td>${escH(r.nom_visible)}<br><small style="color:var(--g300)">${escH(r.area_revisora)}</small></td>
             <td><span class="${bcls}">${btxt}</span></td>
-            <td><button class="btn-sm btn-sm-vio" onclick="openAdminModal('${r.id_enfocament}', '${r.email}')">Revisar</button></td>
+            <td><button class="btn-sm btn-sm-vio" onclick="openAdminModal('${escJS(r.id_enfocament)}', '${escJS(r.email)}')">Revisar</button></td>
         `;
         tb1.appendChild(tr);
     });
@@ -1092,7 +1185,7 @@ function renderAdminDashboard(){
         const titolOriginal = orig ? orig.titol_enfocament : 'Enfocament existent';
 
         let bcls = 'badge-pend', btxt = 'Pendent';
-        if(r.estat_admin === 'Aprovat') { bcls = 'badge-ok'; btxt = 'Revisat'; }
+        if(r.estat_admin === 'Aprovat' || r.estat_admin === 'Revisat') { bcls = 'badge-ok'; btxt = 'Revisat'; }
         if(r.estat_admin === 'Descartat') { bcls = 'badge-ko'; btxt = 'Descartat'; }
         
         tr.innerHTML = `
@@ -1105,12 +1198,27 @@ function renderAdminDashboard(){
             </td>
             <td>${escH(r.nom_visible)} <small style="color:var(--g300)">(${escH(r.area_revisora)})</small></td>
             <td><span class="${bcls}">${btxt}</span></td>
-            <td><button class="btn-sm btn-sm-vio" onclick="openAdminModal('${r.id_enfocament}', '${r.email}')">Revisar</button></td>
+            <td><button class="btn-sm btn-sm-vio" onclick="openAdminModal('${escJS(r.id_enfocament)}', '${escJS(r.email)}')">Revisar</button></td>
         `;
         tb2.appendChild(tr);
     });
     sec2.appendChild(t2); area.appendChild(sec2);
 }
+
+/* ══ SCRIPT DEL TOGGLE SLIDER ══ */
+window.toggleMotiu = function(key, el) {
+    const lbl = $('lbl-chk-' + key);
+    const box = $('box-motiu-' + key);
+    if (el.checked) {
+        lbl.textContent = '✅ APROVAT';
+        lbl.className = 'toggle-label lbl-aprovat';
+        box.style.display = 'none';
+    } else {
+        lbl.textContent = '❌ DESCARTAT';
+        lbl.className = 'toggle-label lbl-descartat';
+        box.style.display = 'block';
+    }
+};
 
 /* ══ MODAL ADMIN FUNCTIONS ══ */
 function openAdminModal(id, email){
@@ -1120,9 +1228,9 @@ function openAdminModal(id, email){
     const isNew = String(id).startsWith('NEW-');
     
     const content = $('modal-content');
-    $('modal-title').textContent = isNew ? 'Revisió de Nou Enfocament' : 'Revisió de Millores Proposades';
     
     if(isNew){
+        $('modal-title').textContent = 'Revisió de Nou Enfocament';
         content.innerHTML = `
             <div class="admin-item-box"><strong>Títol</strong><p>${escH(r.sug_titol_enfocament)}</p></div>
             <div class="admin-item-box"><strong>Enfocament</strong><p>${escH(r.sug_enfocament)}</p></div>
@@ -1132,58 +1240,62 @@ function openAdminModal(id, email){
             ${r.comentari_general ? `<div class="admin-item-box"><strong>Comentari Usuari</strong><p>${escH(r.comentari_general)}</p></div>` : ''}
         `;
         $('btn-ok').textContent = '✅ Aprovar Nou Enfocament';
+        $('btn-ko').style.display = 'inline-flex';
     } else {
+        $('modal-title').textContent = 'Revisió de Millores Proposades';
         const o = mem.find(m => String(m.id) === String(r.id_enfocament));
         let h = '';
         const fields = [
-            {l:'Desplegament (D)', k:'desplegament', sk:'sug_desplegament', ak:'aprovat_desplegament'}, 
-            {l:'Avaluació (A)', k:'avaluacio', sk:'sug_avaluacio', ak:'aprovat_avaluacio'}, 
-            {l:'Evidències (E)', k:'evidencies', sk:'sug_evidencies', ak:'aprovat_evidencies'}
+            {l:'Desplegament', k:'desplegament', sk:'sug_desplegament', ak:'aprovat_desplegament', mk:'motiu_desplegament'}, 
+            {l:'Avaluació', k:'avaluacio', sk:'sug_avaluacio', ak:'aprovat_avaluacio', mk:'motiu_avaluacio'}, 
+            {l:'Evidències', k:'evidencies', sk:'sug_evidencies', ak:'aprovat_evidencies', mk:'motiu_evidencies'}
         ];
         
         fields.forEach(f => {
-            if(r[f.sk]){
-                const isChecked = r[f.ak] === true || r[f.ak] === 'true' || r[f.ak] === 'TRUE' ? 'checked' : '';
-                const chkHtml = `<label class="rev-check" style="margin:0;"><input type="checkbox" id="chk-${f.k}" class="chk-admin-eval" ${isChecked}> Aprovar canvi a l'informe</label>`;
+            if(r[f.sk] && r[f.sk].trim() !== ''){
+                // Per defecte posem aprovat, tret que s'hagi marcat explícitament com a fals prèviament
+                const isChecked = (r[f.ak] === true || r[f.ak] === 'true' || r[f.ak] === 'TRUE' || r[f.ak] === undefined || r[f.ak] === '') ? 'checked' : '';
+                const dispMotiu = isChecked ? 'none' : 'block';
+                const valMotiu = r[f.mk] || '';
+
+                const chkHtml = `
+                    <div style="display:flex; align-items:center; gap:5px;">
+                        <label class="switch">
+                            <input type="checkbox" id="chk-${f.k}" class="chk-admin-eval" ${isChecked} onchange="toggleMotiu('${f.k}', this)">
+                            <span class="slider"></span>
+                        </label>
+                        <span id="lbl-chk-${f.k}" class="toggle-label ${isChecked ? 'lbl-aprovat' : 'lbl-descartat'}">${isChecked ? '✅ APROVAT' : '❌ DESCARTAT'}</span>
+                    </div>
+                `;
                 h += `
-                    <div style="margin-bottom:1rem;">
-                        <div class="sb-hdr" style="border-radius:8px 8px 0 0; border:1px solid var(--g100); border-bottom:none;">
-                            <span>${f.l}</span> ${chkHtml}
+                    <div style="margin-bottom:1.5rem; border:1px solid var(--g200); border-radius:8px; overflow:hidden; background:#fafafa;">
+                        <div style="background:var(--g50); padding:0.8rem 1rem; border-bottom:1px solid var(--g100); display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:0.85rem; font-weight:800; color:var(--navy); text-transform:uppercase;">${f.l}</span> 
+                            ${chkHtml}
                         </div>
-                        <div class="side-by-side" style="margin-bottom:0;">
-                            <div class="sb-col" style="border-radius:0 0 0 8px; border-right:none;"><div class="sb-hdr" style="background:#fafafa; font-size:0.65rem;">Original</div><div class="sb-body">${escH(o[f.k])}</div></div>
-                            <div class="sb-col" style="border-radius:0 0 8px 0;"><div class="sb-hdr" style="background:#fef3c7; font-size:0.65rem;">Proposta de millora</div><div class="sb-body sb-diff">${escH(r[f.sk])}</div></div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; padding: 1rem; background: #fff;">
+                            <div>
+                                <div style="font-size:0.65rem; text-transform:uppercase; color:var(--g500); margin-bottom:5px; font-weight:bold;">Text Original</div>
+                                <div style="font-size:0.85rem; color:var(--g700); white-space:pre-wrap;">${escH(o[f.k])}</div>
+                            </div>
+                            <div>
+                                <div style="font-size:0.65rem; text-transform:uppercase; color:var(--orange); margin-bottom:5px; font-weight:bold;">Proposta de Millora</div>
+                                <div style="font-size:0.85rem; color:#92400e; background:#fffbeb; padding:8px; border-left:3px solid #f59e0b; white-space:pre-wrap; border-radius:4px;">${escH(r[f.sk])}</div>
+                            </div>
+                        </div>
+                        <div id="box-motiu-${f.k}" style="display:${dispMotiu}; padding:0 1rem 1rem 1rem; background:#fff;">
+                            <div style="background:#fff5f5; padding:10px; border-radius:6px; border:1px dashed #fca5a5;">
+                                <label style="display:block; font-size:0.75rem; color:var(--red); margin-bottom:5px; font-weight:bold;">Motiu del descarte (Obligatori):</label>
+                                <textarea id="motiu-${f.k}" rows="2" style="width:100%; border:1px solid #fca5a5; border-radius:4px; padding:6px; font-family:inherit; font-size:0.85rem;" placeholder="Explica per què es descarta aquesta millora...">${escH(valMotiu)}</textarea>
+                            </div>
                         </div>
                     </div>`;
             }
         });
-        if(r.comentari_general) h += `<div class="admin-item-box"><strong>Comentari General / Context de l'usuari</strong><p>${escH(r.comentari_general)}</p></div>`;
+        if(r.comentari_general) h += `<div class="admin-item-box" style="margin-top:1rem;"><strong>Comentari General de l'usuari</strong><p>${escH(r.comentari_general)}</p></div>`;
         content.innerHTML = h;
         $('btn-ok').textContent = '✅ Desar decisions d\'aprovació';
-        
-        // Timeout para asegurar que el DOM ha cargado los checkboxes
-        setTimeout(() => {
-            const chks = document.querySelectorAll('.chk-admin-eval');
-            const evalBtn = $('btn-ok');
-            if(chks.length > 0) {
-                const checkAprovar = () => {
-                    const anyChecked = Array.from(chks).some(c => c.checked);
-                    if(!anyChecked) {
-                        evalBtn.style.background = 'var(--g300)';
-                        evalBtn.style.cursor = 'not-allowed';
-                        evalBtn.title = 'Has de marcar almenys un element per aprovar';
-                    } else {
-                        evalBtn.style.background = '#16a34a';
-                        evalBtn.style.cursor = 'pointer';
-                        evalBtn.title = '';
-                    }
-                };
-                chks.forEach(c => c.addEventListener('change', checkAprovar));
-                checkAprovar(); // check inicial
-            } else {
-                $('btn-ok').style.background = '#16a34a';
-            }
-        }, 50);
+        $('btn-ko').style.display = 'none'; // Amaguem el botó global de descartar
     }
     
     $('admin-comment').value = r.comentari_admin || '';
@@ -1195,56 +1307,84 @@ function closeModal(){
     currentAdminCardId = null;
 }
 
-async function submitAdminDecision(estat){
+async function submitAdminDecision(estatGlobal){
     if(!currentAdminCardId) return;
+    const origR = currentAdminCardId;
+    const isNew = String(origR.id_enfocament).startsWith('NEW-');
     const comment = $('admin-comment').value.trim();
-    if(estat === 'Descartat' && comment === ''){
-        toast('Has de posar un motiu si ho descartes.','terr');
+    
+    let estatFinal = estatGlobal;
+
+    // VALIDACIÓ NOU ENFOCAMENT
+    if(isNew && estatGlobal === 'Descartat' && comment === ''){
+        toast('Has de posar un motiu general si ho descartes.','terr');
         $('admin-comment').focus(); return;
     }
 
-    const origR = currentAdminCardId;
-    const isNew = String(origR.id_enfocament).startsWith('NEW-');
-    
     const payload = {
         action: 'save',
         email: origR.email, 
         id_enfocament: origR.id_enfocament,
-        estat_admin: estat,
         comentari_admin: comment
     };
 
+    // VALIDACIÓ LÒGICA GRANULAR (MILLORES)
     if(!isNew) {
-        payload.aprovat_desplegament = $('chk-desplegament') ? $('chk-desplegament').checked : false;
-        payload.aprovat_avaluacio = $('chk-avaluacio') ? $('chk-avaluacio').checked : false;
-        payload.aprovat_evidencies = $('chk-evidencies') ? $('chk-evidencies').checked : false;
+        estatFinal = 'Revisat'; // Sempre ho marquem com a revisat
+        let errorMotiu = false;
         
-        if(estat === 'Aprovat' && !payload.aprovat_desplegament && !payload.aprovat_avaluacio && !payload.aprovat_evidencies) {
-            toast('⚠️ Marca algun element per aprovar (checkbox).','terr');
-            return;
+        ['desplegament', 'avaluacio', 'evidencies'].forEach(k => {
+            const chk = $('chk-' + k);
+            if(chk) { // Si el camp va ser proposat i existeix al modal
+                payload['aprovat_' + k] = chk.checked;
+                if(!chk.checked) {
+                    const motiuVal = $('motiu-' + k).value.trim();
+                    if(motiuVal === '') {
+                        errorMotiu = true;
+                        $('motiu-' + k).style.borderColor = 'red';
+                    }
+                    payload['motiu_' + k] = motiuVal;
+                } else {
+                    payload['motiu_' + k] = '';
+                }
+            }
+        });
+
+        if(errorMotiu) {
+            toast('Has d\'omplir els motius dels elements descartats.', 'terr');
+            return; // Bloquegem l'enviament
         }
     }
 
-    $('btn-ok').disabled = true; $('btn-ko').disabled = true;
+    payload.estat_admin = estatFinal;
+
+    $('btn-ok').disabled = true; 
+    if($('btn-ko')) $('btn-ko').disabled = true;
     setSync('syncing');
+    
     try{
         if(APPS_SCRIPT_URL) {
             const r = await api('POST', payload);
             if(!r.success) throw new Error(r.error);
         }
-        origR.estat_admin = estat; 
+        
+        // Actualitzem l'estat local de l'objecte per no haver de recarregar tot
+        origR.estat_admin = estatFinal; 
         origR.comentari_admin = comment;
         
         if(!isNew) {
-            origR.aprovat_desplegament = payload.aprovat_desplegament;
-            origR.aprovat_avaluacio = payload.aprovat_avaluacio;
-            origR.aprovat_evidencies = payload.aprovat_evidencies;
+            ['desplegament', 'avaluacio', 'evidencies'].forEach(k => {
+                if(payload['aprovat_' + k] !== undefined) {
+                    origR['aprovat_' + k] = payload['aprovat_' + k];
+                    origR['motiu_' + k] = payload['motiu_' + k];
+                }
+            });
         }
         
         setSync('ok');
         closeModal(); 
         
-        // Refresca la vista en la que estiguem
+        // Refresquem la vista activa
         if(curC === 'admin') renderAdminDashboard();
         else if (curC === 'user') renderUserDashboard();
         
@@ -1252,47 +1392,61 @@ async function submitAdminDecision(estat){
         setSync('err');
         toast('Error guardant: ' + err.message, 'terr');
     }
-    $('btn-ok').disabled = false; $('btn-ko').disabled = false;
+    
+    $('btn-ok').disabled = false; 
+    if($('btn-ko')) $('btn-ko').disabled = false;
 }
 
 /* ══ EXPORTACIÓ A WORD - RESUM USUARI ══ */
+function downloadAdminUserSummary(email, nomUsuari) {
+    _downloadSummary(email, nomUsuari);
+}
+
 function downloadUserSummary(email, nomUsuari) {
-    const uResp = resp.filter(r => r.email === email && (r.estat_admin === 'Aprovat' || r.estat_admin === 'Descartat'));
+    _downloadSummary(email, nomUsuari);
+}
+
+function _downloadSummary(email, nomUsuari) {
+    const uResp = resp.filter(r => r.email === email && (r.estat_admin === 'Aprovat' || r.estat_admin === 'Descartat' || r.estat_admin === 'Revisat'));
     if(uResp.length === 0) { toast("Aquest usuari no té decisions preses encara.", "tinfo"); return; }
 
-    const pInc=[], eInc=[], pDes=[], eDes=[];
+    const millores = [], eInc=[], eDes=[];
     uResp.forEach(r => {
         const isN = String(r.id_enfocament).startsWith('NEW-');
-        if(r.estat_admin==='Aprovat') { isN ? eInc.push(r) : pInc.push(r); }
-        else { isN ? eDes.push(r) : pDes.push(r); }
+        if(isN) {
+            if(r.estat_admin==='Aprovat') eInc.push(r);
+            else eDes.push(r);
+        } else {
+            millores.push(r);
+        }
     });
 
-    let h = `<div style="font-family:sans-serif; color:#333;"><h2>Resum de decisions - Memòria EFQM</h2><p>Aquest és el retorn de la Estratègia Corporativa sobre les teves aportacions:</p>`;
+    let h = `<div style="font-family:sans-serif; color:#333;"><h2>Resum de decisions - Memòria EFQM</h2><p>Aquest és el retorn d'Estratègia Corporativa sobre les teves aportacions:</p>`;
 
-    if(pInc.length>0){
-        h += `<h3 style="color:#16a34a">[ACTUALITZAT] Propostes incorporades a la memòria</h3><ul>`;
-        pInc.forEach(r => { 
+    if(millores.length > 0){
+        h += `<h3 style="color:#0083A9">Millores en Enfocaments Existents</h3><ul>`;
+        millores.forEach(r => { 
             const o = mem.find(m=>String(m.id)===String(r.id_enfocament)); 
             
-            // Fix: Detallem exactament quins camps s'han aprovat en text pla (sense emojis)
-            let camps = [];
-            if(r.aprovat_desplegament === true || r.aprovat_desplegament === 'true' || r.aprovat_desplegament === 'TRUE') camps.push('Desplegament');
-            if(r.aprovat_avaluacio === true || r.aprovat_avaluacio === 'true' || r.aprovat_avaluacio === 'TRUE') camps.push('Avaluació');
-            if(r.aprovat_evidencies === true || r.aprovat_evidencies === 'true' || r.aprovat_evidencies === 'TRUE') camps.push('Evidències');
-            let detall = camps.length > 0 ? `(Camps incorporats: ${camps.join(', ')})` : '(Revisió i comentari gestionats)';
+            let detalls = '';
+            [{k:'desplegament', l:'Desplegament'},{k:'avaluacio', l:'Avaluació'},{k:'evidencies', l:'Evidències'}].forEach(f => {
+                if(r['sug_'+f.k] && r['sug_'+f.k].trim()!=='') {
+                    const isAppr = (r['aprovat_'+f.k] === true || r['aprovat_'+f.k] === 'true' || r['aprovat_'+f.k] === 'TRUE');
+                    if (isAppr) detalls += `<li style="margin-left:20px; font-size:12px;">${f.l}: <b style="color:#16a34a">Aprovat</b></li>`;
+                    else detalls += `<li style="margin-left:20px; font-size:12px;">${f.l}: <b style="color:#dc2626">Descartat</b> <i>(Motiu: ${escH(r['motiu_'+f.k])})</i></li>`;
+                }
+            });
 
-            h += `<li style="margin-bottom:8px;"><b>${escH(o?.titol_enfocament||r.id_enfocament)}</b><br><i style="font-size:12px; color:#555;">${detall}</i></li>`; 
+            h += `<li style="margin-bottom:8px;"><b>${escH(o?.titol_enfocament||r.id_enfocament)}</b><br>
+                  <ul style="margin-top:4px; margin-bottom:4px; list-style-type:circle;">${detalls}</ul>
+                  ${r.comentari_admin ? `<i style="font-size:12px; color:#555;">Nota general: ${escH(r.comentari_admin)}</i>` : ''}
+                  </li>`; 
         });
         h += `</ul>`;
     }
     if(eInc.length>0){
         h += `<h3 style="color:#16a34a">[ACTUALITZAT] Nous enfocs afegits</h3><ul>`;
         eInc.forEach(r => h += `<li><b>${escH(r.sug_titol_enfocament)}</b></li>`);
-        h += `</ul>`;
-    }
-    if(pDes.length>0){
-        h += `<h3 style="color:#dc2626">[DESCARTAT] Propostes desestimades</h3><ul>`;
-        pDes.forEach(r => { const o = mem.find(m=>String(m.id)===String(r.id_enfocament)); h += `<li style="margin-bottom:10px">A l'enfocament <b>${escH(o?.titol_enfocament||r.id_enfocament)}</b><br><i style="color:#666">Motiu: ${escH(r.comentari_admin||'Sense motiu especificat')}</i></li>`; });
         h += `</ul>`;
     }
     if(eDes.length>0){
@@ -1315,7 +1469,7 @@ function downloadUserSummary(email, nomUsuari) {
 
 /* ══ EXPORTACIÓ A WORD - MEMÒRIA GLOBAL ══ */
 function exportToWord() {
-    let pa = '<h1 style="text-align:center; color:#0083A9;">Informe Memòria EFQM amb Millores</h1><p style="text-align:center; font-style:italic; font-size:12px; margin-bottom:40px; color:#666;">Aquest document mostra el text original de la memòria. A sota de cada apartat hi figuren les propostes de millora que han estat aprovades per la direcció per tal de facilitar-ne la integració manual al document oficial.</p><br>';
+    let pa = '<h1 style="text-align:center; color:#0083A9;">Informe Memòria EFQM amb Millores</h1><p style="text-align:center; font-style:italic; font-size:12px; margin-bottom:40px; color:#666;">Aquest document mostra el text original de la memòria. A sota de cada apartat hi figuren les propostes de millora que han estat aprovades per Estratègia Corporativa per tal de facilitar-ne la integració manual al document oficial.</p><br>';
 
     Object.keys(cData).sort().forEach(c => {
         pa += `<h2 style="color:#0083A9; border-bottom:2px solid #0083A9;">Criteri ${c} - ${escH(cData[c].titol)}</h2>`;
@@ -1325,7 +1479,7 @@ function exportToWord() {
             pa += `<h3 style="color:#006b8a; margin-top:20px;">${s} ${escH(sub.titol)}</h3>`;
             
             sub.rows.forEach(row => {
-                const approvedSugs = resp.filter(x => String(x.id_enfocament) === String(row.id) && x.estat_admin === 'Aprovat'); 
+                const approvedSugs = resp.filter(x => String(x.id_enfocament) === String(row.id) && (x.estat_admin === 'Aprovat' || x.estat_admin === 'Revisat')); 
                 
                 pa += `<div style="border:1px solid #ccc; padding:15px; margin-bottom:15px;"><h4>${escH(row.titol_enfocament || 'Sense títol')}</h4>`;
                 
@@ -1344,7 +1498,6 @@ function exportToWord() {
                         
                         approvedSugs.forEach(appR => {
                             if (f.ak && (appR[f.ak] === true || appR[f.ak] === 'true' || appR[f.ak] === 'TRUE') && appR[f.sk] && appR[f.sk].trim() !== '') {
-                                // Fix: Text pla sense emojis pel Word
                                 pa += `<div style="background:#f0fdf4; border:1px dashed #16a34a; padding:8px; margin-top:5px;">
                                     <strong style="color:#16a34a; font-size:11px;">[MILLORA APROVADA APLICADA] (${escH(appR.nom_visible)}):</strong><br>
                                     ${escH(appR[f.sk])}
@@ -1375,7 +1528,6 @@ function exportToWord() {
 
                 approvedSugs.forEach(appR => {
                     if (appR.comentari_general && appR.comentari_general.trim() !== '') {
-                        // Fix: Text pla sense emojis pel Word
                         pa += `<div style="background:#f1f5f9; border-left: 4px solid #94a3b8; padding: 8px; margin-top: 5px; font-size: 12px;">
                             <strong>[COMENTARI GENERAL] (${escH(appR.nom_visible)}):</strong><br>
                             ${escH(appR.comentari_general)}
@@ -1420,10 +1572,7 @@ function markSaved(id){ const c=document.querySelector('.card[data-id="'+id+'"]'
 
 function updProgress(){ 
   let tot=0,sav=0; 
-  document.querySelectorAll('.card[data-is-new="0"]').forEach(c => {
-    tot++;
-    if(c.classList.contains('saved')) sav++;
-  });
+  Object.values(cards).forEach(arr=>{ tot+=arr.length; arr.forEach(({el:e})=>{ if(e.classList.contains('saved')) sav++; }); }); 
   $('pfill').style.width=(tot?Math.round(sav/tot*100):0)+'%'; $('plbl').textContent=sav+' / '+tot; 
   
   document.querySelectorAll('.sb').forEach(blk => {
@@ -1444,16 +1593,40 @@ function updProgress(){
 function setF(f,btn){ curF=f; document.querySelectorAll('.tog-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); applyF(); }
 function applyF(){
   const kw=document.getElementById('srch').value.toLowerCase().trim();
+  
+  if (kw && collapsedStateBeforeSearch.length === 0) {
+      document.querySelectorAll('.sb.collapsed').forEach(b => collapsedStateBeforeSearch.push(b.dataset.s));
+  }
+
   (cards[curC]||[]).forEach(({el:e})=>{
     let show=true;
-    // Fix: El filtre nous només mira que sigui nou, independentment de si està desat o no
     if(curF==='pending') show = !e.classList.contains('saved');
     else if(curF==='validated') show = e.classList.contains('saved');
     else if(curF==='new') show = e.dataset.isNew==='1';
     if(show&&kw) show=(e.dataset.st||'').includes(kw);
     e.style.display=show?'':'none';
   });
-  document.querySelectorAll('.sb').forEach(b=>{ b.style.display=[...b.querySelectorAll('.card')].some(c=>c.style.display!=='none')?'':'none'; });
+
+  document.querySelectorAll('.sb').forEach(b=>{ 
+      const hasVis = [...b.querySelectorAll('.card')].some(c=>c.style.display!=='none');
+      b.style.display = hasVis ? '' : 'none'; 
+      
+      if (kw && hasVis) {
+          b.classList.remove('collapsed');
+      }
+      
+      if (!kw) {
+          if (collapsedStateBeforeSearch.includes(b.dataset.s)) {
+              b.classList.add('collapsed');
+          } else {
+              b.classList.remove('collapsed');
+          }
+      }
+  });
+  
+  if (!kw) {
+      collapsedStateBeforeSearch = [];
+  }
 }
 
 function cardData(id){
@@ -1494,6 +1667,7 @@ async function saveNew(tid,btn){
   
   if (faltan) {
       toast('⚠️ Avís: Falten camps obligatoris per omplir.', 'terr');
+      setSync('err');
       return;
   }
 
@@ -1512,12 +1686,6 @@ async function doSave(payload,id,btn,orig,isNew, isDone){
     else { markPending(id); btn.textContent='Desat (Esborrany)'; toast('Esborrany desat. Encara pendent de finalitzar.','tinfo'); }
     const c=document.querySelector('.card[data-id="'+id+'"]');
     if(c){ if(isNew && isDone) c.classList.remove('expanded'); const chk = c.querySelector('.chk-v'); if(chk && chk.checked){ chk.disabled = true; chk.parentElement.style.opacity = '0.6'; chk.parentElement.style.cursor = 'not-allowed'; } }
-    const lblSav = document.getElementById('lbl-sav-' + id);
-    if(lblSav) {
-        const ara = new Date();
-        const mins = ara.getMinutes().toString().padStart(2, '0');
-        lblSav.textContent = `Últim desat a les ${ara.getHours()}:${mins}`;
-    }
   } catch(e){ 
       btn.textContent='Error ❌'; 
       toast('Error de xarxa','terr'); 
@@ -1528,13 +1696,6 @@ async function doSave(payload,id,btn,orig,isNew, isDone){
 
 function updResp(p){ const i=resp.findIndex(r=>r.email===p.email&&r.id_enfocament===p.id_enfocament); if(i>=0) Object.assign(resp[i],p); else resp.push(p); }
 
-/* ══ UTILS ══ */
-const $=id=>document.getElementById(id);
-const el=(tag,cls,txt)=>{ const e=document.createElement(tag); if(cls) e.className=cls; if(txt!==undefined) e.textContent=txt; return e; };
-const wait=ms=>new Promise(r=>setTimeout(r,ms));
-const escH=t=>String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-function toast(msg,cls){ const c=$('toasts'); const t=el('div','toast '+(cls||'')); t.textContent=msg; c.appendChild(t); setTimeout(()=>t.remove(),3400); }
-function showErr(e,m){ e.textContent=m; e.classList.remove('hidden'); }
 </script>
 </body>
 </html>
